@@ -1,0 +1,96 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                      %
+%     File: Thesis_Appendix.tex                                        %
+%     Tex Master: Thesis.tex                                           %
+%                                                                      %
+%     Author: Andre C. Marta                                           %
+%     Last modified : 21 Jan 2011                                      %
+%                                                                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Domain specific language }
+\label{appendix2}
+$
+func select: Table r -> Table a, Const b {
+  row(r) == row(a);
+  col(r) <= col(a) && col(r) <= 3;
+  groups(r) == groups(a);
+}
+
+func unite: Table r -> Table a, Const b, Const c, Const d, Const e {
+  row(r) == row(a);
+  col(r) == col(a) - 1;
+  groups(r) == groups(a);
+}
+
+func gather: Table r -> Table a, Const b {
+  row(r) >= row(a);
+  col(r) <= col(a);
+  groups(r) >= groups(a);
+}
+
+func spread: Table r -> Table a, Const b, Const c {
+  row(r) <= row(a);
+  col(r) >= col(a);
+  groups(r) <= groups(a);
+}
+
+func separate: Table r -> Table a, Const b, Const c, Const d {
+  row(r) == row(a);
+  col(r) >= col(a) + 1;
+  groups(r) == groups(a);
+}
+
+func filter: Table r -> Table a, Const b, Const c, Const d {
+  row(r) <= row(a) - 1;
+  col(r) == col(a);
+  groups(r) <= groups(a);
+}
+
+func summarise: Table r -> Table a, Const b, Const c {
+  row(r) <= row(a);
+  col(r) <= col(a) + 1;
+  groups(r) <= groups(a);
+}
+
+func inner_join: Table r -> Table a, Table b, Const c {
+  col(r) <= col(a) + col(b) - 1;
+  row(r) <= row(a);
+  groups(r) == 1;
+}
+
+func group_by: Table r -> Table a, Const b {
+  row(r) == row(a);
+  col(r) == col(a);
+  groups(r) < groups(a);
+}
+
+func mutate: Table r -> Table a, Const b, Const c, Const d{
+  row(r) == row(a);
+  col(r) >= col(a);
+  groups(r) == groups(a);
+}
+
+func count: Table r -> Table a {
+  row(r) <= row(a);
+  col(r) <= col(a) + 1;
+  groups(r) <= groups(a);
+}
+
+func normalize: Table r -> Table a, Const b, Const c, Const d{
+  row(r) == row(a);
+  col(r) == col(a);
+  groups(r) == groups(a);
+}
+
+func rowwise: Table r -> Table a {
+  row(r) == row(a);
+  col(r) == col(a);
+  groups(r) == groups(a);
+}
+
+func basic_op: Table r -> Table a, Table b, Const c, Const d, Const e {
+  row(r) == row(a);
+  col(r) == col(a) + 1;
+  groups(r) == groups(a);
+}$

@@ -1,0 +1,51 @@
+\chapter{Introduction}
+
+As computers steadily become vital tools in our day-to-day lives, the need arises to extend the ability to develop computer applications to ampler audiences, including those who lack a programming background.
+OutSystems\footnotemark{} is a low-code development platform that enables its users to build applications through a graphical interface and integrate them with existing systems. It speeds up the development of web and mobile applications, at the same time making the task more accessible to users from different backgrounds.
+\footnotetext{\url{https://www.outsystems.com}. Accessed on \formatdate{6}{1}{2020}.}
+
+Data analysis is a powerful resource with numerous applications that has flourished as a research field over the years.
+%Naturally, data collection is a pivotal step in performing any kind of data analysis.
+Digital forms can be used to collect structured data while performing real-time validations on the input fields. Well-written validations result in overall cleaner and standardised data, free of invalid values, such as typographical mistakes (`typos') and format inconsistencies, which requires less processing to ready for analysis.
+One of the many features offered by OutSystems is the automatic generation of forms based on a high-level description of desired fields, to which users can subsequently add custom hand-written validations that are checked before the form is submitted.
+
+Its usefulness notwithstanding, writing validation code is regarded by programmers as a monotonous and dull task. The same validations are repeatedly used in many input fields that have to be scrutinised one by one to discover which assertions are required in each particular case. Furthermore, hand-written validations are error-prone. Programmers often miss corner cases, admitting less-than-obvious mistakes that more imaginative form-fillers may commit.
+
+Program synthesis is the task of automatically generating a program that satisfies some desired behaviour expressed as a high-level specification.
+Since low-code platforms have the ultimate vision of making application development accessible to everyone, there is a lot of potential in the integration of program synthesis in such platforms.
+% As such, it is a significant problem to consider when developing a low-code platform.
+Owing to its versatility and usefulness, program synthesis has recently attracted interest from various research communities (e.g.
+constraint solving \cite{DBLP:conf/ijcai/KolbTPR18,DBLP:conf/cp/OrvalhoTVMM19,DBLP:journals/pacmpl/Yaghmazadeh0DD17}, 
+programming languages \cite{DBLP:conf/pldi/FengMBD18,DBLP:conf/pldi/FengMGDC17,DBLP:conf/pldi/WangCB17},
+%machine learning \cite{DBLP:conf/icml/MenonTGLK13}
+and deep learning \cite{balog2017deepcoder,DBLP:conf/iclr/ParisottoMS0ZK17}), leading to various promising proposals. Nevertheless, to the best of our knowledge, there has been no effort to synthesise form validation logic.
+
+
+The characteristics that make form validation code so dissatisfying to write are precisely the same that make it propitious to being automatically synthesised.
+Its repetitiveness implies a small number of operations are sufficient to cover a large percentage of commonly used validations, which facilitates the synthesis process.
+Furthermore, because the synthesizer makes no assumptions about the input fields, it is less susceptible to missing corner cases.
+
+\section{Objectives}
+Our goal is to apply program synthesis to the domain of user input validation. We propose to develop a synthesizer that automatically generates validation logic for form input fields.
+The user provides a set of example values for each input field.
+The examples may be valid or invalid and are individually identified as such.
+Then, the synthesizer generates a Boolean expression consistent with the examples, i.e., returns \true{} for all valid examples and \false{} for all invalid.
+
+%, upon receiving a specification comprised of valid and invalid example values for the input fields,
+To increase the confidence in the synthesised expression, the synthesizer may interact with the user: if there is a value whose validity the synthesizer cannot ascertain, it will query the user on that value, who will then classify it as valid or invalid.
+
+This tool will be useful to both programmers and non-programmers.
+For experienced programmers, it is useful to automate repetitious tasks that, albeit simple, are often time-consuming and error-prone.
+For non-programmers, it eases the development of computer applications, eliminating the need to learn the formalism of a programming language or hire a professional to do it.
+
+\section{Document Structure}
+
+In this document, we explore several commonly used program synthesis techniques and speculate on how they may be applied to the domain of form input validations to produce a form input validations synthesizer.
+
+We begin in~\autoref{sec:background} by introducing some background concepts used throughout the rest of the document.
+We proceed to \autoref{sec:related-work} with an overview of existing program synthesis algorithms used in recent synthesizers to improve performance.
+We analyse different form validation frameworks in an attempt to devise a set of operations that summarises the validations offered by all of them. Still in \autoref{sec:related-work}, we look into \textit{AlphaRegex}, a regular expression synthesizer that proposes optimisations specific to that domain.
+
+
+%To finalise, we provide in \autoref{sec:conclusions} a brief summary of the whole document.
+%\clearpage

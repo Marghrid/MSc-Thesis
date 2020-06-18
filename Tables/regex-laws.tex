@@ -1,0 +1,23 @@
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}c c@{}}
+\toprule
+Algebraic Law                      & \quad Description                                    \\ \midrule
+\(r|s = s|r\)                      & \quad Union is commutative                           \\
+\(r|(s|t) = (r|s)|t\)              & \quad Union is associative                           \\
+\(r(st) = (rs)t\)                  & \quad Concatenation is associative                   \\
+\(r(s|t) = rs|rt; (s|t)r = sr|tr\) & \quad Concatenations distributes over union          \\ 
+%\(\epsilon r = r\epsilon = r\)     & \quad \(\epsilon\) is the identity for concatenation \\ 
+%\(r^* = (r|\epsilon)^*\)           & \quad \(\epsilon\) is guaranteed in a Kleene closure \\ 
+\(r|r = r\)      & \quad Union is idempotent \\
+\(r^{**} = r^*\)   & \quad * is idempotent \\
+\(r?? = r?\)       & \quad ? is idempotent \\
+\(r^{++} = r^+\)   & \quad + is idempotent \\
+
+\(r^{+*} = r^{*+} = r^*\)  & \quad .......... \\
+\(r?^* = r^*? = r^*\)      & \quad .......... \\
+\(r?^+ = r^+? = r^*\)      & \quad .......... \\ \bottomrule
+\end{tabular}
+\caption{Algebraic laws for regular expression operators}
+\label{tab:regex-laws}
+\end{table}

@@ -1,0 +1,272 @@
+\usepackage[utf8]{inputenc}
+\usepackage[british]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{float}
+\usepackage{datetime}
+\newdateformat{monthyeardate}{\monthname[\THEMONTH], \THEYEAR}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode} % algorithmic environment
+
+\usepackage{setspace}
+\renewcommand{\baselinestretch}{1.5}
+
+\usepackage{graphicx}
+\graphicspath{{Pictures/}}
+\usepackage{color}
+\usepackage{tikz}       % graphs and diagrams
+\usetikzlibrary{shapes.geometric, arrows, positioning, calc, backgrounds, trees}
+\input{tikz_style.tex}
+
+\usepackage{amsmath}  % AMS mathematical facilities for LaTeX.
+\usepackage{amsthm}   % Typesetting theorems (AMS style).
+\usepackage{amsfonts} % 
+\usepackage{url}
+\usepackage[inline]{enumitem}
+
+\usepackage{comment}
+
+\usepackage{acronym}
+
+\usepackage{fancyvrb}   % save verbatims
+
+\newcommand{\mycomment}[1]{\textcolor{blue}{\textbf{[#1]}}}
+% If I can't decide, at least I make it easy to change
+\newcommand{\true} {\textit{True}}
+\newcommand{\false}{\textit{False}}
+\newcommand{\regex}[1]{\(\tt #1\)}  % To define regexs
+\newcommand{\regexm}[1]{\texttt{#1}} % to define regexs inside math mode
+
+\mathchardef\mhyphen="2D % hyphen in math mode
+
+
+\newcommand{\acknowledgments}{@undefined}
+
+\addto\captionsenglish{\renewcommand{\acknowledgments}{Acknowledgments}}
+%\addto\captionsenglish{\renewcommand{\contentsname}{Contents}}
+%\addto\captionsenglish{\renewcommand{\listtablename}{List of Tables}}
+%\addto\captionsenglish{\renewcommand{\listfigurename}{List of Figures}}
+%\addto\captionsenglish{\renewcommand{\nomname}{Nomenclature}}
+%\addto\captionsenglish{\renewcommand{\glossaryname}{Glossary}}
+%\addto\captionsenglish{\renewcommand{\acronymname}{List of Acronyms}}
+%\addto\captionsenglish{\renewcommand{\bibname}{References}}
+%\addto\captionsenglish{\renewcommand{\appendixname}{Appendix}}
+
+\addto\captionsbritish{\renewcommand{\acknowledgments}{Acknowledgments}}
+%\addto\captionsbritish{\renewcommand{\contentsname}{Contents}}
+%\addto\captionsbritish{\renewcommand{\listtablename}{List of Tables}}
+%\addto\captionsbritish{\renewcommand{\listfigurename}{List of Figures}}
+%\addto\captionsbritish{\renewcommand{\nomname}{Nomenclature}}
+%\addto\captionsbritish{\renewcommand{\glossaryname}{Glossary}}
+%\addto\captionsbritish{\renewcommand{\acronymname}{List of Acronyms}}
+%\addto\captionsbritish{\renewcommand{\bibname}{References}}
+%\addto\captionsbritish{\renewcommand{\appendixname}{Appendix}}
+
+\newcommand{\coverThesis}{@undefined}
+\newcommand{\coverSupervisors}{@undefined}
+\newcommand{\coverExaminationCommittee}{@undefined}
+\newcommand{\coverChairperson}{@undefined}
+\newcommand{\coverSupervisor}{@undefined}
+\newcommand{\coverMemberCommittee}{@undefined}
+
+\addto\captionsenglish{\renewcommand{\coverThesis}{Thesis to obtain the Master of Science Degree in}}
+\addto\captionsenglish{\renewcommand{\coverSupervisors}{Supervisor(s)}}
+\addto\captionsenglish{\renewcommand{\coverExaminationCommittee}{Examination Committee}}
+\addto\captionsenglish{\renewcommand{\coverChairperson}{Chairperson}}
+\addto\captionsenglish{\renewcommand{\coverSupervisor}{Supervisor}}
+\addto\captionsenglish{\renewcommand{\coverMemberCommittee}{Member of the Committee}}
+
+\addto\captionsbritish{\renewcommand{\coverThesis}{Thesis to obtain the Master of Science Degree in}}
+\addto\captionsbritish{\renewcommand{\coverSupervisors}{Supervisor(s)}}
+\addto\captionsbritish{\renewcommand{\coverExaminationCommittee}{Examination Committee}}
+\addto\captionsbritish{\renewcommand{\coverChairperson}{Chairperson}}
+\addto\captionsbritish{\renewcommand{\coverSupervisor}{Supervisor}}
+\addto\captionsbritish{\renewcommand{\coverMemberCommittee}{Member of the Committee}}
+
+% Use Arial font as default
+\renewcommand{\rmdefault}{phv}
+\renewcommand{\sfdefault}{phv}
+
+% Define cover page fonts
+
+\def\FontLn{% 16 pt normal
+  \usefont{T1}{phv}{m}{n}\fontsize{16pt}{16pt}\selectfont}
+\def\FontLb{% 16 pt bold
+  \usefont{T1}{phv}{b}{n}\fontsize{16pt}{16pt}\selectfont}
+\def\FontMn{% 14 pt normal
+  \usefont{T1}{phv}{m}{n}\fontsize{14pt}{14pt}\selectfont}
+\def\FontMb{% 14 pt bold
+  \usefont{T1}{phv}{b}{n}\fontsize{14pt}{14pt}\selectfont}
+\def\FontSn{% 12 pt normal
+  \usefont{T1}{phv}{m}{n}\fontsize{12pt}{12pt}\selectfont}
+
+
+
+\usepackage{dcolumn}
+\newcolumntype{d}{D{.}{.}{-1}} % column aligned by the point separator '.'
+\newcolumntype{e}{D{E}{E}{-1}} % column aligned by the exponent 'E'
+
+\usepackage{nomencl}
+\makenomenclature
+
+% Group variables according to their symbol type
+
+\RequirePackage{ifthen} 
+\ifthenelse{\equal{\languagename}{english}}%
+    { % English
+    \renewcommand{\nomgroup}[1]{%
+      \ifthenelse{\equal{#1}{R}}{%
+        \item[\textbf{Roman symbols}]}{%
+        \ifthenelse{\equal{#1}{G}}{%
+          \item[\textbf{Greek symbols}]}{%
+          \ifthenelse{\equal{#1}{S}}{%
+            \item[\textbf{Subscripts}]}{%
+            \ifthenelse{\equal{#1}{T}}{%
+              \item[\textbf{Superscripts}]}{}}}}}%
+    }{% Portuguese
+    \renewcommand{\nomgroup}[1]{%
+      \ifthenelse{\equal{#1}{R}}{%
+        \item[\textbf{Simbolos romanos}]}{%
+        \ifthenelse{\equal{#1}{G}}{%
+          \item[\textbf{Simbolos gregos}]}{%
+          \ifthenelse{\equal{#1}{S}}{%
+            \item[\textbf{Subscritos}]}{%
+            \ifthenelse{\equal{#1}{T}}{%
+              \item[\textbf{Sobrescritos}]}{}}}}}%
+    }%
+
+\usepackage{rotating}
+\usepackage{hyperref} % enhance documents that are to be
+                              % output as HTML and PDF
+\hypersetup{colorlinks,       % color text of links and anchors,
+                              % eliminates borders around links
+%            linkcolor=red,    % color for normal internal links
+            linkcolor=black,  % color for normal internal links
+            anchorcolor=black,% color for anchor text
+%            citecolor=green,  % color for bibliographical citations
+            citecolor=black,  % color for bibliographical citations
+%            filecolor=magenta,% color for URLs which open local files
+            filecolor=black,  % color for URLs which open local files
+%            menucolor=red,    % color for Acrobat menu items
+            menucolor=black,  % color for Acrobat menu items
+%            pagecolor=red,    % color for links to other pages
+%            urlcolor=cyan,    % color for linked URLs
+             urlcolor=black,   % color for linked URLs
+	          bookmarksopen=false,    % don't expand bookmarks
+	          bookmarksnumbered=true, % number bookmarks
+	          pdftitle={Thesis},
+            pdfauthor={Andre C. Marta},
+            pdfsubject={Thesis Title},
+            pdfkeywords={Thesis Keywords},
+            pdfstartview=FitV,
+            pdfdisplaydoctitle=true}
+
+\usepackage[figure,table]{hypcap}
+
+
+% 'natbib' package
+%
+% Flexible bibliography support.
+% http://www.ctan.org/tex-archive/macros/latex/contrib/natbib/
+%
+% > produce author-year style citations
+%
+% \citet  and \citep  for textual and parenthetical citations, respectively
+% \citet* and \citep* that print the full author list, and not just the abbreviated one
+% \citealt is the same as \citet but without parentheses. Similarly, \citealp is \citep without parentheses
+% \citeauthor
+% \citeyear
+% \citeyearpar
+%
+%% natbib options can be provided when package is loaded \usepackage[options]{natbib}
+%%
+%% Following options are valid:
+%%
+%%   round  -  round parentheses are used (default)
+%%   square -  square brackets are used   [option]
+%%   curly  -  curly braces are used      {option}
+%%   angle  -  angle brackets are used    <option>
+%%   semicolon  -  multiple citations separated by semi-colon (default)
+%%   colon  - same as semicolon, an earlier confusion
+%%   comma  -  separated by comma
+%%   authoryear - for author–year citations (default)
+%%   numbers-  selects numerical citations
+%%   super  -  numerical citations as superscripts, as in Nature
+%%   sort   -  sorts multiple citations according to order in ref. list
+%%   sort&compress   -  like sort, but also compresses numerical citations
+%%   compress - compresses without sorting
+%%
+% ******************************* SELECT *******************************
+%\usepackage{natbib}          % <<<<< References in alphabetical list Correia, Silva, ...
+\usepackage[numbers,sort&compress]{natbib} % <<<<< References in numbered list [1],[2],...
+% ******************************* SELECT *******************************
+
+
+% 'notoccite' package
+%
+% Prevent trouble from citations in table of contents, etc.
+% http://ctan.org/pkg/notoccite
+%
+% > If you have \cite com­mands in \sec­tion-like com­mands, or in \cap­tion,
+%   the ci­ta­tion will also ap­pear in the ta­ble of con­tents, or list of what­ever.
+%   If you are also us­ing an un­srt-like bib­li­og­ra­phy style, these ci­ta­tions will
+%   come at the very start of the bib­li­og­ra­phy, which is con­fus­ing. This pack­age
+%   sup­presses the ef­fect.
+%
+\usepackage{notoccite}
+
+
+% 'multirow' package
+%
+% Create tabular cells spanning multiple rows
+% http://www.ctan.org/pkg/multirow
+%
+\usepackage{multirow}
+
+
+% 'booktabs' package
+%
+% Publication quality tables in LaTeX
+% http://www.ctan.org/pkg/booktabs
+%
+% > en­hance the qual­ity of ta­bles in LaTeX, pro­vid­ing ex­tra com­mands.
+%
+% \renewcommand{\arraystretch}{<ratio>} % space between rows
+%
+\usepackage{booktabs}
+%\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+
+\usepackage{pdfpages}
+
+
+% ----------------------------------------------------------------------
+% Define new commands to assure consistent treatment throughout document
+% ----------------------------------------------------------------------
+
+\newcommand{\ud}{\mathrm{d}}                % total derivative
+\newcommand{\degree}{\ensuremath{^\circ\,}} % degrees
+
+% Abbreviations
+
+\newcommand{\mcol}{\multicolumn}            % table format
+
+\newcommand{\eqnref}[1]{(\ref{#1})}
+\newcommand{\class}[1]{\texttt{#1}}
+\newcommand{\package}[1]{\texttt{#1}}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\BibTeX}{\textsc{Bib}\TeX}
+\newcommand{\tr}[1]{{\ensuremath{\textrm{#1}}}}   % text roman
+\newcommand{\tb}[1]{{\ensuremath{\textbf{#1}}}}   % text bold face
+\newcommand{\ti}[1]{{\ensuremath{\textit{#1}}}}   % text italic
+\newcommand{\mc}[1]{{\ensuremath{\mathcal{#1}}}}  % math calygraphy
+\newcommand{\mco}[1]{{\ensuremath{\mathcalold{#1}}}}% math old calygraphy
+\newcommand{\mr}[1]{{\ensuremath{\mathrm{#1}}}}   % math roman
+\newcommand{\mb}[1]{{\ensuremath{\mathbf{#1}}}}   % math bold face
+\newcommand{\bs}[1]{\ensuremath{\boldsymbol{#1}}} % math symbol
+\def\bm#1{\mathchoice                             % math bold
+  {\mbox{\boldmath$\displaystyle#1$}}%
+  {\mbox{\boldmath$#1$}}%
+  {\mbox{\boldmath$\scriptstyle#1$}}%
+  {\mbox{\boldmath$\scriptscriptstyle#1$}}}
+\newcommand{\boldcal}[1]{{\ensuremath{\boldsymbol{\mathcal{#1}}}}}% math bold calygraphy
+

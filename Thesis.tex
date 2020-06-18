@@ -1,0 +1,100 @@
+\documentclass[10pt,a4paper,twoside]{report}
+
+\input{Preamble}
+\begin{document}
+
+\pagestyle{plain}
+
+\pagenumbering{roman}
+\input{Thesis_FrontCover}
+% \input{Thesis_Dedication}
+\input{Thesis_Acknowledgements}
+\input{Thesis_Resumo} % file "Thesis_Resumo.tex"
+\input{Chapters/Abstract.tex}
+
+\tableofcontents
+\cleardoublepage 
+\listofalgorithms
+\addcontentsline{toc}{section}{List of Algorithms}
+\clearpage 
+\listoffigures
+\addcontentsline{toc}{section}{\listfigurename}
+\clearpage
+\listoftables
+\addcontentsline{toc}{section}{\listtablename}
+\clearpage
+\input{Acronyms}
+\addcontentsline{toc}{section}{List of Acronyms}
+\cleardoublepage
+
+\let\proof\relax 
+\let\endproof\relax 
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{statement}{Problem statement}
+\newtheorem{example}{Example}
+
+% % Nomenclature
+% %
+% % entries of nomenclature list
+% \input{Thesis_Nomenclature} % file "Thesis_Nomenclature.tex"
+% %
+% % Insert glossary/nomenclature section produced by MakeIndex
+% \printnomenclature
+% % Add entry in the table of contents as section
+% \addcontentsline{toc}{section}{\nomname}
+% \cleardoublepage
+
+% % entries of glossary list
+% \input{Thesis_Glossary} % file "Thesis_Glossary.tex"
+
+% % Insert glossary section produced by MakeIndex
+% \printglossary
+% % Add entry in the table of contents as section
+% \addcontentsline{toc}{section}{\glossaryname}
+% \cleardoublepage
+
+% Set arabic numbering (1,2,...) after preface
+%
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+% ----------------------------------------------------------------------
+%  Chapters
+% ----------------------------------------------------------------------
+
+\input{Chapters/Introduction}
+
+\input{Chapters/Background}
+
+\input{Chapters/RelatedWork}
+
+\input{Chapters/Search}
+
+\input{Chapters/Tree}
+
+\input{Thesis_Evaluation}
+\input{Thesis_Conclusions}
+%\input{Thesis_FutureWork} % file "Thesis_FutureWork.tex"
+
+
+% ----------------------------------------------------------------------
+%  Bibliography
+% ----------------------------------------------------------------------
+
+\bibliographystyle{abbrvnat}
+
+\cleardoublepage
+
+
+\bibliography{References}
+% Add entry in the table of contents as chapter
+\addcontentsline{toc}{chapter}{\bibname}
+%\cleardoublepage
+
+% ----------------------------------------------------------------------
+%  Appendix (optional)
+% ----------------------------------------------------------------------
+\appendix
+\input{Thesis_Appendix}
+\end{document}
