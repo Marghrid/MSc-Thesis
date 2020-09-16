@@ -128,7 +128,7 @@
   biburl    = {https://dblp.org/rec/bib/journals/pacmpl/ShiSL19},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
-@article{DBLP:journals/pvldb/MartinsCCFD19,
+@article{trinity19,
   author    = {Ruben Martins and
                Jia Chen and
                Yanju Chen and
@@ -202,6 +202,17 @@
   timestamp = {Tue, 20 Aug 2019 16:17:27 +0200},
   biburl    = {https://dblp.org/rec/bib/conf/ijcai/ShawWG75},
   bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@inproceedings{z3,
+    author    = {Leonardo Mendon{\c{c}}a de Moura and
+               Nikolaj Bj{\o}rner},
+  title     = {{Z3:} An Efficient {SMT} Solver},
+  booktitle = {{TACAS}},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {4963},
+  pages     = {337--340},
+  publisher = {Springer},
+  year      = {2008}
 }
 @inproceedings{DBLP:conf/popl/SrivastavaGF10,
   author    = {Saurabh Srivastava and
@@ -427,6 +438,33 @@
   biburl    = {https://dblp.org/rec/bib/conf/gpce/LeeSO16},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
+@inproceedings{AlphaRegex16,
+  author    = {Mina Lee and
+               Sunbeom So and
+               Hakjoo Oh},
+  title     = {Synthesizing regular expressions from examples for introductory automata
+               assignments},
+  booktitle = {Proceedings of the 2016 {ACM} {SIGPLAN} International Conference on
+               Generative Programming: Concepts and Experiences, {GPCE} 2016, Amsterdam,
+               The Netherlands, October 31 - November 1, 2016},
+  pages     = {70--80},
+  year      = {2016},
+  crossref  = {DBLP:conf/gpce/2016},
+  doi       = {10.1145/2993236.2993244},
+  timestamp = {Tue, 06 Nov 2018 16:57:54 +0100},
+  biburl    = {https://dblp.org/rec/bib/conf/gpce/LeeSO16},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@inproceedings{z3str317,
+  author    = {Murphy Berzish and
+               Vijay Ganesh and
+               Yunhui Zheng},
+  title     = {Z3str3: {A} string solver with theory-aware heuristics},
+  booktitle = {{FMCAD}},
+  pages     = {55--59},
+  publisher = {{IEEE}},
+  year      = {2017}
+}
 @inproceedings{DBLP:conf/iclr/ParisottoMS0ZK17,
   author    = {Emilio Parisotto and
                Abdel{-}rahman Mohamed and
@@ -445,13 +483,13 @@
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 @InProceedings{balog2017deepcoder,
-author = {Balog, Matej and Gaunt, Alexander and Brockschmidt, Marc and Nowozin, Sebastian and Tarlow, Daniel},
-title = {DeepCoder: Learning to Write Programs},
-booktitle = {Proceedings of ICLR'17},
-year = {2017},
-month = {March},
-url = {https://www.microsoft.com/en-us/research/publication/deepcoder-learning-write-programs/},
-edition = {Proceedings of ICLR'17},
+  author    = {Balog, Matej and Gaunt, Alexander and Brockschmidt, Marc and Nowozin, Sebastian and Tarlow, Daniel},
+  title     = {DeepCoder: Learning to Write Programs},
+  booktitle = {Proceedings of ICLR'17},
+  year      = {2017},
+  month     = {March},
+  url       = {https://www.microsoft.com/en-us/research/publication/deepcoder-learning-write-programs/},
+  edition   = {Proceedings of ICLR'17},
 }
 
 @inproceedings{DBLP:conf/pldi/WangCB17,
@@ -556,23 +594,31 @@ edition = {Proceedings of ICLR'17},
   biburl    = {https://dblp.org/rec/bib/conf/cav/ReynoldsBNBT19},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
-@inproceedings{DBLP:conf/cp/OrvalhoTVMM19,
+@inproceedings{Orvalho19,
   author    = {Pedro Orvalho and
                Miguel Terra{-}Neves and
                Miguel Ventura and
                Ruben Martins and
                Vasco M. Manquinho},
   title     = {Encodings for Enumeration-Based Program Synthesis},
-  booktitle = {Principles and Practice of Constraint Programming - 25th International
-               Conference, {CP} 2019, Stamford, CT, USA, September 30 - October 4,
-               2019, Proceedings},
+  booktitle = {{CP}},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {11802},
   pages     = {583--599},
-  year      = {2019},
-  crossref  = {DBLP:conf/cp/2019},
-  doi       = {10.1007/978-3-030-30048-7\_34},
-  timestamp = {Mon, 23 Sep 2019 13:59:34 +0200},
-  biburl    = {https://dblp.org/rec/bib/conf/cp/OrvalhoTVMM19},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
+  publisher = {Springer},
+  year      = {2019}
+}
+@inproceedings{Regel20,
+  author    = {Qiaochu Chen and
+               Xinyu Wang and
+               Xi Ye and
+               Greg Durrett and
+               Isil Dillig},
+  title     = {Multi-modal synthesis of regular expressions},
+  booktitle = {{PLDI}},
+  pages     = {487--502},
+  publisher = {{ACM}},
+  year      = {2020}
 }
 @proceedings{DBLP:conf/ijcai/1969,
   editor    = {Donald E. Walker and
@@ -907,12 +953,29 @@ edition = {Proceedings of ICLR'17},
  address = {Boston, MA, USA},
 }
 @techreport{gulwani09componentbased,
-author = {Gulwani, Sumit and Venkatesan, Ramarathnam},
-title = {Component Based Synthesis Applied to Bitvector Circuits},
-year = {2009},
-month = {April},
-publisher = {Microsoft Research},
-institution = {Microsoft Research},
-url = {https://www.microsoft.com/en-us/research/publication/component-based-synthesis-applied-to-bitvector-circuits/},
-number = {MSR-TR-2010-12},
+  author      = {Gulwani, Sumit and Venkatesan, Ramarathnam},
+  title       = {Component Based Synthesis Applied to Bitvector Circuits},
+  year        = {2009},
+  month       = {April},
+  publisher   = {Microsoft Research},
+  institution = {Microsoft Research},
+  url         = {https://www.microsoft.com/en-us/research/publication/component-based-synthesis-applied-to-bitvector-circuits/},
+  number      = {MSR-TR-2010-12},
+}
+
+@misc{regexlib,
+  title = {Regular Expression Library},
+  howpublished = {\url{www.regexlib.com}},
+  note = {Accessed on \formatdate{27}{5}{2020}}
+}
+
+@misc{squares-webpage,
+  author = {Pedro Orvalho and
+               Miguel Terra{-}Neves and
+               Miguel Ventura and
+               Ruben Martins and
+               Vasco M. Manquinho},
+  title = {SQUARES},
+  howpublished = {\url{https://squares-sql.github.io}},
+  note = {Accessed on \formatdate{27}{5}{2020}}
 }

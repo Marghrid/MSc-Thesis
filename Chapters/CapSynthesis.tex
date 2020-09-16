@@ -1,0 +1,183 @@
+\chapter{Capturing Groups Synthesis}
+
+In this chapter we describe the synthesis procedure that generates the second and third components of the regex validation:
+\begin{itemize}
+    \item \textbf{capturing groups} that reflect the captures provided with the valid examples;
+    \item \textbf{capture conditions} which express integer conditions for the values in the example that are satisfied by all valid examples but not by any of the conditional invalid examples. 
+\end{itemize}
+
+    
+\section{Capturing groups enumeration}\label{sec:cap_groups_enumeration}
+To enumerate capturing groups, \Forest starts by identifying atomic sub-regexes in the previously synthesised regex.
+Atomic regexes correspond to the smallest sub-regexes whose concatenation results in the original complete regex. It does not make sense to place a capturing group inside atomic sub-regexes. For example, the regex \verb![0-9]{2}! is an atomic sub-regex: there are no sub-regexes whose concatenation results in it. It does not make sense to place a capturing group on just a part of~it: \verb!([0-9]){2}!.
+% In the tree representation of regexes, an atomic sub-regex is any subtree of regex whose root node is not a concatenation and whose parents are nothing but concatenations.
+Once identified, the atomic sub-regexes are placed in an ordered list. The concatenation of all elements in this list results in the original regular expression.
+
+\begin{example}
+Recall the previously shown date regex: \UseVerb{date2}. The ordered list of atomic sub-regexes for this regex is [\verb![0-9]{2}!, \verb!/!, \verb![0-9]{2}!, \verb!/!, \verb![0-9]{4}!].
+\end{example}
+
+To enumerate capturing groups over the regular expression, \Forest considers non-empty disjoint sub-lists of this list. The elements inside each sub-list form a capturing group.
+
+\begin{example}
+Suppose we want to get a single capturing group within the date regex.% \UseVerb{date2}.
+To do so, we use the ordered list of atomic sub-regexes [\verb![0-9]{2}!, \verb!/!, \verb![0-9]{2}!, \verb!/!, \verb![0-9]{4}!].
+The following are some examples of sub-lists of the atomic sub-regexes list and their resulting capturing groups:
+
+%\begin{table}[h!]
+%\centering
+\begin{center}
+\setlength{\extrarowheight}{10pt}
+\begin{tabular}{rcl}
+[[\verb![0-9]{2}!], \verb!/!, \verb![0-9]{2}!, \verb!/!, \verb![0-9]{4}!] & $\rightarrow$ & \verb!([0-9]{2})/[0-9]{2}/[0-9]{4}! \\
+
+[[\verb![0-9]{2}!, \verb!/!], \verb![0-9]{2}!, \verb!/!, \verb![0-9]{4}!] & $\rightarrow$ & \verb!([0-9]{2}/)[0-9]{2}/[0-9]{4}! \\
+
+[\verb![0-9]{2}!, \verb!/!, [\verb![0-9]{2}!, \verb!/!, \verb![0-9]{4}!]] & $\rightarrow$ & \verb![0-9]{2}/([0-9]{2}/[0-9]{4})!
+\end{tabular}\bigskip
+\end{center}
+%\captionsetup{labelformat=empty,belowskip=-15p%t}
+%\caption{}
+%\end{table}
+
+\noindent
+Analogously, to enumerate two capturing groups, consider two non-empty disjoint sub-lists. For the date regex, we can have at most 5 capturing groups because the atomic sub-regexes list has 5 elements. The following are some examples of multiple sub-lists of the atomic sub-regexes list and their resulting capturing groups:
+
+%\begin{table}[h!]
+%\centering
+%\setlength{\extrarowheight}{10pt}
+\begin{center}
+\setlength{\extrarowheight}{10pt}
+\begin{tabular}{rcl}
+[[\verb![0-9]{2}!], \verb!/!, [\verb![0-9]{2}!], \verb!/!, \verb![0-9]{4}!] & $\rightarrow$ & \verb!([0-9]{2})/([0-9]{2})/[0-9]{4}! \\
+
+[[\verb![0-9]{2}!], \verb!/!, [\verb![0-9]{2}!, \verb!/!, \verb![0-9]{4}!]] & $\rightarrow$ & \verb!([0-9]{2})/([0-9]{2}/[0-9]{4})! \\
+
+[[\verb![0-9]{2}!], \verb!/!, [\verb![0-9]{2}!], \verb!/!, [\verb![0-9]{4}!]] & $\rightarrow$ & \verb!([0-9]{2})/([0-9]{2})/([0-9]{4})!
+\end{tabular}\bigskip
+\end{center}
+%\captionsetup{labelformat=empty,belowskip=-15pt}
+%\caption{}
+%\end{table}
+\end{example}
+
+\section{Capturing groups synthesis}
+The second component of the regex validation are capturing groups that reflect the captures provided with the valid examples. To synthesise these capturing groups, \Forest enumerates capturing groups over the produced regular expression, as explained in \autoref{sec:cap_groups_enumeration}. Since the captured values are provided along with all valid examples, it is known how many capturing groups are required.
+
+For each enumerated set of capturing groups, \Forest checks whether they match the provided captures. The first capturing groups that match all examples are stored as part of the regex validation.
+
+\begin{example}
+\todo{:)}
+\end{example}
+
+
+\section{Capture conditions synthesis}
+The third component of the regex validation are a set of integer conditions over captured values in the example that are satisfied by all valid examples but not by any of the conditional invalid examples.
+
+To synthesise the capture conditions, \Forest begins with the enumeration process as described in \autoref{sec:cap_groups_enumeration}. However, for the capture conditions, the number of necessary capturing groups is not known beforehand. Thus, we enumerate capturing groups in progressively increasing number. Start with just one capturing group; if no solutions are found, enumerate two capturing groups, and so on.
+
+For each enumerated set of capturing groups, \Forest  uses \ac{SMT} to try and find a set of capture conditions over those capturing groups that are satisfied by all valid examples but not by any of the conditional invalid examples.
+
+Since it is our goal to synthesise integer conditions, the first step is to verify that the captures resulting from any given capturing groups all correspond to integers. This is done by matching the regex to all valid and conditional invalid examples. The resulting captures are then cast to integer. If this is not successful for all captures and all examples, these capturing groups cannot be used for capture conditions and are discarded.
+
+A capture condition is a 3-tuple. It contains a capture, an integer comparison operator and an integer argument. In this document, we use the notation \(\$i, i \in 0, 1, ...\) to reference the text captured by the \((i+1)\)\textsuperscript{th} group. We consider only two integer comparison operators, $\le$ and $\ge$. However, the algorithm can be expanded to include more integer comparison operators.
+
+\Forest uses \ac{SMT} to find which operators to use in the conditions for each capture, and which integer argument they should have. We start by considering all possible capture conditions for a given set of capturing groups. Let \(\mathcal{C}\) be a set of capturing groups and \(\mathcal{C}(x)\) the captures that result from applying the capturing groups \(\mathcal{C}\) to example string \(x\). Let \(\mathcal{O}\) be the set of integer operators being considered. Then, the set of all capture conditions is the combination of any capturing group with any operator \(\mathcal{C} \times \mathcal{O}\).
+
+\todo{I need to somehow explain that the integer argument is not considered here. There cannot be two capture conditions with the same capture and operator and only different integer argument.}
+
+
+
+Boolean variables:
+
+\(u_{cap, cond}\): condition `cond' is used for capture `cap'.
+
+\(s_{cap, x}\): capture `cap' in example `x' satisfies all used conditions that refer to it.
+
+\(a_x\): example `x' satisfies all capture conditions that refer to it.
+
+Let \(\mathcal{V}\) be the set of all valid examples, \(\mathcal{I}\) the set of all conditional invalid examples and \(\mathcal{X} = \mathcal{V} \cup \mathcal{I}\) the set of all examples. Constraint \ref{eq:cap_cond_a_clause} ensures that all valid examples satisfy the used conditions and none of the conditional invalid examples does.
+
+\begin{equation}\label{eq:cap_cond_a_clause}
+    \bigwedge_{x \in \mathcal{V}} a_x \;\land\; \bigwedge_{x \in \mathcal{I}} \neg a_x
+\end{equation}
+
+Let \(\mathcal{C}(x)\) be the set of all captures resulting from applying the current capturing groups to example \(x\). Constraint \ref{eq:cap_cond_a_def} states that an example \(x\) satisfies all capture conditions that refer to it if and only if all the individual captures satisfy their respective conditions.
+
+\begin{equation}\label{eq:cap_cond_a_def}
+    a_x \leftrightarrow \bigwedge_{cap \in \mathcal{C}(x)} s_{cap,x}
+\end{equation}
+
+Let \(\textrm{SMT}(\textit{cond})\) be the \ac{SMT} representation of the condition \textit{cond}. In this representation, the capture is an integer value, the integer operator is has the usual semantics and the integer argument is an SMT integer variable. Constraint \ref{eq:cap_cond_s_def} states that 
+
+\begin{equation}\label{eq:cap_cond_s_def}
+    s_{cap,x} \leftrightarrow \bigwedge (u_{cond} \rightarrow \textrm{SMT}(\textit{cond}))
+\end{equation}
+
+\begin{equation}
+    \textrm{cond} = \textrm{cap-value} \leq \textrm{bound-le}
+\end{equation}
+or
+\begin{equation}
+    \textrm{cond} = \textrm{cap-value} \geq \textrm{bound-ge}
+\end{equation}
+Soft clauses:
+\begin{equation}
+    \bigwedge_{cond} \neg u_{cond}
+\end{equation}
+
+To get another model: Block current model: Block the value of the bound variable for all used conditions.
+
+To get a distinguishing input.
+(I'm assuming both models use the same conditions)
+
+\(c_i\): integer values that represent the value for capture \(i\)
+
+\begin{comment}
+\begin{algorithm}
+\begin{algorithmic}[1]
+\Procedure{all\_sublists}{$l$}
+  \For {$i \gets 1, |l|+1$}  \Comment{Sub-lists can have size 1 to \(|l|\)}
+    \For {$j \gets i,  \textrm{min}(i + |l|, |l|)$}
+        \State \textbf{yield} \(l\)[\(i\):\(j\)]
+    \EndFor
+  \EndFor
+\EndProcedure
+\end{algorithmic}
+\caption{Compute all possible sub-lists of a list \(l\).}
+\label{all-sublists}
+\end{algorithm}
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\Procedure{all\_n\_sublists}{$l$, $n$}
+  \If{$n$=1}
+    \State \textbf{yield} from map(list, \Call{all\_sublists}{$l$})
+  \Statex
+  \Else
+    \For {\textit{split\_idx} $\gets 1, |l|- (n-2)$} \Comment{split \(l\) into 2 sub-lists on index \textit{split\_idx}}
+      \ForAll {\textit{left} \(\in\) \Call{all\_sublists}{$l$[:\textit{split\_idx}]}}
+          \If{\textit{left}[-1] \(\ne\) $l$[\textit{split\_idx}-1]}
+          \Comment{avoid repeated splits}
+            \State \textbf{continue}
+          \EndIf
+          \Statex
+          \ForAll{\textit{right} \(\in\) \Call{all\_n\_sublists}{$l$[\textit{split\_idx}:], $n$-1}}
+            \State \textbf{yield} list(\textit{left}) + \textit{right}
+          \EndFor
+      \EndFor
+    \EndFor
+  \EndIf
+  
+\EndProcedure
+\end{algorithmic}
+\caption{Compute all possible partitions of \(l\) into \(n\) non-overlapping sub-lists.}
+\label{all-n-sublists}
+\end{algorithm}
+
+\end{comment}
+
+\section{Capture conditions disambiguation}
+\begin{itemize}
+    \item also SMT
+\end{itemize}

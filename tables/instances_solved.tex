@@ -1,0 +1,44 @@
+% \begin{table}[t]
+% \setlength{\dashlinedash}{.5ex}
+% \setlength{\dashlinegap}{1ex}
+% \setlength{\tabcolsep}{2.5ex}
+% \renewcommand{\arraystretch}{1.2}
+% %\setlength{\extrarowheight}{5ex}
+% \centering
+% \begin{tabular}{@{}lcccc@{}}
+% \toprule
+% \textbf{Timeout (s)}  & \textbf{10} & \textbf{60} & \textbf{3600} & \textbf{\begin{tabular}[c]{@{}c@{}}Solution after\\timeout\end{tabular}} \\ \midrule
+% \Forest{} (multi-tree)      & 35     & 41     & 48   &   53  \\ \hdashline
+% Multi-tree w/o pruning      & 27     & 32     & 38   &   46  \\
+% Dynamic-only multi-tree     & 10     & 15     & 23   &   26  \\ \hdashline
+% \(k\)-tree                  & 7      & 10     & 17   &   28  \\
+% Line-based (w/o pruning)    & 4      & 4      & 13   &   15  \\ \hdashline
+% %10 examples only           & 32     & 42     & 47   &   53  \\
+% %5 examples only            & 23     & 34     & 44   &   51  \\ \midrule
+% \Regel{} PBE                & 12     & 16     & 27   &   --- \\ \bottomrule
+% \end{tabular}
+% \caption{Comparison of time performance using different synthesis methods.}
+% \label{table:number-solved}
+% \end{table}
+
+\begin{table}[t]
+\setlength{\dashlinedash}{.5ex}
+\setlength{\dashlinegap}{1ex}
+\setlength{\tabcolsep}{2ex}
+\centering
+\caption{Comparison of time performance using different synthesis methods.}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Timeout (s)}  & \textbf{10} & \textbf{60} & \textbf{3600} \\ \midrule
+\Forest{} (multi-tree)      & 35     & 41     & 48   \\ \hdashline
+Multi-tree w/o pruning      & 27     & 32     & 38   \\
+Dynamic-only multi-tree     & 10     & 15     & 23   \\ \hdashline
+\(k\)-tree                  & 7      & 10     & 17   \\
+Line-based (w/o pruning)    & 4      & 4      & 13   \\ \hdashline
+%10 examples only           & 32     & 42     & 47   \\
+%5 examples only            & 23     & 34     & 44   \\ \midrule
+\Regel{} PBE                & 12     & 16     & 27   \\ \bottomrule
+\end{tabular}
+\label{table:number-solved}
+\vspace*{-2mm}
+\end{table}

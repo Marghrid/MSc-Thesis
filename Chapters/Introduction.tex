@@ -15,7 +15,7 @@ Program synthesis is the task of automatically generating a program that satisfi
 Since low-code platforms have the ultimate vision of making application development accessible to everyone, there is a lot of potential in the integration of program synthesis in such platforms.
 % As such, it is a significant problem to consider when developing a low-code platform.
 Owing to its versatility and usefulness, program synthesis has recently attracted interest from various research communities (e.g.
-constraint solving \cite{DBLP:conf/ijcai/KolbTPR18,DBLP:conf/cp/OrvalhoTVMM19,DBLP:journals/pacmpl/Yaghmazadeh0DD17}, 
+constraint solving \cite{DBLP:conf/ijcai/KolbTPR18,Orvalho19,DBLP:journals/pacmpl/Yaghmazadeh0DD17}, 
 programming languages \cite{DBLP:conf/pldi/FengMBD18,DBLP:conf/pldi/FengMGDC17,DBLP:conf/pldi/WangCB17},
 %machine learning \cite{DBLP:conf/icml/MenonTGLK13}
 and deep learning \cite{balog2017deepcoder,DBLP:conf/iclr/ParisottoMS0ZK17}), leading to various promising proposals. Nevertheless, to the best of our knowledge, there has been no effort to synthesise form validation logic.
@@ -25,18 +25,18 @@ The characteristics that make form validation code so dissatisfying to write are
 Its repetitiveness implies a small number of operations are sufficient to cover a large percentage of commonly used validations, which facilitates the synthesis process.
 Furthermore, because the synthesizer makes no assumptions about the input fields, it is less susceptible to missing corner cases.
 
-\section{Objectives}
-Our goal is to apply program synthesis to the domain of user input validation. We propose to develop a synthesizer that automatically generates validation logic for form input fields.
-The user provides a set of example values for each input field.
-The examples may be valid or invalid and are individually identified as such.
+\section{Contributions}
+% Our goal is to apply program synthesis to the domain of user input validation. We propose to develop a synthesizer that automatically generates validation logic for form input fields.
+% The user provides a set of example values for each input field.
+% The examples may be valid or invalid and are individually identified as such.
 Then, the synthesizer generates a Boolean expression consistent with the examples, i.e., returns \true{} for all valid examples and \false{} for all invalid.
 
 %, upon receiving a specification comprised of valid and invalid example values for the input fields,
-To increase the confidence in the synthesised expression, the synthesizer may interact with the user: if there is a value whose validity the synthesizer cannot ascertain, it will query the user on that value, who will then classify it as valid or invalid.
+% To increase the confidence in the synthesised expression, the synthesizer may interact with the user: if there is a value whose validity the synthesizer cannot ascertain, it will query the user on that value, who will then classify it as valid or invalid.
 
-This tool will be useful to both programmers and non-programmers.
-For experienced programmers, it is useful to automate repetitious tasks that, albeit simple, are often time-consuming and error-prone.
-For non-programmers, it eases the development of computer applications, eliminating the need to learn the formalism of a programming language or hire a professional to do it.
+% This tool will be useful to both programmers and non-programmers.
+% For experienced programmers, it is useful to automate repetitious tasks that, albeit simple, are often time-consuming and error-prone.
+% For non-programmers, it eases the development of computer applications, eliminating the need to learn the formalism of a programming language or hire a professional to do it.
 
 \section{Document Structure}
 
