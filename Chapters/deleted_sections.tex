@@ -1,0 +1,61 @@
+
+\begin{comment}
+
+
+\section{Form Input Validation Frameworks} \label{sec:form-validation}
+
+In order to get some insight into the kind of operations and structures we would need to synthesise within the domain of form validation, we looked into three different tools which provide several types of validations over the input~fields:
+
+\paragraph{Google forms\protect\footnotemark} is a survey administration app that allows a user to build personalised surveys or quizzes. The validations are added to the different input fields using a graphical interface. 
+\footnotetext{\url{https://www.google.com/forms/about/}. Accessed on \formatdate{1}{1}{2020}.}
+
+\paragraph{HTML Input Attributes\protect\footnotemark}  are specified within an \texttt{HTML} form, inside the \texttt{<input>} element. Until all the values comply with the requirements introduced by these specifications, the form cannot be submitted.
+\footnotetext{\url{https://www.w3schools.com/html/html_form_attributes.asp}. Accessed on \formatdate{1}{1}{2020}.}
+
+\paragraph{ActiveRecord Validations\protect\footnotemark}  is a \textit{Ruby on Rails} application that offers many predefined validation helpers, which are applied to the form values before they are submitted into a database.
+
+\footnotetext{\url{https://edgeguides.rubyonrails.org/active_record_validations.html}. Accessed on \formatdate{1}{1}{2020}.}
+
+\medskip
+\noindent
+Although these frameworks' interfaces and intended usage differ, the style of validations offered is similar. The following validations are common to all these frameworks:
+
+\begin{itemize}
+  \item \textbf{Required}: Specifies that an input field cannot be blank;
+  \item \textbf{Type}: Specifies the type of an input value. Possible values include integer, text, email, url, date;
+  \item \textbf{Min/Max}: Specifies the minimum/maximum value of a numeric input value;
+  \item \textbf{Min-/Maxlength}: Specifies the minimum/maximum length of a string input value;
+  \item \textbf{Pattern match}: Specifies a regular expression against which an input value is checked.
+\end{itemize}
+
+\noindent
+The validations are applied individually on the input fields. Each field can have more than one validation, and one validation can be in respect to more than one input field. The form is valid when all validations on all input fields are verified.
+
+\SaveVerb{bookprice}=[1-9]+[0-9]*(\.[0-9][0-9]?)?=
+
+\begin{example} \label{ex:book-validation}
+\parindent0pt
+Suppose we build a form to ask for information about a book with three input fields: \textit{book name}, \textit{number of pages} and \textit{book price}. 
+
+If we want to ensure that the name is between 2 and 50 characters long, we may do so by adding the following validations over input field \(\mathit{book\,name}\):
+\begin{equation*}
+\begin{split}
+    &minlength(\mathit{book\,name}, 2),\;\text{and}\\
+    &maxlength(\mathit{book\,name}, 50).
+\end{split}
+\end{equation*}
+
+Then, to ensure the number of pages is a positive integer:
+\begin{equation*}
+\begin{gathered}
+    type(\mathit{number\,of\,pages}, integer),\;\text{and}\\
+    min(\mathit{number\,of\,pages}, 1).\\
+\end{gathered}
+\end{equation*}
+Finally, we can use a regular expression to check that the price is a number with at most 2 decimal~places:
+\[pattern\_match(\mathit{book\,price}, \UseVerb{bookprice})\]
+
+If these 5 validations are verified by the respective input values, the form is valid.
+\end{example}
+
+\end{comment}

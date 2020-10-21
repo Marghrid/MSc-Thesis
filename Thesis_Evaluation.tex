@@ -1,6 +1,4 @@
-\chapter{Evaluation}
-
-\section{Experimental Results}
+\chapter{Experimental Results}
 
 \paragraph{Implementation.}
 \Forest{} is implemented in Python3.7+ on top of \textsc{Trinity}, a general-purpose synthesis framework \cite{trinity19}. \textsc{Trinity} was extended to support our Regular Expression \ac{DSL}, multi-tree constructs, and interaction based on distinguishing inputs. All \ac{SMT} formulas are solved using the Z3 SMT solver, version  4.8.7.0 \cite{z3}. The \textit{enumerator} uses the theory of linear integer arithmetic and the \textit{distinguisher} uses the theory of regular expressions (part of the theory of strings \cite{z3str317}). The \textit{verifier} checks the enumerated regex against the examples using Python's regex library.
@@ -45,7 +43,7 @@ We also compare solving times with \Regel~\cite{Regel20}. Even though \Regel can
 % However, to perform a fair comparison with our synthesizer and because we do not have a natural language description (NLP) for our benchmarks, we only used the PBE engine of \Regel{}, which we denote by \Regel{} PBE.
 
 
-\subsection{Impact of pruning the search space and splitting examples}\label{sec:pruning-split}
+\section{Impact of pruning the search space and splitting examples}\label{sec:pruning-split}
 %\input{figures/time_comparison_pruning}
 \input{figures/time_comparison_dynamic}
 
@@ -58,7 +56,7 @@ On average, with pruning, \Forest{} can synthesize regexes in half the time and 
 \Forest{} is able to split the examples and use static multi-tree as described in \autoref{sec:static-multi-tree} in over 80\% of the benchmarks. The remaining 20\% are solved using dynamic multi-tree. To assess the impact of using static multi-tree we ran \Forest{} with a version of the multi-tree enumerator that does not attempt to split the examples, and jumps directly to dynamic multi-tree solving.
 In the scatter plot in \autoref{fig:mt_vs_dynamic}, we compare the solving times of each benchmark. Using static multi-tree when possible, \Forest{} requires, on average, less than one third of the time (27.36\%) to return the desired regex. Furthermore, static multi-tree allows \Forest{} to synthesize more complex expressions: the maximum number of nodes in a solution returned by dynamic multi-tree is 13 (average 6.3), while complete multi-tree synthesizes expressions of up to 24 nodes (average 11.2).
 
-\subsection{Multi-tree versus \(k\)-tree and line-based encodings}\label{sec:multi-tree-vs-encodings}
+\section{\texorpdfstring{Multi-tree versus \(k\)-tree and line-based encodings}{Multi-tree versus k-tree and line-based encodings}}\label{sec:multi-tree-vs-encodings}
 %\input{figures/time_comparison_encoding}
 
 To evaluate the performance of the multi-tree encoding, we ran \Forest{} with two other enumeration encodings: \(k\)-tree and line-based.
@@ -72,7 +70,9 @@ As seen in \autoref{table:number-solved}, line-based encoding does not outperfor
 
 %As can be seen in \autoref{table:number-solved}, line-based encoding does not outperform the tree-based encodings in our experiments. This contradicts the results obtained by Orvalho et. al. for the synthesis of SQL queries. We conjecture the reason behind this disparity arises from different nature of the DSLs. Most SQL queries, when represented as a tree, leave many branches of the tree unused, which results in the need of a larger depth for the tree. Regular expressions, on the other hand, are able better leverage the tree structure.
 
-\subsection{Impact of fewer examples} \label{sec:fewer-exs}
+\section{Sketching and interaction}
+
+\section{Impact of fewer examples} \label{sec:fewer-exs}
 To assess the impact of providing fewer examples on the accuracy of \Forest{}'s solution, we ran \Forest{} with modified versions of each benchmark.
 First, each benchmark was run with only 10 valid and 10 invalid examples, chosen randomly among all examples. The accuracy of the returned regexes is slightly lower.
 With only 10 valid and 10 invalid examples, \Forest{} returns the correct regular expression in 94\% of the benchmarks, which represents a decrease of only 4\% relative to the results with all examples.
@@ -82,18 +82,104 @@ After, we reduced the number of examples even further: only 5 valid and 5 invali
 
 %only 82\%, 16\% less than with all examples. On average, it interacted 6.1 times per benchmark, which is 3 times more than before. It also enumerated 25\% more expressions before returning.
 
-\subsection{Comparison with \Regel}\label{sec:comp-regel}
+\section{Comparison with \Regel}\label{sec:comp-regel}
 %\input{figures/time_comparison_resnax}
 
 \input{tables/instances_solved_resnax}
 
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.6\textwidth}
+        \begin{tikzpicture}
+            \begin{axis}[xmode=log, ymode=log, grid=major,
+                        xlabel = {\footnotesize \Forest},
+                        ylabel = {\footnotesize \Regel},
+                        xmax = 5000 ,ymax = 5000,
+                        width=.99\linewidth, height=.99\linewidth,
+                        clip marker paths=true]
+            \addplot[thick, mark size=3pt, only marks, mark=x, fill opacity=0.6, draw opacity=0.9, color=scatter-color] table[x=forest regex time, y=regel time, col sep=comma] {data/regel_comparison.csv};
+            \addplot[domain=0.01:3600,smooth,thin]{x};
+            \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(0.01,3600) (3600,3600)}
+                node at (3,2500) {\tiny{3600 second timeout}};
+            \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(3600,0.01) (3600,3600)}
+                node [rotate=-90] at (2500,3) {\tiny{3600 second timeout}};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{\Regel vs. \Forest}
+        \label{fig:regel_comparison}
+    \end{subfigure}
+    % \hfill
+    % \begin{subfigure}[b]{0.45\textwidth}
+    %     \begin{tikzpicture}
+    %         \begin{axis}[xmode=log, ymode=log, grid=major,
+    %                     xlabel = {\footnotesize \Forest},
+    %                     ylabel = {\footnotesize \Regel + 60},
+    %                     xmax = 5000 ,ymax = 5000,
+    %                     width=.99\linewidth, height=.99\linewidth,
+    %                     clip marker paths=true]
+    %         \addplot[only marks, mark=x, fill opacity=0.6, draw opacity=0.9, color=scatter-color] table[x=forest regex time, y=regel plus 60, col sep=comma] {data/regel_comparison.csv};
+    %         \addplot[domain=0.1:3600,smooth,thin]{x};
+    %         \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(0.1,3600) (3600,3600)}
+    %             node at (3,2500) {\tiny{3600 second timeout}};
+    %         \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(3600,0.1) (3600,3600)}
+    %             node [rotate=-90] at (2500,3) {\tiny{3600 second timeout}};
+    %         \end{axis}
+    %     \end{tikzpicture}
+    %     \caption{\Regel + sketch time vs. \Forest}
+    %     \label{fig:regel_comparison}
+    % \end{subfigure}
+    % \par\vspace{3em}
+    % \begin{subfigure}[b]{0.45\textwidth}
+    %     \begin{tikzpicture}
+    %         \begin{axis}[xmode=log, ymode=log, grid=major,
+    %                     xlabel = {\footnotesize \Forest},
+    %                     ylabel = {\footnotesize \Regel w/o sketches},
+    %                     xmax = 5000 ,ymax = 5000,
+    %                     width=.99\linewidth, height=.99\linewidth,
+    %                     clip marker paths=true]
+    %         \addplot[only marks, mark=x, fill opacity=0.6, draw opacity=0.9, color=scatter-color] table[x=forest regex time, y=regel no sketch, col sep=comma] {data/regel_comparison.csv};
+    %         \addplot[domain=0.1:3600,smooth,thin]{x};
+    %         \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(0.1,3600) (3600,3600)}
+    %             node at (3,2500) {\tiny{3600 second timeout}};
+    %         \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(3600,0.1) (3600,3600)}
+    %             node [rotate=-90] at (2500,3) {\tiny{3600 second timeout}};
+    %         \end{axis}
+    %     \end{tikzpicture}
+    %     \caption{\Regel without sketches vs. \Forest}
+    %     \label{fig:regel_comparison}
+    % \end{subfigure}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.6\textwidth}
+        \begin{tikzpicture}
+            \begin{axis}[xmode=log, ymode=log, grid=major,
+                        xlabel = {\footnotesize \Forest},
+                        ylabel = {\footnotesize \Regel},
+                        xmax = 5000 ,ymax = 5000,
+                        width=.99\linewidth, height=.99\linewidth,
+                        clip marker paths=true]
+            \addplot[thick, only marks, mark=x, fill opacity=0.6, draw opacity=0.9, color=red] table[x=regex_synthesis_time, y=regel_time, col sep=comma] {data/regel_comparison_dyn.csv};
+            \addplot[thick, only marks, mark=x, fill opacity=0.6, draw opacity=0.9, color=blue] table[x=regex_synthesis_time, y=regel_time, col sep=comma] {data/regel_comparison_sta.csv};
+            \addplot[domain=0.01:3600,smooth,thin]{x};
+            \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(0.01,3600) (3600,3600)}
+                node at (3,2500) {\tiny{3600 second timeout}};
+            \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(3600,0.01) (3600,3600)}
+                node [rotate=-90] at (2500,3) {\tiny{3600 second timeout}};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{\Regel vs. \Forest}
+        \label{fig:regel_comparison}
+    \end{subfigure}
+\end{figure}
 We run \Regel{} PBE on our 64 regex benchmarks for form validation.
 %
-\Regel{} returned a regular expression in 27 instances, timed out after 1 hour in 19, and terminated due to insufficient memory (32GB) in the remaining 18. Of the 27 synthesized expressions, only 8 satisfied the desired intent.
+\Regel{} returned a regular expression in 27 instances, timed out after 1 hour in 19, and terminated due to insufficient memory (32GB) in the remaining 18. Of the 27 synthesised expressions, only 8 satisfied the desired intent.
 
 We also ran \Forest{} and \Regel{} PBE on the most complex benchmark set of \Regel's paper~\cite{Regel20}. This set corresponds to 122 benchmarks that differ from our benchmarks in the following. First, they do not target the form validation domain. Second, they have much fewer examples (3.75 valid and 3.25 invalid, on average) which are often not enough to completely express user intent. 
 
-\autoref{table:number-solved-resnax} shows the number of instances solved by each approach. \Forest{} DSL only supports 95 out of 122 instances. After 1 hour, \Forest{} could only return a solution to 50 of \Regel{}'s benchmarks (41\%). In 10 other benchmarks, after 1 hour, \Forest{} had already found a solution consistent with the examples, but it was still disambiguating. Of the synthesized regexes, only 13 are correct considering the natural language description provided along with the examples (11\%). In the same amount of time, \Regel{} returned 92 regexes (75\%), of which 16 (13\%) satisfy the natural language description. Note that \Regel{} can also take as input a natural language description of the problem and their evaluation shows that for this set of benchmarks, the accuracy of \Regel{} is increased substantially when using natural language~\cite{Regel20}. However, the same behavior could also be expected if \Forest{} would be extended with this kind of information.
+\autoref{table:number-solved-resnax} shows the number of instances solved by each approach. \Forest{} DSL only supports 95 out of 122 instances. After 1 hour, \Forest{} could only return a solution to 50 of \Regel{}'s benchmarks (41\%). In 10 other benchmarks, after 1 hour, \Forest{} had already found a solution consistent with the examples, but it was still disambiguating. Of the synthesised regexes, only 13 are correct considering the natural language description provided along with the examples (11\%). In the same amount of time, \Regel{} returned 92 regexes (75\%), of which 16 (13\%) satisfy the natural language description. Note that \Regel{} can also take as input a natural language description of the problem and their evaluation shows that for this set of benchmarks, the accuracy of \Regel{} is increased substantially when using natural language~\cite{Regel20}. However, the same behavior could also be expected if \Forest{} would be extended with this kind of information.
 
 This comparison shows the PBE engine of \Forest{} is much better than \Regel{} for form validation benchmarks where it exploits the structure of the data. For the synthesis of regexes where there is no structure, we observe that the performance of both PBE engines is comparable.
 

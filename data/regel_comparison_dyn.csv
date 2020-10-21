@@ -1,0 +1,13 @@
+name,enumerator,timed_out,total_synthesis_time,regex_synthesis_time,first_regex_time,regel_time,regel_timeout
+cc.txt,DynamicMT(n=1; d=3),FALSE,5.56,5.07,4.65,3.813,FALSE
+ean.txt,DynamicMT(n=1; d=3),FALSE,1.07,0.8,0.37,0.012,FALSE
+grid.txt,DynamicMT(n=1; d=3),FALSE,14.05,13.5,5.11,401.872,FALSE
+pc_us.txt,DynamicMT(n=1; d=3),FALSE,0.17,0.09,0.11,0.01,FALSE
+domain.txt,DynamicMT(n=1; d=4),TRUE,3623.52,3614.36,undefined,3601,TRUE
+gstin.txt,DynamicMT(n=1; d=4),TRUE,3629.67,3625.73,undefined,3601,TRUE
+id_fi.txt,DynamicMT(n=2; d=3),TRUE,3619.6,3617.99,undefined,3601,TRUE
+id_mx.txt,DynamicMT(n=2; d=3),TRUE,3617.78,3615.33,undefined,8.472,FALSE
+isbn.txt,DynamicMT(n=2; d=3),TRUE,3611.57,3610.15,undefined,3601,TRUE
+isbn10.txt,DynamicMT(n=2; d=3),FALSE,2915.45,2914.43,27.59,14.685,FALSE
+iban.txt,DynamicMT(n=3; d=3),TRUE,3625.64,3587.99,undefined,769.721,FALSE
+signed.txt,DynamicMT(n=3; d=3),FALSE,2468.42,2465.51,625.56,11.641,FALSE

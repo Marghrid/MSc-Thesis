@@ -1,8 +1,7 @@
 \chapter{Introduction}
 
 As computers steadily become vital tools in our day-to-day lives, the need arises to extend the ability to develop computer applications to ampler audiences, including those who lack a programming background.
-OutSystems\footnotemark{} is a low-code development platform that enables its users to build applications through a graphical interface and integrate them with existing systems. It speeds up the development of web and mobile applications, at the same time making the task more accessible to users from different backgrounds.
-\footnotetext{\url{https://www.outsystems.com}. Accessed on \formatdate{6}{1}{2020}.}
+OutSystems\footnotemark{} is a low-code development platform that enables its users to build applications through a graphical interface and integrate them with existing systems. It speeds up the development of web and mobile applications, at the same time making the task more accessible to users from different backgrounds. \footnotetext{\url{https://www.outsystems.com}. Accessed on \formatdate{6}{1}{2020}.}
 
 Data analysis is a powerful resource with numerous applications that has flourished as a research field over the years.
 %Naturally, data collection is a pivotal step in performing any kind of data analysis.
@@ -25,7 +24,6 @@ The characteristics that make form validation code so dissatisfying to write are
 Its repetitiveness implies a small number of operations are sufficient to cover a large percentage of commonly used validations, which facilitates the synthesis process.
 Furthermore, because the synthesizer makes no assumptions about the input fields, it is less susceptible to missing corner cases.
 
-\section{Contributions}
 % Our goal is to apply program synthesis to the domain of user input validation. We propose to develop a synthesizer that automatically generates validation logic for form input fields.
 % The user provides a set of example values for each input field.
 % The examples may be valid or invalid and are individually identified as such.
@@ -37,6 +35,67 @@ Then, the synthesizer generates a Boolean expression consistent with the example
 % This tool will be useful to both programmers and non-programmers.
 % For experienced programmers, it is useful to automate repetitious tasks that, albeit simple, are often time-consuming and error-prone.
 % For non-programmers, it eases the development of computer applications, eliminating the need to learn the formalism of a programming language or hire a professional to do it.
+\section{Motivating Example}\label{ex:1}
+
+Suppose a user is writing a form where one of the fields is a date that must respect the format DD/MM/YYYY.
+The user wants to accept the input strings:
+\begin{multicols}{3}
+    \begin{itemize}[label={},noitemsep]
+    \item 19/08/1996
+    \item 26/10/1998
+    \item 22/09/2000
+    \item 01/12/2001
+    \item 29/09/2003
+    \item 31/08/2015
+    \end{itemize}
+\end{multicols}
+\noindent
+But not:
+\begin{multicols}{3}
+\begin{itemize}[label={},noitemsep]
+\item 19/08/96
+\item 26-10-1998
+\item 22.09.2000
+\item 1/12/2001
+\item 29/9/2003
+\item 2015/08/31
+\end{itemize}
+\end{multicols}
+\noindent
+A regular expression can be used to enforce this format. However, if the user is not proficient in the usage of this formalism, writing it can be a challenging task. Even if the user is familiar with regular expressions, writing a large number of such validations for all the fields of a form can become monotonous and error-prone.
+Instead, the user may simply use the two sets of examples as input to \Forest{}, who will output the regex \UseVerb{date2}.
+
+Suppose the user wants to validate not only the format, but also the values in the date.
+We consider as \textit{conditional invalid}:
+\begin{multicols}{3}
+    \begin{itemize}[label={},noitemsep]
+    \item 33/08/1996
+    \item 26/00/1998
+    \item 22/13/2000
+    \item 00/12/2001
+    \item 12/31/2003
+    \item 52/03/2015
+    \end{itemize}
+\end{multicols}
+To ensure only valid values are inserted as the day and month, one can use capturing groups. A capturing group is represented by a set of parenthesis. The capturing group is the regex between them. They capture the text matched by the regex inside them into a numbered group that can be reused with a numbered reference. In this paper we use the notation \(\$i, i \in 0, 1, ...\) to reference the text captured by the \((i+1)\)\textsuperscript{th} group.
+Then, conditions can be applied to these values. In this situation, the desired validation and the output of \Forest is:
+\UseVerb{date_day_mo_caps}, \(\$0 \wedge 31 \wedge \$0 \ge 1 \wedge \$1 \le 12 \wedge \$1 \ge 1\).
+
+Finally, suppose the user wishes not only to validate the input string but also to extract some information from it. Still using the dates example, the user could wish to extract the year from each date, so it could be used afterwards.
+\begin{multicols}{3}
+    \begin{itemize}[label={},noitemsep]
+    \item 19/08/1996, 1996
+    \item 26/10/1998, 1998
+    \item 22/09/2000, 2000
+    \item 01/12/2001, 2001
+    \item 29/09/2003, 2003
+    \item 31/08/2015, 2015
+    \end{itemize}
+\end{multicols}
+
+Using a capture group, we can extract the year from the dates:\\ \UseVerb{date_year_cap}. The captured text corresponds to the desired information.
+
+\section{Contributions}
 
 \section{Document Structure}
 

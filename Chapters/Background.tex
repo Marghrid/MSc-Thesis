@@ -1,7 +1,10 @@
 \chapter{Background}\label{sec:background}
 This section offers a brief introduction on some key notions required to understand the rest of this document.
-We start off by looking into formal languages and associated definitions in \autoref{sec:languages}, followed by the closely related topic of regular expressions in \autoref{sec:regex}\footnote{Definitions and examples in Sections \ref{sec:languages} and \ref{sec:regex}
-were, in part, adapted from Chapter~3 of \textit{Compilers: Principles, Techniques, and Tools}, by \citet*{DragonBook}.}. Finally, in \autoref{sec:ps}, we present an overview of the basic concepts of program synthesis.
+We start off by looking into formal languages and associated definitions in \autoref{sec:languages}, where we also define regular expressions, one of the main goals of our synthesis procedure\footnote{Definitions and examples in \autoref{sec:languages}
+were, in part, adapted from Chapter~3 of \textit{Compilers: Principles, Techniques, and Tools}, by \citet*{DragonBook}.}.
+\todo{Section about logic \autoref{sec:logic}.\footnote{Definitions and examples in \autoref{sec:logic}
+were, in part, adapted from \textit{Handbook of Satisfiability}, by \citet*{HandbookSAT}.}}
+Finally, in \autoref{sec:ps}, we present an overview of the basic concepts of program synthesis.
 
 \section{Regular Languages}\label{sec:languages}
 Formal languages differ from the common meaning of the word \textit{language} in that they are built from a set of well-defined rules and thus stringently specified. Programming languages, such as \texttt{C} or \texttt{Python}, are examples of formal languages. They have a strict syntax and no deviation is tolerated: if a string does not comply with the syntax rules, it is not in the language.
@@ -57,12 +60,12 @@ The following are examples of languages:
 \end{itemize}
 \end{example}
 
-\subsection{Regular operations}
+\subsection{Regular Operations}
 Regular operations are a type of operation over languages, and regular languages are a subset of languages that are closed under regular operations. The three most basic regular operations are union, concatenation and closure.
 
 The union of two languages \(\mathcal{L}\) and \(\mathcal{M}\), denoted \(\mathcal{L} \cup \mathcal{M}\), is the set of all strings in \(\mathcal{L}\) and all strings in \(\mathcal{M}\) (including those that are in both).
 The concatenation of two languages \(\mathcal{L}\) and \(\mathcal{M}\), denoted \(\mathcal{L}\mathcal{M}\), is the set all strings formed by taking any string from \(\mathcal{L}\) and any string from \(\mathcal{M}\) and concatenating them. The concatenation of the same language, \(\mathcal{L}\), \(n\) times is sometimes denoted as \(\mathcal{L}^n\). For example  \(\mathcal{L}^3 = \mathcal{L}\mathcal{L}\mathcal{L}\).
-The Kleene closure\footnotemark{} (also called Kleene star or simply star) of a language \(\mathcal{L}\), denoted \(\mathcal{L}^*\), is the set of strings resulting from the concatenation of any string in \(\mathcal{L}\) zero or more times. The Kleene closure of any language will always include the empty string.
+The Kleene closure\footnotemark{} (also called Kleene star or simply star) of a language \(\mathcal{L}\), denoted \(\mathcal{L}^*\), is the set of strings resulting from the concatenation of any string in \(\mathcal{L}\) zero or more times. The Kleene closure of any language always includes the empty string.
 
 \footnotetext{Kleene closure owes its name to the American mathematician Stephen Cole Kleene, who first described the concepts of regular language and regular expression in the~1950s.}
 \begin{definition}[Regular operations] There are 3 regular operations on languages, union, concatenation and closure, which are defined as follows:
@@ -206,8 +209,102 @@ The language \(\mathcal{L} = \{a^n b^n : n \ge 1\}\) is the language of strings 
 \end{comment}
 
 
+\section{\acl{MaxSMT}}\label{sec:logic}
+
+\todo{intro to Max SMT}
+
+% The problem is significant both because the question of satisfiability is important in its own right and because many other questions in Propositional Logic can be reduced to that of propositional satisfiability.
+
+%In addition to its theoretical importance, \ac{SAT} has many practical applications in the field of Computer Science.
+
+\subsection{Propositional Satisfiability}
+
+In logic and computer science, \acf{SAT} is the problem of, given a Boolean formula, determining if there exists an assignment of its variables that satisfies it.
+\todo{Why is it interesting? NP-hard. Encode problem's constraints into CNF clauses.}
+
+\begin{definition}[Literal]
+A literal \(l\) is a Boolean variable (\(l = x\)) or its complement (\(l = \neg x\)).
+\end{definition}
+
+\begin{definition}[Clause]
+A clause \(c\) is a disjunction of literals: \(c = l_1 \lor l_2 \lor ... \lor l_k\).
+\end{definition}
+
+\noindent
+\ac{SAT} formulas are usually represented in the \acf{CNF}. 
+
+\begin{definition}[\ac{CNF} Formula]
+A formula \(\phi\) in \ac{CNF} is a conjunction of clauses: \(\phi = c1 \land c2 \land ... \land c_n\). \(\phi\) can be equivalently represented as \(\phi = \{c_1, c_2, ..., c_n\}\)
+\end{definition}
+
+\begin{example}\label{ex:CNF_formula}
+Consider the variables \(X = \{x_1, x_2, x_3\}\). Then, \(\phi_1 = (x_1 \lor x_2) \land (\neg x_1 \lor x_3)\) is a \ac{CNF} formula over \(X\).
+\end{example}
+
+\begin{definition}[Assignment]
+Given a propositional formula \(\phi\), an assignment is a mapping \(\nu~: X~\rightarrow~\{\textit{True},~\textit{False}\}\), where \(X\) is the set of variables in \(\phi\).
+\end{definition}
+
+\noindent
+Given an assignment \(\nu : X \rightarrow \{\textit{True}, \textit{False}\}\) and a variable \(x \in X\), the positive literal \(x\) is satisfied by \(\nu\) if and only if \(\nu(x) = \textit{True}\) and the negative literal \(\neg x\) is satisfied by \(\nu\) if and only if \(\nu(x) = \textit{False}\); a clause is satisfied by \(\nu\) if and only if at least one of its literals is satisfied by \(\nu\); a formula in CNF is satisfied by \(\nu\) if and only if all of its clauses are satisfied by \(\nu\).
+
+\begin{definition}[Model]
+Given a propositional formula  \(\phi\) and an assignment \(\nu\), \(\nu\) is a model of \(\phi\) if and only if \(\nu\) satisfies \(\phi\).
+\end{definition}
+
+\begin{example}
+Recall the \ac{CNF} formula from \autoref{ex:CNF_formula}: \(\phi_1 = (x_1 \lor x_2) \land (\neg x_1 \lor x_3)\). The assignment \(\nu_1 = \{x_1 \mapsto \textit{False}, x_2 \mapsto \textit{True}, x_3 \mapsto \textit{True}\}\) is a possible model of \(\phi_1\).
+\end{example}
+
+\subsection{Maximum Satisfiability}
+The problem of finding an assignment \(\nu\) to the variables of a CNF formula that satisfies the maximum number of clauses possible is known as \ac{MaxSAT}.
+\ac{MaxSAT} is used to get insights about the \textit{unsatisfiable} instances. A \ac{SAT} solver will tell us that we cannot satisfy all clauses. A \ac{MaxSAT} solver will tell us how many can be satisfied at most.
+
+An important variation of the \ac{MaxSAT} problem, known as \textit{partial} \ac{MaxSAT}, divides its clauses into two types: hard clauses and soft clauses.
+Partial \ac{MaxSAT} is then the problem of finding an assignment \(\nu\) to the variables of a \ac{CNF} formula that satisfies all hard clauses and as many soft clauses possible.
+
+\begin{definition}[MaxSAT]
+\todo{Definition}
+\end{definition}
+
+
+\begin{example}
+\todo{Example}
+\end{example}
+
+\subsection{Satisfiability Modulo Theories}
+
+Sometimes, it is advantageous to express the problem at hand using more expressive logics. In this thesis we make extensive use of an extension of \ac{SAT}: \acf{SMT}. \ac{SMT} is the problem of satisfiability of formulas with respect to some background theory \(\mathcal{T}\), which defines the interpretations of certain function symbols.
+
+\begin{definition}[\(\mathcal{T}\)-atom]
+A \(\mathcal{T}\)-atom \(t\) is a ground atomic formula in \(\mathcal{T}\).
+\end{definition}
+
+
+\begin{definition}[\(\mathcal{T}\)-literal]
+A \(\mathcal{T}\)-literal is a \(\mathcal{T}\)-atom  or (\(t\)) its negation (\(\neg t\)).
+\end{definition}
+
+\begin{definition}[\(\mathcal{T}\)-formula]
+A \(\mathcal{T}\)-formula is then analogous to a propositional formula but it is composed of \(\mathcal{T}\)-literals instead of propositional literals.
+\end{definition}
+
+\ac{SMT} is then the problem of deciding, given an SMT formula \(\phi\), deciding if there exists a total assignment of the variables of \(\phi\) that satisfies it. Common used theories include the theory of Linear Integer Arithmetic (LIA) or the theory of Equality with Uninterpreted Functions (EUF).
+
+\begin{example}
+\(\phi_2 = (b - a = 1) \land ((b < 5) \lor (a>10))\) is a SMT formula in the theory of LIA. A possible model for \(\phi_2\) is \(\nu_2 = \{a \mapsto 1, b \mapsto 2\}\).
+\end{example}
+
+
+\subsection{\acl{MaxSMT}}
+
 \section{Program Synthesis} \label{sec:ps}
-\input{figures/PS.tex}
+\begin{figure}
+    \centering
+    \includegraphics[scale=.35]{pictures/program_synthesis.pdf}
+    \caption{Program Synthesis}
+    \label{fig:program-synthesis}
+\end{figure}
 Program synthesis is the task of automatically generating a program that satisfies some desired behaviour expressed as a high-level specification~(see \autoref{fig:program-synthesis}).
 This specification can range from a complete formal definition, such as a first-order formula \cite{DBLP:conf/ijcai/Green69,DBLP:conf/pldi/GulwaniJTV11}, to more ambiguous descriptions of the desired program's behaviour, like a set of input-output examples~\cite{balog2017deepcoder,DBLP:conf/pldi/FengMBD18,DBLP:conf/icse/JhaGST10,DBLP:conf/ijcai/ShawWG75,DBLP:journals/jacm/Summers77} or a natural language sentence~\cite{DBLP:conf/icse/DesaiGHJKMRR16,DBLP:journals/pacmpl/Yaghmazadeh0DD17}.
 
@@ -220,7 +317,7 @@ According to \citeauthor{PSnow}~\cite{DBLP:conf/ppdp/Gulwani10,PSnow}, a program
 
 \paragraph{Desired behaviour specification} is the most important characteristic of a synthesizer from the users' point of view. It is the language in which they describe the behaviour of the program they intend to generate. It must take into consideration the underlying task, the users' technical background and which material is available when using the synthesizer.
 
-\paragraph{Program space} is the set of all programs the synthesizer can possibly generate. In other words, it is the space over which the synthesizer will search for a feasible program. It depends on the domain of the problem the synthesizer is intended to solve. It must be expressive enough to ensure the desired program is included, but also restricted enough lest the search problem become intractable.
+\paragraph{Program space} is the set of all programs the synthesizer can possibly generate. In other words, it is the space over which the synthesizer searches for a feasible program. It depends on the domain of the problem the synthesizer is intended to solve. It must be expressive enough to ensure the desired program is included, but also restricted enough lest the search problem become intractable.
 
 \paragraph{Search technique} refers to the method employed to find the desired program within the program space. It can be based on enumerative search, deductive search, constraint solving, or some combination thereof.
 
@@ -235,11 +332,10 @@ Program synthesis is a very wide field of research. It has been studied by diffe
 
 In \autoref{sec:cegis}, we look at a way to steer the search in the right direction by using information about wrong answers to avoid future similar mistakes. In sections~\ref{sec:ogis} and~\ref{sec:user-interaction}, we look at different ways to deal with the ambiguity of the desired behaviour specification in inductive synthesis.
 
-%In \autoref{sec:form-validation} we analyse several existing form validation tools, in order to get some insight into the type of operations we will be synthesising.
 Finally, in \autoref{sec:synth-predicates}, we take an in-depth look at \textit{AlphaRegex}, a tool that, though not directly addressing the form validation problem, tackles the synthesis of regular expressions, which are an important part of our domain.
 
 \subsection{Desired Behaviour Specification} \label{sec:desired-behaviour-spec}
-For the synthesis procedure to start, the user must first specify the program's intended behaviour. The desired behaviour can be described in many different ways, and will internally be converted to some sort of behavioural constraints, which the output program must satisfy.
+For the synthesis procedure to start, the user must first specify the program's intended behaviour. The desired behaviour can be described in many different ways, and is internally converted to some sort of behavioural constraints, which the output program must satisfy.
 
 \begin{definition}[Desired Behaviour Specification]
 The desired behaviour specification is a predicate \(\phi\), such that \(\phi(\vec{x}, y)\) is \true{} if and only if \(y\) is the desired output value for the input vector \(\vec{x}\).
@@ -253,7 +349,13 @@ Then, they employ a theorem prover to construct a proof of the provided specific
 Deductive synthesizers require the user to provide a complete formal description of the desired behaviour, such as a first-order formula.
 Because it is a complete definition, the synthesizer always returns a program with the exact desired behaviour, and it is always satisfactory to the user.
 However, writing these kind of specifications can be as complex as writing the program itself, and might force the user to learn a new formalism in any case.
-\input{figures/PBE.tex}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=.35]{pictures/pbe.pdf}
+    \caption{\ac{PBE}: The desired behaviour specification is a set of \(N\) input-output examples.}
+    \label{fig:pbe}
+\end{figure}
 
 Such difficulties motivated a new approach to program synthesis: inductive synthesis \cite{DBLP:conf/pldi/FengMBD18,DBLP:conf/pldi/FengMGDC17,DBLP:conf/ijcai/ShawWG75,DBLP:journals/jacm/Summers77}. The program is then built based on simpler (albeit ambiguous) specifications, easier for the user to devise. \acf{PBE} is a branch of inductive synthesis where the user intent is specified using input-output examples~\cite{DBLP:conf/pldi/GodefroidT12,DBLP:conf/ijcai/ShawWG75,DBLP:journals/jacm/Summers77,DBLP:conf/sigmod/WangCB17,DBLP:conf/pldi/WangCB17}, as shown in \autoref{fig:pbe}.
 %\textcolor{red}{(\cite{DBLP:conf/ijcai/ShawWG75} synthesises simple LISP programs from one input-output example.~\cite{DBLP:journals/jacm/Summers77} from several output examples)} or natural language descriptions~\cite{DBLP:conf/icse/DesaiGHJKMRR16}).
@@ -286,7 +388,7 @@ Common desirable characteristics used to rank the programs include: execution sp
 Another approach is to enable the synthesizer to interact with the user to try and disambiguate the underlying intent. Section~\ref{sec:user-interaction} provides more details on this topic.
 
 \subsection{Program Space} \label{sec:program-space}
-The next step towards finding a program that satisfies the user's needs is defining the space of programs over which the synthesizer will be performing the search: the program space.
+The next step towards finding a program that satisfies the user's needs is defining the space of programs over which the synthesizer perfors the search: the program space.
 We cannot consider all the programs that can be written using a full-featured programming language, as too many programs would be taken into consideration, rendering the search space intractable.
 On that account, we need to restrict the language in which the programs are written in order to enable an efficient search of the program space.
 However, we must ensure it remains expressive enough to capture many real-world tasks within the considered specialised domain.
@@ -336,12 +438,18 @@ Given a specification of desired behaviour \(\phi\), program synthesis is the pr
 
 Several search techniques have been explored to solve program synthesis. In the remainder of this section, some of these search techniques are briefly explained. Note that one synthesizer does not have to apply only one of these techniques; more often, a combination of several techniques is applied.
 
-\input{figures/enumerative_search}
-\paragraph{Enumerative Search}\label{sec:enum-search} \cite{DBLP:conf/pldi/FengMGDC17,DBLP:conf/pldi/FengMBD18,DBLP:conf/gpce/LeeSO16,Orvalho19,DBLP:conf/cav/ReynoldsBNBT19} is a very common approach to solve the search problem of program synthesis. In this technique, we have two key components: an \textit{enumerator} and a \textit{verifier}.
+\begin{figure}
+    \centering
+    \includegraphics[scale=.35]{pictures/enumerative_search.pdf}
+    \caption{Enumerative search}
+    \label{fig:enumerative_search}
+\end{figure}
+
+\paragraph{Enumerative Search}\label{sec:enum-search}\cite{DBLP:conf/pldi/FengMGDC17,DBLP:conf/pldi/FengMBD18,DBLP:conf/gpce/LeeSO16,Orvalho19,DBLP:conf/cav/ReynoldsBNBT19} is a common approach to solve the search problem of program synthesis. In this technique, we have two key components: an \textit{enumerator} and a \textit{verifier}.
 The \textit{enumerator} successively enumerates programs from the program space in some order. For each candidate program, the \textit{verifier} subsequently checks whether it satisfies all behavioural constraints, i.e., it is consistent with the user intent specification.
-If the \textit{verifier} redeems the program consistent to the given specification, then the program is correct and it can be returned to the user.
+If the \textit{verifier} deems the program consistent with the given specification, then the program is correct and it can be returned to the user.
 If, on the other hand, the \textit{verifier} decides that the given program does not satisfy the specification, then the \textit{enumerator} must pick a new program from the search space.
-This loop is described in \autoref{fig:enumerative-search}.
+This loop is described in \autoref{fig:enumerative_search}.
 
 A naive implementation of enumerative search does not scale to complex programs; however, it is a very effective strategy when coupled with some optimisation techniques. First off, the program space must be structured according to some metrics, usually program size or complexity, such that the \textit{enumerator} yields simpler programs first and only when those are refuted by the \textit{verifier} are more complex programs considered. This concept contributes to solving the problem of user intent ambiguity introduced in \autoref{sec:desired-behaviour-spec} by applying the Ockham's Razor principle: choose the simplest program that is consistent with the specification.
 
@@ -356,14 +464,33 @@ Suppose we want to synthesise an expression \(e\) of the form \(F(e_1, e_2)\) th
 
 Deductive search is very convenient when the underlying grammar allows for a rich set of constants. In such cases, enumerative search is no longer viable. A new enumeration step may be required for each possible constant in order to find the right one, resulting in too many iterations. On the other hand, the top-down deductive technique can deduce constants based on the accumulated constraints as the last  step in the search process.
 
-\paragraph{Constraint Solving} \cite{Solar-LezamaPhDThesis,DBLP:conf/popl/SrivastavaGF10} consists on somehow generating a logical formula whose solution will yield the intended program, and then solving it.
+\paragraph{Constraint Solving} \cite{Solar-LezamaPhDThesis,DBLP:conf/popl/SrivastavaGF10} consists on somehow generating a logical formula whose solution yields the intended program, and then solving it.
 
-Several approaches can be used to generate the formula. On one extreme, we have invariant-based methods, which will generate one formula that is satisfiable if and only if the program is consistent with the specification. Upon solving such a formula, we have not only a correct program but also a inductive proof of its correctness.
+Several approaches can be used to generate the formula. On one extreme, we have invariant-based methods, which generate one formula that is satisfiable if and only if the program is consistent with the specification. Upon solving such a formula, we have not only a correct program but also a inductive proof of its correctness.
 However, these methods do not scale well with the complexity of the specification --- the resulting formula may be intractable, and much more complex than the program itself.
 
 To circumvent this drawback, we can instead make use of input-based methods. Then, the formula asserts the correctness of the program only on a subset of all possible inputs, which leads to much simpler constraints.
 
 Once we have a logic formula, it must be solved. These formulas are of second-order logic, and need to be first reduced to first-order quantifier-free constraints that can the be solved using an off-the-shelf logic-based solver. Second-order reduction can be achieved using techniques such as \ac{CEGIS} \cite{Solar-LezamaPhDThesis}, which is described in \autoref{sec:cegis}.
+
+\chapter{Related Work / Program Synthesis}
+
+\section{Sketch-based Enumerative Search}
+\begin{figure}
+    \centering
+    \includegraphics[scale=.35]{pictures/sketch.pdf}
+    \caption{Sketch-based enumeration}
+    \label{fig:sketch_enumeration}
+\end{figure}
+Some synthesizers opt to perform enumerative search using partial programs.
+Partial programs (often called sketches) are a high-level representation of the intended program. Instead of completely defining a program, they contain holes, i.e., parts of the program that refer to lower-level implementation details. For a sketch to become syntactically correct, all its holes must be filled with syntactically correct expressions.
+
+Instead of enumerating complete programs, a sketch-based synthesizer takes one of two approaches: Either
+\begin{enumerate*}[label=(\roman*)]
+    \item a sketch is provided by the user, who already possesses a high-level description of the desired program, in which case the synthesizer must complete it according to the specification, or
+    \item the synthesizer is responsible for both producing a suitable sketch and completing it. The enumeration process is then split in two steps: sketch generation and sketch completion.
+\end{enumerate*}
+During sketch generation, the synthesizer enumerates incomplete programs in some order. During sketch completion, the synthesizer then enumerates complete programs for each given sketch, by successively filling each hole with a syntactically correct expression. Sketch-based enumeration is outlined in \autoref{fig:sketch_enumeration}.
 
 
 \section{\acl{CEGIS}}\label{sec:cegis}
@@ -395,7 +522,12 @@ Formula \eqref{eq:counterexample} is also a first-order formula.
 Formula~\eqref{eq:counterexample} is unsatisfiable if and only if \(P\) is a correct program.
 Therefore, to find a correct program, we search the program space for a program \(P\) such that~\eqref{eq:counterexample} is unsatisfiable. Once found, \(P\) can be returned to the~user. %To achieve this, we can use enumerative search (previously explained in \autoref{sec:enum-search}), whose definition fits well into this way of verifying correctness of the program: the \textit{verifier} entity is then a solver that tries to satisfy formula~\eqref{eq:counterexample} (see Figures \ref{fig:enumerative-search} and~\ref{fig:CEGIS}).
 
-\input{figures/CEGIS.tex}
+\begin{figure}
+    \centering
+    \includegraphics[scale=.35]{pictures/cegis.pdf}
+    \caption{\ac{CEGIS}}
+    \label{fig:cegis}
+\end{figure}
 
 Whenever we encounter a program \(P\) for which formula~\eqref{eq:counterexample} is satisfiable, the values of \(\vec{x}\) and \(y\) that satisfy the formula constitute a counterexample: an input \(\vec{x}\) for which \(P\) does not satisfy the specification \(\phi\); in other words, an input \(\vec{x}\) to which our program returns the wrong output.
 If we take this counterexample \((\vec{x}, y)\) into account during our subsequent search, none of the new candidate programs will return \(y\) on the input \(\vec{x}\).
@@ -405,7 +537,7 @@ We have thus strengthened the specification, eliminating the previous incorrect 
 A counterexample \((\vec{x}, y)\) for an incorrect program \(P\) is an input-output pair such that \(P(x) = y\) and \(\neg \phi(\vec{x}, y)\), i.e., \(y\) is the output returned by \(P\) on input \(\vec{x}\) even though \((\vec{x}, y)\) is not consistent with the specification.
 \end{definition}
 
-This approach was proposed in \citeyear{Solar-LezamaPhDThesis} by \citeauthor{Solar-LezamaPhDThesis} in his PhD Thesis \cite{Solar-LezamaPhDThesis} and it is represented in \autoref{fig:CEGIS}. In this figure, the \textit{verifier} is a solver that tries to satisfy formula~(\ref{eq:counterexample}).
+This approach was proposed in \citeyear{Solar-LezamaPhDThesis} by \citeauthor{Solar-LezamaPhDThesis} in his PhD Thesis \cite{Solar-LezamaPhDThesis} and it is represented in \autoref{fig:cegis}. In this figure, the \textit{verifier} is a solver that tries to satisfy formula~(\ref{eq:counterexample}).
 
 We can further improve this method by reformulating the verification formula in order to produce a constructive counterexample:
 %
@@ -416,7 +548,7 @@ We can further improve this method by reformulating the verification formula in 
 Like before, \eqref{eq:constructive} is a first-order formula and it is unsatisfiable if and only if \(P\) is a correct program.
 When \eqref{eq:constructive} is satisfiable \(P\) is not a correct program and the values of \(\vec{x}\) and \(y\) that satisfy the formula are now a \textit{constructive} counterexample: \(y\) is the correct output for input \(\vec{x}\).
 While a model \((\vec{x}, y)\) that satisfies \eqref{eq:counterexample} is an input-output pair that the program must \textit{not} satisfy, a model \((\vec{x}, y)\) that satisfies \eqref{eq:constructive} is a correct input-output pair that the program \textit{must} satisfy.
-Adding the constructive counterexample to our previous specification results in a much stronger constraint and will prune the remaining search space even further. %However, this reformulation is only possible when there is only one output value that satisfies the specification for the input value~\(\vec{x}\).
+Adding the constructive counterexample to our previous specification results in a much stronger constraint and prunes the remaining search space even further. %However, this reformulation is only possible when there is only one output value that satisfies the specification for the input value~\(\vec{x}\).
 
 \begin{definition}[Constructive counterexample]
 A constructive counterexample \((\vec{x}, y)\) for an incorrect program \(P\) is an input-output pair such that {{\(P(x)~\neq~y\)}} and \(\phi(\vec{x}, y)\), i.e., \(y\) is not the output returned by \(P\) on input \(\vec{x}\) even though \((\vec{x}, y)\) is consistent with the specification.
@@ -426,9 +558,9 @@ A constructive counterexample \((\vec{x}, y)\) for an incorrect program \(P\) is
 As discussed in \autoref{sec:desired-behaviour-spec}, \ac{PBE} comes with the drawback of incompleteness of the behaviour specification. Many programs are consistent with the provided specification, but not all these programs exhibit the user's intended behaviour.
 
 In order to restore soundness of the solution, \citeauthor{DBLP:conf/icse/JhaGST10} proposed in \citeyear{DBLP:conf/icse/JhaGST10} a new approach which makes use of distinguishing inputs to disambiguate the input-output examples: \acf{OGIS}~\cite{DBLP:conf/icse/JhaGST10}.
-An \textit{I/O~oracle} maps any given input to the desired output and it is used as an alternative to a complete specification. This means that whenever the \textit{I/O~oracle} is queried on any input vector \(\vec{x}\), it will always return the correct output \(y\).
+An \textit{I/O~oracle} maps any given input to the desired output and it is used as an alternative to a complete specification. This means that whenever the \textit{I/O~oracle} is queried on any input vector \(\vec{x}\), it always returns the correct output \(y\).
 
-We start with the same schema we had for \ac{CEGIS} (\autoref{fig:CEGIS}),  with a \textit{verifier} which, upon receiving a program \(P\), decides whether it is consistent with the behavioural constraints~\(\phi\). However, in \ac{OGIS} we no longer return to the user the first correct program we find.
+We start with the same schema we had for \ac{CEGIS} (\autoref{fig:cegis}),  with a \textit{verifier} which, upon receiving a program \(P\), decides whether it is consistent with the behavioural constraints~\(\phi\). However, in \ac{OGIS} we no longer return to the user the first correct program we find.
 
 When a correct program \(P_1\) is found, it is stored, and the search continues for another correct program. If no other correct program is found, then \(P_1\) is the unique correct program and it can be returned to the user. If another correct program \(P_2\) is found, then we have two programs consistent with the provided specification, i.e., \(P_1\) and \(P_2\) satisfy the following formulas:
 %
@@ -451,14 +583,19 @@ Upon finding two correct programs, we want to find an input to which the two pro
 If formula~(\ref{eq:distinguishing}) is unsatisfiable then \(P_1\) and \(P_2\) are equivalent programs.
 In this case, either there are more correct programs that can be taken into consideration, or \(P_1 = P_2\) is the unique program that satisfies all input-output examples and it is returned to the user.
 If~(\ref{eq:distinguishing}) is satisfiable, the distinguishing input \(\vec{x}\) can be extracted from the model \((\vec{x}, y_1, y_2)\) that satisfies it.
-Once found, we can query the \textit{I/O oracle} on the distinguishing input, who will yield the correct output for it.
-The distinguishing input along with its correct output will form a new correct input-output pair \((\vec{x}, y)\) which can then be added to the specification~\(\phi\), further constraining the search space.
+Once found, we can query the \textit{I/O oracle} on the distinguishing input, who yields the correct output for it.
+The distinguishing input along with its correct output forms a new correct input-output pair \((\vec{x}, y)\) which can then be added to the specification~\(\phi\), further constraining the search space.
 
 In the end of this cycle, we have a set of input-output pairs that completely specify the generated program, thus eliminating all ambiguity.
 
-\input{figures/OGIS.tex}
+\begin{figure}
+    \centering
+    \includegraphics[scale=.35]{pictures/ogis.pdf}
+    \caption{\ac{OGIS}}
+    \label{fig:ogis}
+\end{figure}
 
-This method is illustrated in \autoref{fig:OGIS}. In this figure, the \textit{enumerator} and \textit{verifier} are identical to those in \ac{CEGIS} (\autoref{fig:CEGIS}). The \textit{distinguisher} is a new entity, which can be a solver that tries to satisfy formula~(\ref{eq:distinguishing}).
+This method is illustrated in \autoref{fig:ogis}. In this figure, the \textit{enumerator} and \textit{verifier} are identical to those in \ac{CEGIS} (\autoref{fig:cegis}). The \textit{distinguisher} is a new entity, which can be a solver that tries to satisfy formula~(\ref{eq:distinguishing}).
 
 
 \section{User Interaction} \label{sec:user-interaction}
@@ -467,74 +604,25 @@ As mentioned before, \ac{PBE} uses input-output examples as the desired behaviou
 In order to increase confidence in the synthesizer's solution, a good way to disambiguate the specification is by explicitly interacting with the user so he or she can provide further information about the intended~program.
 % In this section we look at two different user interaction models that allow the synthesizer to gather more information about the intended program, thus resolving the ambiguity in the initially provided examples.
 
-\input{figures/DistExamples.tex}
+\subsection{Conversational Clarification}
+\begin{figure}
+    \centering
+    \includegraphics[scale=.35]{pictures/conversational_clarification.pdf}
+    \caption{Conversational clarification}
+    \label{fig:conversational_clarification}
+\end{figure}
+
 Conversational clarification is an interaction method described by \citeauthor{DBLP:conf/uist/MayerSGLMPSZG15} \cite{DBLP:conf/uist/MayerSGLMPSZG15} which has been successfully used in many synthesizers  \cite{DBLP:journals/pvldb/LiCM15,DBLP:journals/corr/abs-19,DBLP:conf/sigmod/WangCB17,DBLP:conf/pldi/WangCB17}.
 During the synthesis procedure, the synthesiser asks questions to the user with respect to certain inputs, and uses the answers to resolve ambiguities in the desired behaviour specification. 
 
-After the synthesizer has generated several programs that are consistent with the user-provided examples, it uses the \textit{distinguisher} described in \autoref{sec:ogis} to produce a distinguishing input: an input for which two correct programs yield two different outputs. The synthesizer will then query the user on what is the desired output for that specific input (it may be the output returned by one of the synthesised programs, or a different one altogether). The distinguishing input along with the desired output form a new input-output example, which is added to the specification, making it stronger. Each distinguishing input splits the search space in a different way, so the number of necessary user interactions depends on the chosen distinguishing input in each iteration. In the end, only one program remains. Since all ambiguity in the original specification has been resolved, the remaining program is the desired program and it can be returned to the user.
+After the synthesizer has generated several programs that are consistent with the user-provided examples, it uses the \textit{distinguisher} described in \autoref{sec:ogis} to produce a distinguishing input: an input for which two correct programs yield two different outputs. The synthesizer then queries the user on what is the desired output for that specific input (it may be the output returned by one of the synthesised programs, or a different one altogether). The distinguishing input along with the desired output form a new input-output example, which is added to the specification, making it stronger. Each distinguishing input splits the search space in a different way, so the number of necessary user interactions depends on the chosen distinguishing input in each iteration. In the end, only one program remains. Since all ambiguity in the original specification has been resolved, the remaining program is the desired program and it can be returned to the user.
 
-Conversational clarification is represented in \autoref{fig:Conversational Clarification}. It is no more than a variation of the \ac{OGIS} method, described in \autoref{sec:ogis}, where the user plays the part of the \textit{I/O oracle}.
-
-\begin{comment}
+Conversational clarification is represented in \autoref{fig:conversational_clarification}. It is no more than a variation of the \ac{OGIS} method, described in \autoref{sec:ogis}, where the user plays the part of the \textit{I/O oracle}.
 
 
-\section{Form Input Validation Frameworks} \label{sec:form-validation}
+\subsection{Ramos's Interaction Models}
 
-In order to get some insight into the kind of operations and structures we would need to synthesise within the domain of form validation, we looked into three different tools which provide several types of validations over the input~fields:
-
-\paragraph{Google forms\protect\footnotemark} is a survey administration app that allows a user to build personalised surveys or quizzes. The validations are added to the different input fields using a graphical interface. 
-\footnotetext{\url{https://www.google.com/forms/about/}. Accessed on \formatdate{1}{1}{2020}.}
-
-\paragraph{HTML Input Attributes\protect\footnotemark}  are specified within an \texttt{HTML} form, inside the \texttt{<input>} element. Until all the values comply with the requirements introduced by these specifications, the form cannot be submitted.
-\footnotetext{\url{https://www.w3schools.com/html/html_form_attributes.asp}. Accessed on \formatdate{1}{1}{2020}.}
-
-\paragraph{ActiveRecord Validations\protect\footnotemark}  is a \textit{Ruby on Rails} application that offers many predefined validation helpers, which are applied to the form values before they are submitted into a database.
-
-\footnotetext{\url{https://edgeguides.rubyonrails.org/active_record_validations.html}. Accessed on \formatdate{1}{1}{2020}.}
-
-\medskip
-\noindent
-Although these frameworks' interfaces and intended usage differ, the style of validations offered is similar. The following validations are common to all these frameworks:
-
-\begin{itemize}
-  \item \textbf{Required}: Specifies that an input field cannot be blank;
-  \item \textbf{Type}: Specifies the type of an input value. Possible values include integer, text, email, url, date;
-  \item \textbf{Min/Max}: Specifies the minimum/maximum value of a numeric input value;
-  \item \textbf{Min-/Maxlength}: Specifies the minimum/maximum length of a string input value;
-  \item \textbf{Pattern match}: Specifies a regular expression against which an input value is checked.
-\end{itemize}
-
-\noindent
-The validations are applied individually on the input fields. Each field can have more than one validation, and one validation can be in respect to more than one input field. The form is valid when all validations on all input fields are verified.
-
-\SaveVerb{bookprice}=[1-9]+[0-9]*(\.[0-9][0-9]?)?=
-
-\begin{example} \label{ex:book-validation}
-\parindent0pt
-Suppose we build a form to ask for information about a book with three input fields: \textit{book name}, \textit{number of pages} and \textit{book price}. 
-
-If we want to ensure that the name is between 2 and 50 characters long, we may do so by adding the following validations over input field \(\mathit{book\,name}\):
-\begin{equation*}
-\begin{split}
-    &minlength(\mathit{book\,name}, 2),\;\text{and}\\
-    &maxlength(\mathit{book\,name}, 50).
-\end{split}
-\end{equation*}
-
-Then, to ensure the number of pages is a positive integer:
-\begin{equation*}
-\begin{gathered}
-    type(\mathit{number\,of\,pages}, integer),\;\text{and}\\
-    min(\mathit{number\,of\,pages}, 1).\\
-\end{gathered}
-\end{equation*}
-Finally, we can use a regular expression to check that the price is a number with at most 2 decimal~places:
-\[pattern\_match(\mathit{book\,price}, \UseVerb{bookprice})\]
-
-If these 5 validations are verified by the respective input values, the form is valid.
-\end{example}
-
-\end{comment}
+\citet{UnchartIt} propose two interaction models: \textsc{Options} and Y/N. Both models interact with the user using distinguishing inputs, i.e., new inputs generated by the synthesizer that allow
 
 \section{Regex synthesizers}\label{sec:related-work}
 
@@ -573,7 +661,9 @@ If the under-approximation does not reject any of the negative examples,  we con
 Consider now the state \(\tt1|\Box\), i.e., the union of \regex{1} with a hole. The under-approximation of this state, \(\tt1|\emptyset = 1\), restricts \regex{1|\Box} to the language that accepts as few strings as possible, in this case, the one containing only the string with a single `1'. If \regex{1} does not reject any of the negative examples, then this state can be pruned.
 \end{example}
 
-\paragraph{Elimination of redundant states} is done using the equivalences of regular expressions resulting from the algebraic rules described in \autoref{tab:regex-laws} in \autoref{sec:regex}. For example, the algorithm needs not evaluate the expression \(s\texttt{|}r\) if it has already considered \(r\texttt{|}s\), where \(r\) and \(s\) are regular expressions, as these expressions are equivalent.
+\paragraph{Elimination of redundant states} is done using the equivalences of regular expressions resulting from the algebraic rules of regular expressions.
+%  described in \autoref{tab:regex-laws} in \autoref{sec:regex}
+For example, the algorithm needs not evaluate the expression \(s\texttt{|}r\) if it has already considered \(r\texttt{|}s\), where \(r\) and \(s\) are regular expressions, as these expressions are equivalent.
 
 \medskip
 
@@ -581,9 +671,5 @@ Consider now the state \(\tt1|\Box\), i.e., the union of \regex{1} with a hole. 
 The authors tested \textit{AlphaRegex} in 25 benchmark problems collected from textbooks on automata theory which are provided along with the code for their tool.
 \textit{AlphaRegex} proved capable of synthesising relatively complex expressions, with more than a dozen operations, in under one minute.
 
-\medskip
-
-The binary alphabet is much smaller than the alphabet we require when synthesising regular expression validations. Nonetheless, \textit{AlphaRegex} proposes effective search pruning techniques which in combination with an enumerative search technique produce satisfactory results.
-We believe these pruning techniques may be adjusted to larger alphabets, thus improving the synthesis in our domain as well.
 
 \subsection{\textsc{Regel}}

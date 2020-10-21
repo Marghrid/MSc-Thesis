@@ -162,20 +162,6 @@
 \usepackage[figure,table]{hypcap}
 
 
-% 'natbib' package
-%
-% Flexible bibliography support.
-% http://www.ctan.org/tex-archive/macros/latex/contrib/natbib/
-%
-% > produce author-year style citations
-%
-% \citet  and \citep  for textual and parenthetical citations, respectively
-% \citet* and \citep* that print the full author list, and not just the abbreviated one
-% \citealt is the same as \citet but without parentheses. Similarly, \citealp is \citep without parentheses
-% \citeauthor
-% \citeyear
-% \citeyearpar
-%
 %% natbib options can be provided when package is loaded \usepackage[options]{natbib}
 %%
 %% Following options are valid:
@@ -196,23 +182,8 @@
 %%
 % ******************************* SELECT *******************************
 
-\usepackage{natbib} 
-% \usepackage[numbers,sort&compress]{natbib} % <<<<< References in numbered list [1],[2],...
-% ******************************* SELECT *******************************
-
-
-% 'notoccite' package
-%
-% Prevent trouble from citations in table of contents, etc.
-% http://ctan.org/pkg/notoccite
-%
-% > If you have \cite com­mands in \sec­tion-like com­mands, or in \cap­tion,
-%   the ci­ta­tion will also ap­pear in the ta­ble of con­tents, or list of what­ever.
-%   If you are also us­ing an un­srt-like bib­li­og­ra­phy style, these ci­ta­tions will
-%   come at the very start of the bib­li­og­ra­phy, which is con­fus­ing. This pack­age
-%   sup­presses the ef­fect.
-%
-% \usepackage{notoccite}
+%\usepackage{natbib} 
+\usepackage[numbers,sort&compress]{natbib} % <<<<< 
 
 \usepackage{multirow} % tabular cells spanning multiple rows
 
@@ -231,8 +202,29 @@
 % Define new commands to assure consistent treatment throughout document
 % ----------------------------------------------------------------------
 
+\theoremstyle{definition}
+%definitions on subsections
+\newtheorem{definition}{Definition}[section]
+
+%examples on subsections
+\newtheorem{example}{Example}[section]
+
+
 \newcommand{\ud}{\mathrm{d}}                % total derivative
 \newcommand{\degree}{\ensuremath{^\circ\,}} % degrees
+
+
+
+% Redefine autoref automatic prefix.
+% It is "Section" for sections, subsections and subsubsections.
+\def\sectionautorefname{Section}
+\def\sectionname{Section}
+\def\subsectionautorefname{Section}
+\def\subsectionname{Section}
+\def\subsubsectionautorefname{Section}
+\def\subsubsectionname{Section}
+\def\exampleautorefname{example}
+\def\examplename{example}
 
 % Abbreviations
 \newcommand{\eqnref}[1]{(\ref{#1})}
@@ -255,7 +247,6 @@
   {\mbox{\boldmath$\scriptscriptstyle#1$}}}
 \newcommand{\boldcal}[1]{{\ensuremath{\boldsymbol{\mathcal{#1}}}}}% math bold calygraphy
 
-
 \newcommand{\mycomment}[1]{\textcolor{blue}{\textbf{[#1]}}}
 % If I can't decide, at least I make it easy to change
 \newcommand{\true} {\textit{True}}
@@ -266,9 +257,16 @@
 \newcommand{\Regel}{\textsc{Regel}\xspace}
 \newcommand{\todo}[1]{\textbf{\color{magenta} [#1]}}
 
-\input{DSL}
-
 \newcommand{\acknowledgments}{@undefined}
 
 
+
+\SaveVerb{date}|[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]|
+\SaveVerb{date2}|[0-9]{2}/[0-9]{2}/[0-9]{4}|
+\SaveVerb{date_day_mo_caps}|([0-9]{2})/([0-9]{2})/[0-9]{4}|
+\SaveVerb{date_year_cap}|[0-9]{2}/[0-9]{2}/([0-9]{4})|
+
+\hyphenation{DD/MM/YYYY}
+
+\input{DSL}
 \input{figures/compare_times_plot} % time x time plots
