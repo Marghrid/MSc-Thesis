@@ -3,16 +3,18 @@
 \input{preamble}
 \begin{document}
 
+
 \pagestyle{plain}
 
 
 \pagenumbering{roman}
 \input{Thesis_FrontCover}
-% \input{Thesis_Dedication}
-\input{Thesis_Acknowledgements}
-\input{Thesis_Resumo} % file "Thesis_Resumo.tex"
-\input{Chapters/Abstract.tex}
+% \input{dedication}
+\input{acknowledgements}
+\input{resumo}
+\input{chapters/Abstract.tex}
 
+\setcounter{tocdepth}{1}
 \tableofcontents
 
 %\cleardoublepage 
@@ -21,48 +23,17 @@
 %\clearpage 
 
 \listoffigures
-% \addcontentsline{toc}{section}{\listfigurename}
+\addcontentsline{toc}{section}{\listfigurename}
 \clearpage
 
 \listoftables
-% \addcontentsline{toc}{section}{\listtablename}
+\addcontentsline{toc}{section}{\listtablename}
 \clearpage
 
-\input{Acronyms}
-% \addcontentsline{toc}{section}{List of Acronyms}
+\input{acronyms}
+\addcontentsline{toc}{section}{List of Acronyms}
 \cleardoublepage
 
-% \let\proof\relax 
-% \let\endproof\relax 
-% \theoremstyle{definition}
-% \newtheorem{definition}{Definition}
-% \newtheorem{statement}{Problem statement}  
-% \newtheorem{example}{Example}
-
-
-
-% % Nomenclature
-% %
-% % entries of nomenclature list
-% \input{Thesis_Nomenclature} % file "Thesis_Nomenclature.tex"
-% %
-% % Insert glossary/nomenclature section produced by MakeIndex
-% \printnomenclature
-% % Add entry in the table of contents as section
-% \addcontentsline{toc}{section}{\nomname}
-% \cleardoublepage
-
-% % entries of glossary list
-% \input{Thesis_Glossary} % file "Thesis_Glossary.tex"
-
-% % Insert glossary section produced by MakeIndex
-% \printglossary
-% % Add entry in the table of contents as section
-% \addcontentsline{toc}{section}{\glossaryname}
-% \cleardoublepage
-
-% Set arabic numbering (1,2,...) after preface
-%
 \setcounter{page}{1}
 \pagenumbering{arabic}
 
@@ -70,18 +41,18 @@
 %  Chapters
 % ----------------------------------------------------------------------
 
-\input{Chapters/Introduction}
+\input{chapters/introduction}
 
-\input{Chapters/Background}
+\input{chapters/background}
 
-\input{Chapters/RelatedWork}
+\input{chapters/related}
 
-\input{Chapters/RegexSynthesis}
+\input{chapters/regex_synthesis}
 
-\input{Chapters/CapSynthesis}
+\input{chapters/cap_synthesis}
 
-\input{Thesis_Evaluation}
-\input{Thesis_Conclusions}
+\input{chapters/results}
+\input{chapters/conclusions}
 %\input{Thesis_FutureWork} % file "Thesis_FutureWork.tex"
 
 
@@ -102,6 +73,6 @@
 % ----------------------------------------------------------------------
 %  Appendix (optional)
 % ----------------------------------------------------------------------
-\appendix
-\input{Thesis_Appendix}
+%\appendix
+%\input{Thesis_Appendix}
 \end{document}

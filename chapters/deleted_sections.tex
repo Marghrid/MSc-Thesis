@@ -1,5 +1,70 @@
 
-\begin{comment}
+\subsection{Regular Definitions}
+
+For convenience, we may wish to give names to certain regular expressions and use those names in subsequent expressions, as if the names were themselves symbols. If \(\Sigma\) is an alphabet of basic symbols, then a regular definition is a sequence of definitions of the form:
+
+\begin{equation}
+\begin{gathered} % centered multiline equation.
+d_1 \to r_1\\
+d_2 \to r_2\\
+...\\
+d_n \to r_n
+\end{gathered}
+\end{equation}
+
+\noindent
+where each \(d_i\) is a new symbol, not in \(\Sigma\) and not the same as any of the other \(d\), and each \(r_i\) is a regular expression over the alphabet \(\Sigma \cup \{ d_1, d_2, ..., d_{i-1} \}\).
+
+By restricting \(r_i\) to \(\Sigma\) and the previously defined \(d\)'s, we avoid recursive definitions, and we can construct a regular expression over \(\Sigma\) alone, for each \(r_i\).
+We do so by first replacing uses of \(d_1\) in \(r_2\) (which cannot use any of the d's except
+for \(d_1\)), then replacing uses of \(d_1\) and \(d_2\) in \(r_3\) by \(r_1\) and (the substituted) \(r_2\), and so on. Finally, in \(r_n\) we replace each \(d_i\), for \(i = 1, 2, ..., n-1\), by the substituted version of \(r_i\), each of which has only symbols of \(\Sigma\).
+
+\begin{example}
+
+We may wish to
+\begin{equation*}
+\begin{aligned}
+\regex{number} &\to \regex{0|1|2|3|4|5|6|7|8|9} \\
+%
+\regex{lower\_case} &\to \regex{a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z} \\
+%
+\regex{upper\_case} &\to \regex{A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z}\\
+%
+\regex{letter} &\to \regex{upper\_case | lower\_case}
+\end{aligned}
+\end{equation*}
+\end{example}
+
+
+
+
+\subsection{Regex vs \acp{CFG}} \label{sec:regex-vs-CFG}
+
+Grammars are a more powerful notation than regular expressions. Every construct that can be described by a regular expression can be described by a grammar, but not vice-versa. Alternatively, every regular language is a context-free language, but not vice-versa.
+
+\begin{example}
+Consider the regular expression \((a|b)^*abb\) and the \ac{CFG}:
+
+\begin{equation}
+\begin{aligned} % centered multiline equation.
+A_0 &\to aA_0 | bA_0 | aA_1\\
+A_1 &\to bA_2\\
+A_2 &\to bA_3\\
+A_3 &\to \epsilon
+\end{aligned}
+\end{equation}
+
+The regular expression and the grammar describe the same language: the set of strings in \(\{a, b\}\) that end in \(abb\).
+
+\end{example}
+
+\begin{example}
+The language \(\mathcal{L} = \{a^n b^n : n \ge 1\}\) is the language of strings in \(\{a, b\}\) that start with some \(a\)s followed by the same number of \(b\)s.  \(\mathcal{L}\) can be defined using a \ac{CFG} but not using a regular expression:  \(\mathcal{L}\) is a context-free language but not a regular language.
+\end{example}
+
+
+
+
 
 
 \section{Form Input Validation Frameworks} \label{sec:form-validation}
@@ -57,5 +122,3 @@ Finally, we can use a regular expression to check that the price is a number wit
 
 If these 5 validations are verified by the respective input values, the form is valid.
 \end{example}
-
-\end{comment}

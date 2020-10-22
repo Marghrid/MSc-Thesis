@@ -1,4 +1,4 @@
-\chapter{Capturing Groups Synthesis}
+\chapter{Capturing Groups Synthesis}\label{chap:capture-cond-synthesis}
 
 \todo{Motivation and introduction to subsections}
 
@@ -22,7 +22,7 @@ Once identified, the atomic sub-regexes are placed in an ordered list. The conca
 Recall the previously shown date regex: \UseVerb{date2}. The ordered list of atomic sub-regexes for this regex is [\verb![0-9]{2}!, \verb!/!, \verb![0-9]{2}!, \verb!/!, \verb![0-9]{4}!].
 \end{example}
 
-Enumerating capturing groups over the regular expression is done by enumerating non-empty disjoint sub-lists of this list. The elements inside each sub-list form a capturing group. \todo{Do I need to show the generator I use to enumerate disjoint sub-lists? It's here: \url{https://www.overleaf.com/1387546481sndgbkmsbjgj}}
+Enumerating capturing groups over the regular expression is done by enumerating non-empty disjoint sub-lists of this list. The elements inside each sub-list form a capturing group.
 
 \begin{example}
 Suppose we want to get a single capturing group within the date regex. % \UseVerb{date2}.
@@ -75,7 +75,7 @@ For each enumerated set of capturing groups, \Forest matches the regular express
 Recall the example in \autoref{ex:1}: the user wished not only to validate the input string but also to extract some information from it. The goal was to extract the year from each date, so it could be used afterwards. In this situation, the examples provided by the user are:
 %
 \begin{multicols}{3}
-    \begin{itemize}[label={},topsep=0em]
+    \begin{itemize}[label={}]
     \item 19/08/1996, 1996
     \item 26/10/1998, 1998
     \item 22/09/2000, 2000
@@ -166,7 +166,7 @@ Constraint \ref{eq:cap_cond_s_def} states that a capture \textit{cap} in example
 \begin{example}
 Consider again \(x_0\) = ``27/10/2017'' and two capture conditions over \verb`([0-9]{2})/[0-9]{2}/[0-9]{4}`: \(c_0 = (\$0, \le\)) and \(c_1 = (\$0, \ge\)). Constraint \eqref{eq:cap_cond_s_def} for this example is then:
 %
-\begin{equation*}\label{eq:cap_cond_s_def}
+\begin{equation*}
     s_{0,x_0} \leftrightarrow (u_{c_0} \rightarrow 27 \le b_{c_0}) 
     \land (u_{c_1} \rightarrow 27 \ge b_{c_1})
 \end{equation*}
@@ -211,12 +211,12 @@ Another call to the \ac{SMT} solver supplies another, different solution. We hav
 
 \begin{example}\label{ex:cond_cap_keep_distinct}
 Recall the valid and conditional invalid examples from \autoref{ex:1}. Because there is no conditional invalid example that shows that there cannot be a date with the day 32, \Forest can produce two correct sets of capture conditions for the examples provided in  over \verb`([0-9]{2})/([0-9]{2})/[0-9]{4}`:
-\begin{itemize}[nosep]
+\begin{itemize}
     \item \(\mathcal{S}_1 = \$0 \le 31 \wedge \$0 \ge 1 \wedge \$1 \le 12 \wedge \$1 \ge 1\)
     \item \(\mathcal{S}_2 = \$0 \le 32 \wedge \$0 \ge 1 \wedge \$1 \le 12 \wedge \$1 \ge 1\)
 \end{itemize}
 To find the correct solution, \Forest will first keep only the captures that differ from one solution to the other:
-\begin{itemize}[nosep]
+\begin{itemize}
     \item \(\mathcal{S}_1^* = \$0 \le 31\)
     \item \(\mathcal{S}_2^* = \$0 \le 32\)
 \end{itemize}

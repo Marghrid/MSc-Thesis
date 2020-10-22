@@ -5,17 +5,17 @@
 \newcommand{\compareTimesPlot}[4]{
 \begin{tikzpicture}
     \begin{axis}[xmode=log, ymode=log, grid=major,
-                xlabel = {\footnotesize #2},
-                ylabel = {\footnotesize #4},
+                xlabel = {#2},
+                ylabel = {#4},
                 xmax = 5000 ,ymax = 5000,
                 width=.99\linewidth, height=.99\linewidth,
                 clip marker paths=true]
-    \addplot[only marks, mark=x, fill opacity=0.6, draw opacity=0.9, color=scatter-color] table[x=#1, y=#3, col sep=comma] {data/time_comparison.csv};
+    \addplot[only marks, mark=x, fill opacity=0.6, draw opacity=0.9, color=scatter-color] table[x=#1, y=#3, col sep=comma] {data/time_comparison_15.csv};
     \addplot[domain=0.1:3600,smooth,thin]{x};
     \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(0.1,3600) (3600,3600)}
-        node at (3,2500) {\tiny{3600 second timeout}};
+        node at (3,2500) {\scriptsize 3600 second timeout};
     \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(3600,0.1) (3600,3600)}
-        node [rotate=-90] at (2500,3) {\tiny{3600 second timeout}};
+        node [rotate=-90] at (2500,3) {\scriptsize 3600 second timeout};
     \end{axis}
 \end{tikzpicture}
 }

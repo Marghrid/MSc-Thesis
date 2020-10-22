@@ -1,0 +1,19 @@
+\begin{figure}[t]
+    \centering
+     \begin{subfigure}[b]{0.47\textwidth}
+         \centering
+         \compareTimesPlot{multitree}{Multi-tree (s)}{ktree}{\(k\)-tree (s)}
+         \caption{Multi-tree vs. \(k\)-tree}
+         \label{fig:mt_vs_ktree}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.47\textwidth}
+         \centering
+         \compareTimesPlot{nopruning}{Multi-tree w/o pruning (s)}{lines}{Line-based (s)}
+         \caption{Multi-tree vs. line-based}
+         \label{fig:mt_vs_lines}
+     \end{subfigure}
+\captionsetup{belowskip=-8pt}
+\caption{Comparison of synthesis time using different encodings.}
+\label{fig:time-comparison-encodings}
+\end{figure}

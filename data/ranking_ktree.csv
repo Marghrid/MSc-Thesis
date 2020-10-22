@@ -1,65 +1,65 @@
-instance,   time,    ranking
-pc_us       , 0.41   , 1 
-ean         , 1.39   , 2 
-time2       , 3.25   , 3 
-cc          , 3.75   , 4 
-id1         , 9.11   , 5 
-pc_us2      , 9.74   , 6 
-id2         , 9.79   , 7 
-grid        , 10.29  , 8 
-ein         , 12.17  , 9 
-pn_us       , 13.04  , 10
-time1       , 213.77 , 11
-pc_nl       , 226.84 , 12
-id_cl       , 228.7  , 13
-id_es       , 230.66 , 14
-hexa        , 406.02 , 15
-color       , 520.76 , 16
-isbn10      , 1213.97, 17
-iban_pt     , 3601   , 18
-mac         , 3603.25, 19
-vr_uk       , 3603.27, 20
-vr_pt2      , 3605.28, 21
-vr_pt       , 3607.06, 22
-grid2       , 3607.42, 23
-vr_no       , 3609.14, 24
-email_simple, 3609.22, 25
-domain      , 3611.22, 26
-vr_ke       , 3611.3 , 27
-vr_it       , 3613.26, 28
-id_ch       , 3613.29, 29
-dollar      , 3613.32, 30
-id_dk       , 3615.12, 31
-vr_fi       , 3615.25, 32
-dec         , 3615.27, 33
-isbn        , 3616.8 , 34
-vr_es       , 3617.25, 35
-ipv6        , 3617.29, 36
-datetime2   , 3617.31, 37
-vr_dk       , 3619.18, 38
-ipv4        , 3619.42, 39
-datetime    , 3619.75, 40
-imeisv      , 3621.15, 41
-uuid        , 3621.25, 42
-date6       , 3621.46, 43
-imei        , 3623.23, 44
-ssn         , 3623.26, 45
-date5       , 3623.45, 46
-signed      , 3625.16, 47
-date4       , 3625.35, 48
-id_se       , 3625.39, 49
-id_pt       , 3627.13, 50
-pc_uk       , 3627.31, 51
-date3       , 3627.32, 52
-date        , 3629.02, 53
-cc3         , 3629.11, 54
-pc_pt       , 3629.29, 55
-date2       , 3629.33, 56
-pc_ca       , 3631.08, 57
-cc2         , 3631.14, 58
-id_mx       , 3638.9 , 59
-id_kr       , 3639.24, 60
-id_fi       , 3646.94, 61
-id_es2      , 3647.38, 62
-gstin       , 3795.38, 63
-iban        , 4964.58, 
+instance, time, ranking
+pc_us.txt, 0.21, 1
+ean.txt, 1.08, 2
+time2.txt, 2.59, 3
+cc.txt, 6.02, 4
+id2.txt, 11.91, 5
+pn_us.txt, 16.61, 6
+pc_us2.txt, 17.44, 7
+ein.txt, 24.39, 8
+grid.txt, 34.8, 9
+pc_nl.txt, 232.19, 10
+time1.txt, 350.69, 11
+id_cl.txt, 832.58, 12
+id_es.txt, 862.57, 13
+color2.txt, 1281.58, 14
+hexa.txt, 3055.43, 15
+vr_uk.txt, 3603.6, 16
+cc3.txt, 3605.48, 17
+pc_pt.txt, 3605.64, 18
+vr_pt2.txt, 3605.65, 19
+vr_pt.txt, 3607.35, 20
+domain.txt, 3607.43, 21
+cc2.txt, 3607.64, 22
+grid2.txt, 3609.11, 23
+email_simple.txt, 3609.21, 24
+dollar2.txt, 3609.24, 25
+vr_no.txt, 3611.4, 26
+gstin.txt, 3611.43, 27
+dollar.txt, 3611.53, 28
+pc_lx2.txt, 3611.82, 29
+dec.txt, 3613.31, 30
+id_se.txt, 3613.45, 31
+vr_ke.txt, 3613.59, 32
+id_kr.txt, 3615.19, 33
+pc_lx.txt, 3615.4, 34
+vr_it.txt, 3615.62, 35
+id_mx.txt, 3617.09, 36
+id_pt.txt, 3617.16, 37
+vr_fi.txt, 3617.51, 38
+id_fi.txt, 3619.17, 39
+vr_es.txt, 3619.4, 40
+pc_ca.txt, 3619.41, 41
+id_es2.txt, 3621.45, 42
+vr_dk.txt, 3621.46, 43
+pc_al.txt, 3621.47, 44
+datetime.txt, 3621.83, 45
+mac.txt, 3623.78, 46
+uuid.txt, 3623.92, 47
+id_dk.txt, 3625.32, 48
+date6.txt, 3625.73, 49
+isbn10.txt, 3627.2, 50
+ssn.txt, 3627.6, 51
+date5.txt, 3627.63, 52
+isbn.txt, 3629.39, 53
+id_ch.txt, 3629.61, 54
+signed.txt, 3629.61, 55
+pc_uk.txt, 3631.76, 56
+date4.txt, 3631.89, 57
+ipv6.txt, 3631.93, 58
+iban_pt.txt, 3634.88, 59
+ipv4.txt, 3635.97, 60
+date2.txt, 3637.46, 61
+iban.txt, 3637.87, 62
+imeisv.txt, 3639.94, 63
+imei.txt, 3643.54, 64

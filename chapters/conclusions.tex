@@ -1,0 +1,22 @@
+\chapter{Conclusions}
+\label{chap:conclusions}
+
+Regexes are commonly used to enforce patterns and validate the input fields of digital forms. However, writing regex validations requires specialized knowledge that not all users possess.
+%
+We have presented a new algorithm for synthesis of regex validations from examples that leverages the common structure shared between valid examples. Our experimental evaluation shows that the multi-tree representation synthesizes three times more regexes than previous representations in the same amount of time and, together with the user interaction model, \Forest{} solves 72\% of the benchmarks with the correct user intent. We verified that \Forest{} maintains a very high accuracy with
+as few as 10 examples of each kind.
+% as few as 10 valid and 10 invalid examples.
+We also observed that our approach outperforms \Regel{}, a state-of-the-art synthesizer, in the domain of form~validations.
+
+\section{Future Work}
+In the future, \Forest{} can be improved in several ways.
+
+\begin{itemize}
+    \item Automatically separate invalid and conditional invalid examples, so users don't need to differentiate them;
+    
+    \item Better interaction model: fewer, more comprehensive questions. A binary search for the capture conditions would be really cool;
+    
+    \item A better sketching model! Sketching is used successfully in a myriad of synthesizers, why can't I? (the multi-tree is similar, but not the same). Maybe even use NLP based sketches, like REGEL.
+    
+    \item Other character groups, such as [,./] for separators. Also, include UTF-8 characters in character classes.
+\end{itemize}

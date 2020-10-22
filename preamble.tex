@@ -22,7 +22,7 @@
 
 \usepackage{amsmath}  % AMS mathematical facilities for LaTeX.
 \usepackage{amsthm}   % Typesetting theorems (AMS style).
-\usepackage{amsfonts} % 
+\usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{url}
 \usepackage[inline]{enumitem}
@@ -247,7 +247,6 @@
   {\mbox{\boldmath$\scriptscriptstyle#1$}}}
 \newcommand{\boldcal}[1]{{\ensuremath{\boldsymbol{\mathcal{#1}}}}}% math bold calygraphy
 
-\newcommand{\mycomment}[1]{\textcolor{blue}{\textbf{[#1]}}}
 % If I can't decide, at least I make it easy to change
 \newcommand{\true} {\textit{True}}
 \newcommand{\false}{\textit{False}}
@@ -255,11 +254,13 @@
 \newcommand{\regexm}[1]{\texttt{#1}} % to define regexs inside math mode
 \newcommand{\Forest}{\textsc{Forest}\xspace}
 \newcommand{\Regel}{\textsc{Regel}\xspace}
+
+
 \newcommand{\todo}[1]{\textbf{\color{magenta} [#1]}}
+\newcommand{\revise}[1]{\textcolor{MidnightBlue}{#1}}
+\newcommand{\mycomment}[1]{\textcolor{blue}{\textbf{[#1]}}}
 
 \newcommand{\acknowledgments}{@undefined}
-
-
 
 \SaveVerb{date}|[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]|
 \SaveVerb{date2}|[0-9]{2}/[0-9]{2}/[0-9]{4}|
@@ -270,3 +271,8 @@
 
 \input{DSL}
 \input{figures/compare_times_plot} % time x time plots
+
+
+\setlist[enumerate]{itemsep=.5ex}
+
+\setlist[itemize]{itemsep=.5ex}
