@@ -1,22 +1,33 @@
-\chapter{Conclusions}
+\chapter{Conclusions and Future Work}
 \label{chap:conclusions}
 
-Regexes are commonly used to enforce patterns and validate the input fields of digital forms. However, writing regex validations requires specialized knowledge that not all users possess.
+As computer applications become increasingly dependent on the collection and subsequent analysis of large amounts of data, the need arises to make these data collection and analysis tasks available to users who do not possess a programming background.
+Digital forms are often used for structured data collection. Part of what makes them desirable is the ability to enforce a certain format on the inputs, by adding real-time validations to the input fields. Validations help prevent `typos' and format inconsistencies, which leads to clean and standardised data.
+Regular expressions are a very expressive and commonly used method to enforce patterns and validate the input fields of digital forms.
+However, writing regex validations requires specialised knowledge that not all users possess. Furthermore, when done for a large number of input fields, the task of hand-writing regexes becomes monotonous and error prone. To help users write regular expressions, previous work has focused on the synthesis of regexes from examples and from natural language. However, to the best of our knowledge, none of these methods for regex synthesis has form validations as the main focus.
+
+In this dissertation, we have presented a new algorithm for synthesis of regex validations from a set example values for the input field. Our approach leverages the common structure shared between valid examples to split the original problem into smaller sub-problems, using a divide-and-conquer approach.
+We use SMT solving to explore and prune the search space.
 %
-We have presented a new algorithm for synthesis of regex validations from examples that leverages the common structure shared between valid examples. Our experimental evaluation shows that the multi-tree representation synthesizes three times more regexes than previous representations in the same amount of time and, together with the user interaction model, \Forest{} solves 72\% of the benchmarks with the correct user intent. We verified that \Forest{} maintains a very high accuracy with
+Furthermore, we proposed a method to synthesise capturing groups and integer conditions over the respective captures. The capture conditions further restrict the accepted values: we validate not only the input's \textit{format}, but also its \textit{values}. We also described an interaction model that removes ambiguity underlying the input examples. This procedure selects the correct regex among several candidates, thus increasing confidence in the returned~solution.
+
+We implemented our approach in a tool, \Forest{}, and tested it in real-world regex validation benchmarks. Our experimental evaluation shows that our multi-tree representation synthesises over three times more regexes than previous representations in the same amount of time and, together with the user interaction model, \Forest{} solves 74\% of the benchmarks with the correct user intent. When \Forest{} returns a solution, it is the intended regular expression in 98\% of the instances.
+%
+We saw that pruning the search space by removing equivalent regular expressions from consideration cuts our synthesis time in half and that our divide-and-conquer approach allows us to solve programs in two-thirds of the time, on average.
+%
+We verified that \Forest{} maintains a very high accuracy (94\%) with
 as few as 10 examples of each kind.
-% as few as 10 valid and 10 invalid examples.
-We also observed that our approach outperforms \Regel{}, a state-of-the-art synthesizer, in the domain of form~validations.
+Finally, We compared our approach with \Regel{}, a state-of-the-art synthesizer, and observed that \Forest outperforms \Regel in the domain of form~validations.
 
-\section{Future Work}
-In the future, \Forest{} can be improved in several ways.
+In the future, \Forest{} can be improved in several ways. First, \Forest could ask for only two sets of examples, valid and invalid. In practice, this would make the distinction between \textit{invalid} and \textit{conditional invalid} examples invisible to the user.
+Then, either as a preprocessing step, or done dynamically during synthesis, \Forest would automatically classify the invalid examples, differentiating between examples that are invalidated by the regular expression and by the capture conditions.
 
-\begin{itemize}
-    \item Automatically separate invalid and conditional invalid examples, so users don't need to differentiate them;
-    
-    \item Better interaction model: fewer, more comprehensive questions. A binary search for the capture conditions would be really cool;
-    
-    \item A better sketching model! Sketching is used successfully in a myriad of synthesizers, why can't I? (the multi-tree is similar, but not the same). Maybe even use NLP based sketches, like REGEL.
-    
-    \item Other character groups, such as [,./] for separators. Also, include UTF-8 characters in character classes.
-\end{itemize}
+Another way to make \Forest more user-friendly is by allowing some noise in the specification, both by allowing some wrongly classified examples at the beginning of synthesis, and by permitting the user to provide some wrong answers during disambiguation. Previous work has proposed to synthesise programs from noisy examples \cite{DanielThesis,ecoop/Peleg20,DBLP:conf/cav/AlmagorK20}, where instead of finding a program that satisfies all examples, the goal is to \textit{maximise} the number of examples satisfied.
+
+Regarding the regular expressions' \ac{DSL}, it could be extended in many ways. The \ac{DSL} could include a broader set of character classes, such as \verb`[,./]` to represent separators, for instance. Moreover, including UTF-8 characters in the character classes would allow for more flexibility in the synthesised expression, and more adaptability to non-English applications. Provided UTF-8 character classes are supported by the regex theory, this improvement should not bring any extra complexity to the synthesis algorithm.
+%
+The synthesis of capture conditions can also include more operators, besides the inequality operators, \(\le\) and \(\ge\). It would be interesting to explore the synthesis of more complex capture conditions, such as conditions depending on more than one capture. This would allow more restrictive validations; for example, referring one last time to the motivating example in \autoref{sec:motivating-example}, we could limit the possible values for the day in the date to reflect the month to which they refer, and even leap years.
+
+More interaction models can be tried out with \Forest, especially during the synthesis of capture conditions. One could either adapt \citeauthor{UnchartIt20}'s interaction models to this domain, like we have done for regular expressions, or find some other way to maximise the number of conditions eliminated from the search space with each interaction.
+%
+Finally, it might be very advantageous to explore different sketching techniques for \Forest. The two techniques we tried were flawed, but they can be improved: Graph-based sketch completion can be improved by finding a way to prune the space of possible completions during the search. SMT-based completion can be improved by experimenting with variations in the encoding: either using a regex theory that allows variables inside the regular expression, like was our original intention, or simply build a less memory-consuming SMT formula. Aside from our sketching models, a completely new approach could be explored. As we saw in \autoref{sec:comp-regel}, we could have a multi-modal approach, similar to that of \Regel{}~\cite{Regel20}. Particularly, \Regel's sketch generation method could be integrated into \Forest's synthesis procedure.

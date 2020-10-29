@@ -6,18 +6,18 @@ The support for real-time validations that filter invalid provided data makes th
 Form validators based on regular expressions are often used on digital forms to prevent users from inserting data in the wrong format.
 However, writing these validators can pose a challenge to some users.
 
-We present \Forest, a regular expression synthesizer for digital form validations.
-\Forest produces a regular expression that matches the desired pattern for the input values 
+In this document, we present \Forest, a regular expression synthesizer for digital form validations.
+\Forest produces a regular expression that matches the desired pattern for the input values, a set of capturing groups that extract some information from them,
 and 
 a set of conditions over capturing groups that ensure the validity of integer values in the input.
 Our synthesis procedure is based on enumerative search and uses a \ac{SMT} solver to explore and prune the search space.
 We propose a novel representation for regular expressions synthesis, multi-tree, which induces patterns in the examples and uses them to split the problem through a divide-and-conquer approach.
 We also present a new \ac{SMT} encoding to synthesise capture conditions for a given regular expression.
-To increase confidence in the synthesised regular expression, we implement user interaction based on distinguishing inputs. 
+To increase confidence in the synthesised regular expression, we implement a user interaction based on distinguishing inputs. 
 
 We evaluated \Forest{} on real-world form-validation instances using regular expressions. Experimental results show that \Forest{} successfully returns the desired regular expression in 72\% of the instances and outperforms \Regel, a state-of-the-art regular expression synthesizer.
 
 \vfill
-
-\textbf{\Large Keywords:} Program Synthesis, \acl{PBE}, Satisfiability Modulo Theories, Regular Expressions.
+\noindent
+\textbf{\Large Keywords:} Program Synthesis, \acl{PBE}, Satisfiability Modulo Theories, Regular Expressions, Form Validation.
 \cleardoublepage

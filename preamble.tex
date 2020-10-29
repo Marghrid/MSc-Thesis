@@ -2,7 +2,7 @@
 \usepackage[british]{babel}
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{float}
-\usepackage{datetime}
+\usepackage[nodayofweek]{datetime} % format dates
 \newdateformat{monthyeardate}{\monthname[\THEMONTH], \THEYEAR}
 \usepackage{setspace}
 \renewcommand{\baselinestretch}{1.5}
@@ -36,6 +36,7 @@
 \usepackage{algpseudocode}
 \usepackage{algorithm}
 \usepackage{listings}
+\usepackage{afterpage} % clever \clearpage, puts the effect off until the page is full
 
 \mathchardef\mhyphen="2D % hyphen in math mode
 
@@ -98,42 +99,11 @@
 \def\FontSn{% 12 pt normal
   \usefont{T1}{phv}{m}{n}\fontsize{12pt}{12pt}\selectfont}
 
-
-
 \usepackage{dcolumn}
 \newcolumntype{d}{D{.}{.}{-1}} % column aligned by the point separator '.'
 \newcolumntype{e}{D{E}{E}{-1}} % column aligned by the exponent 'E'
 
-\usepackage{nomencl}
-\makenomenclature
 
-% Group variables according to their symbol type
-
-\RequirePackage{ifthen} 
-\ifthenelse{\equal{\languagename}{english}}%
-    { % English
-    \renewcommand{\nomgroup}[1]{%
-      \ifthenelse{\equal{#1}{R}}{%
-        \item[\textbf{Roman symbols}]}{%
-        \ifthenelse{\equal{#1}{G}}{%
-          \item[\textbf{Greek symbols}]}{%
-          \ifthenelse{\equal{#1}{S}}{%
-            \item[\textbf{Subscripts}]}{%
-            \ifthenelse{\equal{#1}{T}}{%
-              \item[\textbf{Superscripts}]}{}}}}}%
-    }{% Portuguese
-    \renewcommand{\nomgroup}[1]{%
-      \ifthenelse{\equal{#1}{R}}{%
-        \item[\textbf{Simbolos romanos}]}{%
-        \ifthenelse{\equal{#1}{G}}{%
-          \item[\textbf{Simbolos gregos}]}{%
-          \ifthenelse{\equal{#1}{S}}{%
-            \item[\textbf{Subscritos}]}{%
-            \ifthenelse{\equal{#1}{T}}{%
-              \item[\textbf{Sobrescritos}]}{}}}}}%
-    }%
-
-\usepackage{rotating}
 \usepackage{hyperref} % enhance documents that are to be
                               % output as HTML and PDF
 \hypersetup{colorlinks,       % color text of links and anchors,
@@ -182,8 +152,7 @@
 %%
 % ******************************* SELECT *******************************
 
-%\usepackage{natbib} 
-\usepackage[numbers,sort&compress]{natbib} % <<<<< 
+\usepackage[numbers,sort&compress]{natbib}
 
 \usepackage{multirow} % tabular cells spanning multiple rows
 
@@ -197,6 +166,10 @@
 \usepackage{arydshln} % dashed lines in tables
 
 \usepackage{multicol}
+
+\usepackage{placeins} % float barrier at the end of each section
+
+\usepackage{makecell} % for multiline cells in tables
 
 % ----------------------------------------------------------------------
 % Define new commands to assure consistent treatment throughout document
@@ -214,49 +187,21 @@
 \newcommand{\degree}{\ensuremath{^\circ\,}} % degrees
 
 
-
-% Redefine autoref automatic prefix.
-% It is "Section" for sections, subsections and subsubsections.
-\def\sectionautorefname{Section}
-\def\sectionname{Section}
-\def\subsectionautorefname{Section}
-\def\subsectionname{Section}
-\def\subsubsectionautorefname{Section}
-\def\subsubsectionname{Section}
-\def\exampleautorefname{example}
-\def\examplename{example}
-
-% Abbreviations
-\newcommand{\eqnref}[1]{(\ref{#1})}
-\newcommand{\class}[1]{\texttt{#1}}
-\newcommand{\package}[1]{\texttt{#1}}
-\newcommand{\file}[1]{\texttt{#1}}
-\newcommand{\BibTeX}{\textsc{Bib}\TeX}
-\newcommand{\tr}[1]{{\ensuremath{\textrm{#1}}}}   % text roman
-\newcommand{\tb}[1]{{\ensuremath{\textbf{#1}}}}   % text bold face
-\newcommand{\ti}[1]{{\ensuremath{\textit{#1}}}}   % text italic
-\newcommand{\mc}[1]{{\ensuremath{\mathcal{#1}}}}  % math calygraphy
-\newcommand{\mco}[1]{{\ensuremath{\mathcalold{#1}}}}% math old calygraphy
-\newcommand{\mr}[1]{{\ensuremath{\mathrm{#1}}}}   % math roman
-\newcommand{\mb}[1]{{\ensuremath{\mathbf{#1}}}}   % math bold face
-\newcommand{\bs}[1]{\ensuremath{\boldsymbol{#1}}} % math symbol
-\def\bm#1{\mathchoice                             % math bold
-  {\mbox{\boldmath$\displaystyle#1$}}%
-  {\mbox{\boldmath$#1$}}%
-  {\mbox{\boldmath$\scriptstyle#1$}}%
-  {\mbox{\boldmath$\scriptscriptstyle#1$}}}
-\newcommand{\boldcal}[1]{{\ensuremath{\boldsymbol{\mathcal{#1}}}}}% math bold calygraphy
-
 % If I can't decide, at least I make it easy to change
-\newcommand{\true} {\textit{True}}
-\newcommand{\false}{\textit{False}}
+\newcommand{\true} {\textit{True}\xspace}
+\newcommand{\false}{\textit{False}\xspace}
 \newcommand{\regex}[1]{\(\tt #1\)}  % To define regexs
 \newcommand{\regexm}[1]{\texttt{#1}} % to define regexs inside math mode
+\newcommand{\set}[1]{{\ensuremath{\mathcal{#1}}}}  % math calygraphy
 \newcommand{\Forest}{\textsc{Forest}\xspace}
+\newcommand{\AlphaRegex}{\textsc{AlphaRegex}\xspace}
 \newcommand{\Regel}{\textsc{Regel}\xspace}
+\newcommand{\UnchartIt}{\textsc{UnchartIt}\xspace}
+\newcommand{\optmodel}{\textsc{Options}\xspace} % Ramos's interaction models
+\newcommand{\ynmodel}{\textsc{Y/N}\xspace} % Ramos's interaction models
 
 
-\newcommand{\todo}[1]{\textbf{\color{magenta} [#1]}}
+\newcommand{\todo}[1]{\textbf{\color{purple} [#1]}}
 \newcommand{\revise}[1]{\textcolor{MidnightBlue}{#1}}
 \newcommand{\mycomment}[1]{\textcolor{blue}{\textbf{[#1]}}}
 
@@ -276,3 +221,17 @@
 \setlist[enumerate]{itemsep=.5ex}
 
 \setlist[itemize]{itemsep=.5ex}
+
+\frenchspacing
+
+
+% Redefine autoref automatic prefix.
+% It is "Section" for sections, subsections and subsubsections.
+\def\sectionautorefname{Section}
+\def\sectionname{Section}
+\def\subsectionautorefname{Section}
+\def\subsectionname{Section}
+\def\subsubsectionautorefname{Section}
+\def\subsubsectionname{Section}
+\def\exampleautorefname{Example}
+\def\examplename{Example}

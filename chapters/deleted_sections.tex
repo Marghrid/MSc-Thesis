@@ -122,3 +122,95 @@ Finally, we can use a regular expression to check that the price is a number wit
 
 If these 5 validations are verified by the respective input values, the form is valid.
 \end{example}
+
+
+\begin{figure}
+    \centering
+    \vspace{5ex}
+    \begin{subfigure}[b]{0.47\textwidth}
+        \begin{tikzpicture}
+            \begin{axis}[xmode=log, ymode=log, grid=major,
+                        xlabel = {\Forest},
+                        ylabel = {\Regel},
+                        xmax = 5000 ,ymax = 5000,
+                        width=.5\linewidth, height=.5\linewidth,
+                        clip marker paths=true]
+            \addplot[thick, mark size=3pt, only marks, mark=x, fill opacity=0.6, draw opacity=0.9, color=scatter-color] table[x=forest regex time, y=regel time, col sep=comma] {data/regel_comparison.csv};
+            \addplot[domain=0.01:3600,smooth,thin]{x};
+            \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(0.01,3600) (3600,3600)}
+                node at (3,2500) {\scriptsize 3600 second timeout};
+            \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(3600,0.01) (3600,3600)}
+                node [rotate=-90] at (2500,3) {\scriptsize 3600 second timeout};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{\Regel vs. \Forest on \Forest's instances.}
+        \label{fig:regel_comparison}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.47\textwidth}
+        \begin{tikzpicture}
+            \begin{axis}[xmode=log, ymode=log, grid=major,
+                        xlabel = {\Forest},
+                        ylabel = {\Regel},
+                        xmax = 5000 ,ymax = 5000,
+                        width=.5\linewidth, height=.5\linewidth,
+                        clip marker paths=true]
+            \addplot[thick, mark size=3pt, only marks, mark=x, fill opacity=0.6, draw opacity=0.9, color=scatter-color] table[x=forest regex time, y=regel time, col sep=comma] {data/regel_comparison.csv};
+            \addplot[domain=0.01:3600,smooth,thin]{x};
+            \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(0.01,3600) (3600,3600)}
+                node at (3,2500) {\scriptsize 3600 second timeout};
+            \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(3600,0.01) (3600,3600)}
+                node [rotate=-90] at (2500,3) {\scriptsize 3600 second timeout};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{\Regel vs. \Forest on \Forest's instances.}
+        \label{fig:regel_comparison}
+    \end{subfigure}
+    %\begin{subfigure}[b]{0.47\textwidth}
+    %     \begin{tikzpicture}
+    %         \begin{axis}[xmode=log, ymode=log, grid=major,
+    %                     xlabel = {\Forest},
+    %                     ylabel = {\Regel + 60},
+    %                     xmax = 5000 ,ymax = 5000,
+    %                     width=.99\linewidth, height=.99\linewidth,
+    %                     clip marker paths=true]
+    %         \addplot[only marks, mark=x, fill opacity=0.6, draw opacity=0.9, color=scatter-color] table[x=forest regex time, y=regel plus 60, col sep=comma] {data/regel_comparison.csv};
+    %         \addplot[domain=0.1:3600,smooth,thin]{x};
+    %         \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(0.1,3600) (3600,3600)}
+    %             node at (3,2500) {\tiny{3600 second timeout}};
+    %         \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(3600,0.1) (3600,3600)}
+    %             node [rotate=-90] at (2500,3) {\tiny{3600 second timeout}};
+    %         \end{axis}
+    %     \end{tikzpicture}
+    %     \caption{\Regel + sketch time vs. \Forest}
+    %     \label{fig:regel_comparison}
+    % \end{subfigure}
+    % \par\vspace{3em}
+    % \begin{subfigure}[b]{0.45\textwidth}
+    %     \begin{tikzpicture}
+    %         \begin{axis}[xmode=log, ymode=log, grid=major,
+    %                     xlabel = {\Forest},
+    %                     ylabel = {\Regel w/o sketches},
+    %                     xmax = 5000 ,ymax = 5000,
+    %                     width=.99\linewidth, height=.99\linewidth,
+    %                     clip marker paths=true]
+    %         \addplot[only marks, mark=x, fill opacity=0.6, draw opacity=0.9, color=scatter-color] table[x=forest regex time, y=regel no sketch, col sep=comma] {data/regel_comparison.csv};
+    %         \addplot[domain=0.1:3600,smooth,thin]{x};
+    %         \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(0.1,3600) (3600,3600)}
+    %             node at (3,2500) {\tiny{3600 second timeout}};
+    %         \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(3600,0.1) (3600,3600)}
+    %             node [rotate=-90] at (2500,3) {\tiny{3600 second timeout}};
+    %         \end{axis}
+    %     \end{tikzpicture}
+    %     \caption{\Regel without sketches vs. \Forest}
+    %     \label{fig:regel_comparison}
+    %\end{subfigure}
+\end{figure}
+
+\input{tables/instances_solved_resnax}
+\todo{Comparison with \Regel:}
+\color{blue}
+\autoref{table:number-solved-resnax} shows the number of instances solved by each approach. \Forest{} DSL only supports 95 out of 122 instances. After 1 hour, \Forest{} could only return a solution to 50 of \Regel{}'s benchmarks (41\%). In 10 other benchmarks, after 1 hour, \Forest{} had already found a solution consistent with the examples, but it was still disambiguating. Of the synthesised regexes, only 13 are correct considering the natural language description provided along with the examples (11\%). In the same amount of time, \Regel{} returned 92 regexes (75\%), of which 16 (13\%) satisfy the natural language description. Note that \Regel{} can also take as input a natural language description of the problem and their evaluation shows that for this set of benchmarks, the accuracy of \Regel{} is increased substantially when using natural language~\cite{Regel20}. However, the same behaviour could also be expected if \Forest{} would be extended with this kind of information.
+
+This comparison shows the PBE engine of \Forest{} is much better than \Regel{} for form validation benchmarks where it exploits the structure of the data. For the synthesis of regexes where there is no structure, we observe that the performance of both PBE engines is comparable.
+\color{black}

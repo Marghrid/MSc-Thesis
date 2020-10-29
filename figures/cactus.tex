@@ -1,14 +1,69 @@
 \begin{figure}[t]
+\centering
+
+\begin{subfigure}{\linewidth}
   \centering
-  \vspace{5ex}
   \begin{tikzpicture}
   \begin{axis}[
     xmode=linear,  ymode=linear,
-    width=.6\linewidth, height=.5\linewidth,
+    width=.55\linewidth, height=.45\linewidth,
     grid=major,
     %scale only axis,
-    ymax=3600 ,xmax=64, xmin=1, ymin=0.05,
-    xtick distance=8, ytick distance=600,
+    ymax=3600 ,xmax=69, xmin=1, ymin=0,
+    xtick distance=10, ytick distance=600,
+    extra x ticks = {69},
+    ylabel = {Time (s)},
+    xlabel = {Instances solved},
+    legend style={
+      anchor=west,
+      at={(1.1,.5)},
+      row sep=1.3ex
+    },
+    cycle list/Dark2-8,
+    cycle multi list={Dark2-8}  % plot colors
+  ]
+  
+    \addplot+[line width=1pt, mark=square*, mark size=1.2] table [x=ranking, y=time, col sep=comma] {data/ranking_lines.csv};
+    \addlegendentry{Line-based};
+    
+    \addplot+[line width=1pt, mark=+] table [x=ranking, y=time, col sep=comma] {data/ranking_ktree.csv};
+    \addlegendentry{\(k\)-tree};
+    
+    \addplot+[line width=1pt, mark=diamond*] table [x=ranking, y=time, col sep=comma] {data/ranking_dynamic.csv};
+    \addlegendentry{Dynamic multi-tree};
+    
+    \addplot+[line width=1pt, mark=x] table [x=ranking, y=time, col sep=comma] {data/ranking_regel_no_sketches.csv};
+    \addlegendentry{\Regel PBE};
+    
+    \addplot+[line width=1pt, mark=otimes*, mark size=1.2] table [x=ranking, y=time, col sep=comma] {data/ranking_nopruning.csv};
+    \addlegendentry{Multi-tree w/o pruning};
+  
+    \addplot+[line width=1pt, mark=triangle*, mark size=1.5] table [x=ranking, y=time, col sep=comma] {data/ranking_forest.csv};
+    \addlegendentry{\Forest};
+    
+    \addplot+[line width=1pt, mark=asterisk] table [x=ranking, y=time, col sep=comma] {data/ranking_regel.csv};
+    \addlegendentry{\Regel};
+
+    \addplot+[line width=1pt, mark=Mercedes star] table [x=ranking, y=time, col sep=comma] {data/ranking_forest_first_regex.csv};
+    \addlegendentry{\Forest's \nth{1} regex};
+  
+  \end{axis}
+  \end{tikzpicture}
+  \caption{Instances solved in 3600 seconds.}
+  \label{fig:cactus_3600}
+\end{subfigure}
+\vspace{5ex}
+\begin{subfigure}{\linewidth}
+  \centering
+  \begin{tikzpicture}
+  \begin{axis}[
+    xmode=linear,  ymode=linear,
+    width=.55\linewidth, height=.45\linewidth,
+    grid=major,
+    %scale only axis,
+    ymax=60 ,xmax=69, xmin=1, ymin=0,
+    xtick distance=10, ytick distance=10,
+    extra x ticks = {69},
     ylabel = {Time (s)},
     xlabel = {Instances solved},
     legend style={
@@ -35,17 +90,20 @@
     \addplot+[line width=1pt, mark=otimes*, mark size=1.2] table [x=ranking, y=time, col sep=comma] {data/ranking_nopruning.csv};
     \addlegendentry{Multi-tree w/o pruning};
     
-    \addplot+[line width=1pt, mark=asterisk] table [x=ranking, y=time, col sep=comma] {data/ranking_regel_skcomp.csv};
-    \addlegendentry{\Regel};
-  
     \addplot+[line width=1pt, mark=triangle*, mark size=1.5] table [x=ranking, y=time, col sep=comma] {data/ranking_forest.csv};
     \addlegendentry{\Forest};
+    
+    \addplot+[line width=1pt, mark=asterisk] table [x=ranking, y=time, col sep=comma] {data/ranking_regel.csv};
+    \addlegendentry{\Regel};
 
     \addplot+[line width=1pt, mark=Mercedes star] table [x=ranking, y=time, col sep=comma] {data/ranking_forest_first_regex.csv};
     \addlegendentry{\Forest's \nth{1} regex};
   
-\end{axis}
-\end{tikzpicture}
-\caption{Instances solved using different methods}
-\label{fig:comparison_all_methods}
+  \end{axis}
+  \end{tikzpicture}
+  \caption{Instances solved in 60 seconds.}
+  \label{fig:cactus_60}
+\end{subfigure}
+\caption{Comparison of number of instances solved using different methods.}
+\label{fig:cactus}
 \end{figure}

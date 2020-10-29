@@ -1,20 +1,33 @@
-\documentclass[10pt,a4paper,twoside]{report}
+\documentclass[10pt,a4paper,openright]{report}
 
 \input{preamble}
 \begin{document}
 
+\setlength{\emergencystretch}{2.5em}
+
+
+% Redefine autoref automatic prefix.
+% It is "Section" for sections, subsections and subsubsections.
+\def\sectionautorefname{Section}
+\def\sectionname{Section}
+\def\subsectionautorefname{Section}
+\def\subsectionname{Section}
+\def\subsubsectionautorefname{Section}
+\def\subsubsectionname{Section}
+\def\exampleautorefname{Example}
+\def\examplename{Example}
 
 \pagestyle{plain}
 
 
 \pagenumbering{roman}
-\input{Thesis_FrontCover}
-% \input{dedication}
+\input{cover}
+%\input{dedication}
 \input{acknowledgements}
-\input{resumo}
+\input{chapters/resumo}
 \input{chapters/Abstract.tex}
 
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
 \tableofcontents
 
 %\cleardoublepage 

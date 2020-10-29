@@ -1,28 +1,41 @@
-\chapter{Related Work / Program Synthesis}\label{chap:program-synthesis}
+\chapter{\revise{Related Work / Program Synthesis}}\label{chap:program-synthesis}
 
 
-Program synthesis is a very wide field of research. It has been studied by different research communities and applied to diverse problems. As such, many approaches have been proposed to deal with the specific challenges introduced by each application, resulting in a great variety of focused algorithms that aim at finding a better program in less time. In this section, we take a more in-depth look into some of these techniques.
+Program synthesis is a very wide field of research. It has been studied by several different research communities and applied to diverse problems. As such, many approaches have been proposed to deal with the specific challenges introduced by each application, resulting in a great variety of focused algorithms that aim at finding a better program in less time. In this section, we take a more in-depth look into some of these techniques.
 
-In \autoref{sec:cegis}, we look at a way to steer the search in the right direction by using information about wrong answers to avoid future similar mistakes. In sections~\ref{sec:ogis} and~\ref{sec:user-interaction}, we look at different ways to deal with the ambiguity of the desired behaviour specification in inductive synthesis.
+In \autoref{sec:rel-sketching} we introduce sketch-based enumeration: an enumeration method that deals with partial programs. In \autoref{sec:cegis}, we look at a method that steers the search in the right direction by using information about wrong answers to avoid future similar mistakes.
+%
+In sections~\ref{sec:ogis} and~\ref{sec:rel-user-interaction}, we look at ways to deal with the ambiguity of the desired behaviour specification in inductive synthesis.
+%
+Finally, in \autoref{sec:rel-regex-synthesizers}, we take an in-depth look at two existing regular expression synthesizers: \AlphaRegex and~\Regel.
 
-Finally, in \autoref{sec:synth-predicates}, we take an in-depth look at \textit{AlphaRegex}, a tool that, though not directly addressing the form validation problem, tackles the synthesis of regular expressions, which are an important part of our domain.
+\section{Sketch-based Enumeration}\label{sec:rel-sketching}
 
-\section{Sketch-based Enumerative Search}
 \begin{figure}
     \centering
     \includegraphics[scale=.35]{pictures/sketch.pdf}
     \caption{Sketch-based enumeration}
     \label{fig:sketch_enumeration}
 \end{figure}
-Some synthesizers opt to perform enumerative search using partial programs.
-Partial programs (often called sketches) are a high-level representation of the intended program. Instead of completely defining a program, they contain holes, i.e., parts of the program that refer to lower-level implementation details. For a sketch to become syntactically correct, all its holes must be filled with syntactically correct expressions.
 
+Some synthesizers perform enumerative search using partial programs \cite{Solar-LezamaPhDThesis,DBLP:conf/pldi/Solar-LezamaRBE05,DBLP:conf/asplos/Solar-LezamaTBSS06,DBLP:conf/pldi/WangCB17,DanielThesis,Regel20,DBLP:conf/pldi/FengMGDC17,DBLP:conf/popl/FengM0DR17,DBLP:journals/pacmpl/Yaghmazadeh0DD17,DBLP:journals/sttt/Solar-Lezama13}.
+%Partial programs are a high-level representation of the intended program.
+Instead of completely defining a program, partial (or incomplete) programs contain holes alongside the \ac{DSL} components. %, i.e., parts of the program that refer to lower-level implementation details.
+For a partial program to become a syntactically correct complete program, all its holes must be filled with syntactically consistent expressions.
+%
+If we think in terms of the \ac{DSL}'s representation as a \ac{CFG}, a \textit{complete} program is a production of the grammar containing only terminal symbols, i.e, only actual operators and literal values in the \ac{DSL}. In contrast, a \textit{partial} program is a production of the grammar that may contain non-terminal symbols. Since each non-terminal symbol can correspond to many terminal symbols, a partial program can represent many complete programs.
+
+Sketch-based enumeration deals with a particular type of partial programs: \textit{sketches}. A sketch is a partial program where the holes cannot be filled with operators: all missing constructs are literal values of the \ac{DSL}.
+%
 Instead of enumerating complete programs, a sketch-based synthesizer takes one of two approaches: Either
 \begin{enumerate*}[label=(\roman*)]
     \item a sketch is provided by the user, who already possesses a high-level description of the desired program, in which case the synthesizer must complete it according to the specification, or
     \item the synthesizer is responsible for both producing a suitable sketch and completing it. The enumeration process is then split in two steps: sketch generation and sketch completion.
 \end{enumerate*}
 During sketch generation, the synthesizer enumerates incomplete programs in some order. During sketch completion, the synthesizer then enumerates complete programs for each given sketch, by successively filling each hole with a syntactically correct expression. Sketch-based enumeration is outlined in \autoref{fig:sketch_enumeration}.
+
+To some synthesizers, two-step enumeration outperforms normal enumeration because there is a very efficient way to fill the sketch holes, either because the few possible values exist for each hole, or because they can be directly deduced from the specification (instead of enumerated).
+
 
 
 \section{\acl{CEGIS}}\label{sec:cegis}
@@ -62,7 +75,7 @@ Therefore, to find a correct program, we search the program space for a program 
 \end{figure}
 
 Whenever we encounter a program \(P\) for which formula~\eqref{eq:counterexample} is satisfiable, the values of \(\vec{x}\) and \(y\) that satisfy the formula constitute a counterexample: an input \(\vec{x}\) for which \(P\) does not satisfy the specification \(\phi\); in other words, an input \(\vec{x}\) to which our program returns the wrong output.
-If we take this counterexample \((\vec{x}, y)\) into account during our subsequent search, none of the new candidate programs will return \(y\) on the input \(\vec{x}\).
+If we take this counterexample \((\vec{x}, y)\) into account during our subsequent search, none of the new candidate programs returns \(y\) on the input \(\vec{x}\).
 We have thus strengthened the specification, eliminating the previous incorrect candidate program.
 
 \begin{definition}[Counterexample]
@@ -109,7 +122,7 @@ When a correct program \(P_1\) is found, it is stored, and the search continues 
 Upon finding two correct programs, we want to find an input to which the two programs \(P_1\) and \(P_2\) return different outputs: a \textit{distinguishing input}. To produce a distinguishing input, we can try to solve:
 %
 \begin{equation}\label{eq:distinguishing}
-  \exists \vec{x}, y_1, y_2: P_1(\vec{x}) = y_1 \wedge P_2(\vec{x}) = y_2 \wedge y_1 \neq y_2.
+  \exists \vec{x}: P_1(\vec{x}) \ne P_2(\vec{x}).
 \end{equation}
 %
 If formula~(\ref{eq:distinguishing}) is unsatisfiable then \(P_1\) and \(P_2\) are equivalent programs.
@@ -130,13 +143,13 @@ In the end of this cycle, we have a set of input-output pairs that completely sp
 This method is illustrated in \autoref{fig:ogis}. In this figure, the \textit{enumerator} and \textit{verifier} are identical to those in \ac{CEGIS} (\autoref{fig:cegis}). The \textit{distinguisher} is a new entity, which can be a solver that tries to satisfy formula~(\ref{eq:distinguishing}).
 
 
-\section{User Interaction} \label{sec:user-interaction}
+\section{User Interaction} \label{sec:rel-user-interaction}
 
 As mentioned before, \ac{PBE} uses input-output examples as the desired behaviour specification, which can be very ambiguous. When the synthesizer simply picks a correct program to return to the user, it may not satisfy the desired behaviour in corner cases not covered by the examples provided.
 In order to increase confidence in the synthesizer's solution, a good way to disambiguate the specification is by explicitly interacting with the user so he or she can provide further information about the intended~program.
-% In this section we look at two different user interaction models that allow the synthesizer to gather more information about the intended program, thus resolving the ambiguity in the initially provided examples.
+In this section we look at a few different user interaction models that allow the synthesizer to gather more information about the intended program, thus resolving the ambiguity in the initially provided examples.
 
-\subsection{Conversational Clarification}
+\subsection{Conversational Clarification Model}\label{sec:rel-conv-clarification}
 \begin{figure}
     \centering
     \includegraphics[scale=.35]{pictures/conversational_clarification.pdf}
@@ -144,30 +157,121 @@ In order to increase confidence in the synthesizer's solution, a good way to dis
     \label{fig:conversational_clarification}
 \end{figure}
 
-Conversational clarification is an interaction method described by \citeauthor{DBLP:conf/uist/MayerSGLMPSZG15} \cite{DBLP:conf/uist/MayerSGLMPSZG15} which has been successfully used in many synthesizers  \cite{DBLP:journals/pvldb/LiCM15,DBLP:journals/corr/abs-19,DBLP:conf/sigmod/WangCB17,DBLP:conf/pldi/WangCB17}.
-During the synthesis procedure, the synthesiser asks questions to the user with respect to certain inputs, and uses the answers to resolve ambiguities in the desired behaviour specification. 
+Conversational clarification is an interaction method first described in \citeyear{DBLP:conf/uist/MayerSGLMPSZG15} by \citet{DBLP:conf/uist/MayerSGLMPSZG15} that has since been successfully integrated in many synthesizers  \cite{DBLP:journals/pvldb/LiCM15,DBLP:journals/corr/abs-1909-11206,DBLP:conf/sigmod/WangCB17,DBLP:conf/pldi/WangCB17}.
+During the synthesis procedure, the synthesiser asks the user questions about certain inputs, and uses the answers to resolve ambiguities in the desired behaviour specification. 
 
-After the synthesizer has generated several programs that are consistent with the user-provided examples, it uses the \textit{distinguisher} described in \autoref{sec:ogis} to produce a distinguishing input: an input for which two correct programs yield two different outputs. The synthesizer then queries the user on what is the desired output for that specific input (it may be the output returned by one of the synthesised programs, or a different one altogether). The distinguishing input along with the desired output form a new input-output example, which is added to the specification, making it stronger. Each distinguishing input splits the search space in a different way, so the number of necessary user interactions depends on the chosen distinguishing input in each iteration. In the end, only one program remains. Since all ambiguity in the original specification has been resolved, the remaining program is the desired program and it can be returned to the user.
+After the synthesizer has generated several programs that are consistent with the user-provided examples, it uses the \textit{distinguisher} described in \autoref{sec:ogis} to produce a distinguishing input:
+an input for which two correct programs yield two different outputs.
+The synthesizer then queries the user on what is the desired output for that specific input (it may be the output returned by one of the synthesised programs, or a different one altogether).
+The distinguishing input along with the desired output form a new input-output example, which is added to the specification, making it stronger.
+Each distinguishing input splits the search space in a different way, so the number of necessary user interactions depends on the chosen distinguishing input in each iteration.
+In the end, only one program remains. Since all ambiguity in the original specification has been resolved, the remaining program is the desired program and it can be returned to the user.
 
 Conversational clarification is represented in \autoref{fig:conversational_clarification}. It is no more than a variation of the \ac{OGIS} method, described in \autoref{sec:ogis}, where the user plays the part of the \textit{I/O oracle}.
 
 
-\subsection{Ramos's Interaction Models}
+\subsection{\optmodel Model}\label{sec:rel-ramos-interaction}
 
-\citet{UnchartIt} propose two interaction models: \textsc{Options} and Y/N. Both models interact with the user using distinguishing inputs, i.e., new inputs generated by the synthesizer that allow
+\citeauthor{UnchartIt20}~\cite{UnchartIt20,unchartit-webpage} propose two interaction models: \optmodel and \ynmodel.
+Both models have in common with conversational clarification the fact that they interact with the user using distinguishing inputs, i.e., new inputs generated by the synthesizer whose output differs for different candidate programs. 
+The main difference is that, while conversational clarification distinguishes only between two programs, \optmodel and \ynmodel distinguish \textit{optimally} between \(n > 2\) candidate programs, \(P_1, ..., P_n\).
+In each interaction they maximise the number of programs that are eliminated from the search space. Besides, unlike conversational clarification, with \optmodel and \ynmodel, the program's output is always shown to the user beforehand.
+The user just has to select one among several or classify it as correct or incorrect.
+In sum, not only are \optmodel and \ynmodel's interactions fewer, they are also easier for the user to answer.\footnote{\UnchartIt's interaction models can be tried out at \url{http://sat.inesc-id.pt/unchartit/dist/}}
 
-\todo{Explain}
+The \optmodel model shows the user a distinguishing input, as well as several options that correspond to the outputs of candidate programs for that input. Then, the user selects the correct output among the provided options.
+%If the selected output still corresponds to the output of several candidate programs, additional rounds of questions are performed to disambiguate solely among those programs.
+Ideally, there is a single input example that produces a different output for each candidate program.
+In this best-case scenario, a single interaction is sufficient to disambiguate all candidate programs with the \optmodel: only one is consistent with the user's selection.
 
-\section{Regex synthesizers}\label{sec:related-work}
+To produce the distinguishing input, \(\vec{x}\), we start by defining a Boolean variable \(b_{ij}\) for each pair \(i,j\in\{1, ..., n\},i<j\). \(b_{ij}\) is \true if and only if \(P_i\) and \(P_j\) have the same output for \(\vec{x}\):
+%
+\begin{equation}
+    \bigwedge_{i,j \in \{1, ..., n\}, i < j} (P_i(\vec{x}) = P_j(\vec{x})) \leftrightarrow b_{ij}.
+\end{equation}
+%
+To ensure that at least two of the candidate programs produce a different output for the distinguishing input \(\vec{x}\), we include the constraint:
+%
+\begin{equation}
+    \bigvee_{i,j \in \{1, ..., n\}, i < j} \neg b_{ij}.
+\end{equation}
+%
+Finally, since it is our goal to find an input such that all programs have different outputs, we want as few \(b_{ij}\) set to \true as possible.
+Thus, we add the following soft constraints:
+%
+\begin{equation}
+    \bigwedge_{i,j \in \{1, ..., n\}, i < j} \neg b_{ij}.
+\end{equation}
+
+We use a \ac{MaxSMT} solver to try and find a model that satisfies the formula. If it is unsatisfiable, then there is no input \(\vec{x}\) to which any of the programs have a different output, i.e., \(P_1, ..., P_n\) are all equivalent. If it is satisfiable, then we show \(\vec{x}\) to the user along with all possible outputs \(P_i(\vec{x})\). The user selects the correct output, and the synthesizer discards all programs whose output for \(\vec{x}\) differs.
+
+\subsection{\ynmodel Model}
+
+On the \ynmodel interaction model, the goal is to identify a distinguishing input \(\vec{x}\) that splits the set of programs into two sets \set{A} and \set{B}, such that programs in \set{A} produce the same output \(o\)  given input \(\vec{x}\), and all programs in \set{B} produce outputs different than \(o\) given input \(\vec{x}\).
+%
+The goal is then to find \(\vec{x}\) such that half programs is placed in each set.
+
+To encode this problem into \ac{MaxSMT}, we have the same Boolean variables \(b_{ij}\) for all pairs \(i,j \in \{1, ..., n\}, i < j\), which are \true if and only if \(P_i\) and \(P_j\) have the same output for input \(\vec{x}\):
+\begin{equation}
+    \bigwedge_{i,j \in \{1, ..., n\}, i < j} (P_i(\vec{x}) = P_j(\vec{x})) \leftrightarrow b_{ij}.
+\end{equation}
+%
+Then, we define a set of Boolean variables \(p_i^\set{A}\) (resp. \(p_i^\set{B}\)) for all \(i\in \{1, ..., n\}\) which are assigned \true if and only if program \(P_i\) is placed in set \set{A} (resp. \set{B}).
+%
+If two candidate programs \(P_i\) and \(P_j\) produce the same output for \(\vec{x}\) (i.e. \(b_{ij}\) is \true), then \(P_i\) and \(P_j\) must be placed in the same set. On the other hand, if two programs produce different outputs (i.e. \(b_{ij}\) is \false), then only one of them can be placed in set \set{A}. Finally, each program to be placed in one and only one set. To enforce this, we add the constraints:
+\begin{equation}
+    \bigwedge_{i,j \in \{1, ..., n\}, i < j} b_{ij} \rightarrow \left( (p_i^\set{A} \wedge p_j^\set{A}) \vee (p_i^\set{B} \wedge p_j^\set{B}) \right),
+\end{equation}
+%
+\begin{equation}
+    \bigwedge_{i,j \in \{1, ..., n\}, i < j} \neg b_{ij} \rightarrow (\neg p_i^\set{A} \vee \neg p_j^\set{A}), \; \textrm{and}
+\end{equation}
+%
+\begin{equation}
+    \bigwedge_{i \in \{1, ..., n\}} p_i^\set{A} \ne p_i^\set{B}.
+\end{equation}
+%
+To ensure we have at least one program in set \set{A}, we add the cardinality constraint:
+\begin{equation}
+    \sum_{i=1}^n p_i^B  \le n-1.
+\end{equation}
+
+\noindent
+Ideally, we would like \set{A} and \set{B} to have the same number of elements, so that when the user classifies \(\vec{x}\) as either correct or incorrect we can eliminate half the programs from the search space. To achieve this, we add the optimisation objective:
+\begin{equation}
+    \textrm{min.} \left|\sum_{i=1}^n p_i^A - \sum_{i=1}^n p_i^B \right|.
+\end{equation}
+
+As before, we use a \ac{MaxSMT} solver to solve the formula.
+If the formula is unsatisfiable, then all programs are equivalent and there is no distinguishing input. In this case we can keep only one program and discard the rest.
+If the formula is satisfiable, then the model assignment for \(\vec{x}\) is the distinguishing input. In this situation, the synthesizer shows \(\vec{x}\) to the user, along with the output of any program in \set{A} run with input \(\vec{x}\) (they all have the same output).
+Finally, we ask the user if this is the desired output for input \(\vec{x}\). If the output is correct, we can eliminate from the search space all programs in \set{B}. Otherwise, we remove all programs in \set{A}.
+
+\section{Regex Synthesizers}\label{sec:rel-regex-synthesizers}
+
+In this section, we discuss prior work on the synthesis of regular expressions that is most closely related to our approach.
+%
+Previous approaches that perform general string processing~\cite{DBLP:conf/popl/Gulwani11,Fidex16} restrict the form of the regular expressions that can be synthesised. In contrast, we support a wide range of regular expressions operators, including the Kleene closure, positive closure, option, and range. 
+%
+More recent work that targets the synthesis of regexes is done by \AlphaRegex~\cite{AlphaRegex16} and \Regel~\cite{Regel20}.
+
+\AlphaRegex performs an enumerative search and uses under- and over-approximations of regexes to prune the search space. However, \AlphaRegex is limited to the binary alphabet and does not support the kind of regexes that we need to synthesise for form validations. \AlphaRegex is analysed in depth in \autoref{sec:alpharegex}.
 
 
+\Regel is a state-of-the-art synthesizer of regular expressions based on a multi-modal approach that combines input-output examples with a natural language description of user intent. They use natural language to build sketches that capture the high-level structure of the regex to be synthesised and subsequently use the input-output examples to fill those sketches. 
+\Regel prunes the search space by using \AlphaRegex-like under- and over-approximations and symbolic regexes combined with SMT-based reasoning.
 
-\subsection{\textit{AlphaRegex}}
-\label{sec:synth-predicates}
-In \citeyear{AlphaRegex16}, \citet{AlphaRegex16} presented \textit{AlphaRegex}, a \ac{PBE} synthesizer of regular expressions in the binary alphabet, \(\Sigma = \{0, 1\}\).
+There are other approaches that synthesise regexes solely from natural language~\cite{DBLP:conf/naacl/KushmanB13,DBLP:conf/emnlp/LocascioNDKB16,DBLP:conf/emnlp/ZhongGYPXLLZ18}. We see these approaches as orthogonal to ours and expect that \Forest can be improved by hints provided by a natural language component such as was done in \Regel.
+%
+To the best of our knowledge, no previous work focused on the synthesis of conditions over capturing groups.
 
-To use \textit{AlphaRegex}, the user describes the desired accepted language by providing a set of positive and negative examples. The synthesised regular expression must define a language that includes all the positive examples and none of the negative ones.
-\textit{AlphaRegex} uses an enumerative search technique, with a ranking method that prioritises simpler expressions.
+
+\subsection{\AlphaRegex}
+\label{sec:alpharegex}
+In \citeyear{AlphaRegex16}, \citet{AlphaRegex16} presented \AlphaRegex, a \ac{PBE} synthesizer of regular expressions in the binary alphabet, \(\Sigma = \{0, 1\}\).
+%
+Like with \Forest, with \AlphaRegex the user describes the desired accepted language by providing a set of positive and negative examples. The synthesised regular expression must define a language that includes all the positive examples and none of the negative ones.
+\AlphaRegex uses an enumerative search technique, with a ranking method that prioritises simpler expressions.
 
 The algorithm starts by examining the simplest regular expressions, \regex{0} and \regex{1}.
 If these are not consistent with the examples, it checks more complex productions such as \regex{0|0}, \regex{0|1}, \regex{1|0}, \regex{1|1} (i.e. expressions in the form of \regex{\Box|\Box}), \regex{00}, \regex{01}, \regex{10}, \regex{11} (i.e. expressions in the form of \(\tt\Box\Box\)), and \regex{0*}, \regex{1*}, (i.e. expressions in the form of \(\tt\Box*\)).
@@ -175,7 +279,7 @@ If these are not consistent with the examples, it checks more complex production
 Here, we introduce the hole (\(\Box\)), a placeholder for any regular expression. Regular expressions with or without holes are the states of the search.
 The algorithm generates regular expressions by iteratively replacing holes with other states and checking if the resulting regular expressions are correct.
 
-To speed up the search, \textit{AlphaRegex} makes use of three different kinds of search space pruning techniques: over-approximation, under-approximation and elimination of redundant states.
+To speed up the search, \AlphaRegex makes use of three different kinds of search space pruning techniques: over-approximation, under-approximation and elimination of redundant states.
 
 \paragraph{Over-approximation} is achieved by replacing holes in the current state with \regex{(0|1)*}.
 This regular expression describes the language that accepts all the strings that can be written using the binary alphabet.
@@ -202,10 +306,53 @@ For example, the algorithm needs not evaluate the expression \(s\texttt{|}r\) if
 \medskip
 
 \noindent
-The authors tested \textit{AlphaRegex} in 25 benchmark problems collected from textbooks on automata theory which are provided along with the code for their tool.
-\textit{AlphaRegex} proved capable of synthesising relatively complex expressions, with more than a dozen operations, in under one minute.
+The authors tested \AlphaRegex in 25 benchmark problems collected from textbooks on automata theory which are provided along with the code for their tool.
+\AlphaRegex proved capable of synthesising relatively complex expressions, with more than a dozen operations, in under one minute.
 
 
 \subsection{\Regel}
 
-\todo{\Regel!}
+\begin{figure}
+    \centering
+    \includegraphics[scale=.35]{figures/regel.pdf}
+    \caption{\Regel's synthesis pipeline}
+    \label{fig:regel-synthesis}
+\end{figure}
+
+In \citeyear{Regel20}, \citet{Regel20} proposed \Regel, a multi-modal sketch-based regex synthesizer. \Regel accepts two different kinds of description of desired behaviour: 
+\begin{enumerate*}[label=(\roman*)]
+    \item a natural language description of the desired pattern (which is used to generate a sketch), and
+    \item a set of positive and negative examples (which is used to complete the sketch).
+\end{enumerate*}
+\Regel's synthesis pipeline is shown in \autoref{fig:regel-synthesis}
+
+\Regel's \ac{DSL} is a lot more expressive than that of \AlphaRegex. They synthesise common regex operators: concatenation, union, Kleene closure, positive closure, option and range. Besides the standard regex operators, they accept operations and (intersect) and not (complement), which are implemented at the automaton level. 
+The literals complemented in \Regel's \ac{DSL} are the same as those in \Forest: the characters in the valid examples, in addition to all relevant character classes.
+
+\paragraph{Sketch generation.}
+The first step of \Regel's synthesis is to produce a ranked list of sketches from the natural language description of the desired pattern using a semantic parser. Intuitively, \Regel's sketches represent a family of regexes that conform to a high-level structure. A sketch is then a program of an extended version of the \ac{DSL} that includes a ``constrained hole'' construct, denoted \(\square\{S_1, ..., S_n\}\), where \(S_1, ..., S_n\) are sub-regexes.
+Specifically, regex \(r\) belongs to the space of
+regexes defined by \(\square\{S_1, ..., S_n\}\) if one of the leaf nodes of \(r\) is one of the \(S_i\) sub-regexes.
+%
+In addition to constrained holes, \Regel's sketches can contain operators in their regex DSL. For example, a sketch can be of the form \(\texttt{f}(S_1, ..., S_n)\) where \(\texttt{f}\) denotes a DSL operator.
+
+
+\begin{example}
+Consider the following \Regel sketch:  \(S_1\) = \(\square\)\{\verb`[0-9]{7}`, \texttt{-}\}. The regular expression \(r_1\)=\verb`(([A-Za-z]|-){2}|[0-9]{7}){1,4}` can result from \(S_1\) because one of its leaf nodes, \texttt{-}, is in the constrained hole.
+%
+Consider now \(S_2\) = \(\square\)\{\verb`[0-9]{3}`,\verb`[0-9]{2}`,\texttt{-},\verb`[0-9]{4}`\} and \(r_2\) = \verb`([0-9]|-){11}`. Similarly, \(r_2\) can result from \(S_2\).
+\end{example}
+
+\paragraph{Sketch completion.}
+Then, given a sketch \(S\), \Regel's \ac{PBE} engine tries to find a concrete regex that is both a valid completion of \(S\) and consistent with the input-output examples using sketch-guided enumerative search. Their sketch completion procedure leverages two main ideas.
+
+First, like \AlphaRegex, they use lightweight deductive reasoning to prune infeasible partial regexes by constructing over- and under- approximations. However, unlike \AlphaRegex, they are able to build these approximations using the hints obtained from the natural language and therefore perform more precise reasoning.
+
+
+Second, they use symbolic regexes to prune large parts of the search space.
+When synthesising constructs that take integer constants as arguments (like the range operator), they use a symbolic integer \(\kappa\) that represents any possible integer rather than explicitly enumerating possible integer values.
+Then, they generate a SMT formula that over-approximates the concrete regex. Since it is not a precise encoding of the regex, not all models satisfy all examples. So, in the end one of the resulting \ac{SMT} models must be selected to extract the concrete values of \(\kappa\).
+
+\citeauthor{Regel20} evaluate their approach on 322 regexes and showed that their multi-modal approach can successfully synthesise the intended regex in 80\% of the cases. In comparison, using only natural language can solve 43\% of these benchmarks and an example-only baseline can solve only 26\%. 
+%
+They show also that their PBE engine is an order of magnitude faster than \AlphaRegex.

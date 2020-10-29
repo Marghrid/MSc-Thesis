@@ -6,8 +6,8 @@ level 1/.style={sibling distance=2cm},
 level 2/.style={sibling distance=1cm},
 level 1/.append style={level distance=1.5cm},
 level 2/.append style={level distance=.8cm},
-empty/.style={edge from parent/.style={solid,gray,draw}}]
-\tikzstyle{every node}=[circle,draw=black, solid, edge from parent/.style={solid,gray,draw=black}]
+empty/.style={edge from parent/.style={solid,eps-node-color,draw}}]
+\tikzstyle{every node}=[circle,draw=black, solid, edge from parent/.style={solid,eps-node-color,draw=black}]
 \tikzstyle{edge from parent}=[draw=black, solid]
 \tikzstyle{every label}=[rectangle, draw=none]
 
@@ -23,9 +23,9 @@ child {
 child {
     node [label={\texttt{/}}] {} edge from parent[draw=top-node-color,dashed]
     child[empty] {
-        node [label={[text=gray]below:\(\epsilon\)}, draw=gray] {}}
+        node [label={[text=eps-node-color]below:\(\epsilon\)}, draw=eps-node-color] {}}
     child[empty] {
-        node [label={[text=gray]below:\(\epsilon\)}, draw=gray] {}}
+        node [label={[text=eps-node-color]below:\(\epsilon\)}, draw=eps-node-color] {}}
 }
 %
 child {
@@ -39,9 +39,9 @@ child {
 child {
     node [label={\texttt{/}}] {} edge from parent[draw=top-node-color,dashed]
     child {
-        node [label={[text=gray]below:\(\epsilon\)}, draw=gray] {}  edge from parent[draw=gray] }
+        node [label={[text=eps-node-color]below:\(\epsilon\)}, draw=eps-node-color] {}  edge from parent[draw=eps-node-color] }
     child {
-        node [label={[text=gray]below:\(\epsilon\)}, draw=gray] {}  edge from parent[draw=gray] }
+        node [label={[text=eps-node-color]below:\(\epsilon\)}, draw=eps-node-color] {}  edge from parent[draw=eps-node-color] }
 }
 %
 child {

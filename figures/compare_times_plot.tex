@@ -10,12 +10,15 @@
                 xmax = 5000 ,ymax = 5000,
                 width=.99\linewidth, height=.99\linewidth,
                 clip marker paths=true]
-    \addplot[only marks, mark=x, fill opacity=0.6, draw opacity=0.9, color=scatter-color] table[x=#1, y=#3, col sep=comma] {data/time_comparison_15.csv};
-    \addplot[domain=0.1:3600,smooth,thin]{x};
+    \addplot[thick, mark size=3, only marks, mark=x, fill opacity=0.6, draw opacity=0.7, color=scatter-color] table[x=#1, y=#3, col sep=comma] {data/time_comparison.csv};
+    %
+    \addplot[domain=0.1:3600,smooth,thin]{x}; % y = x line
+    %
     \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(0.1,3600) (3600,3600)}
-        node at (3,2500) {\scriptsize 3600 second timeout};
+        node at (100,2500) {\scriptsize 3600 second timeout}; % y timeout
+    %
     \addplot [dotted, thick, timeout-color, opacity=0.8] coordinates {(3600,0.1) (3600,3600)}
-        node [rotate=-90] at (2500,3) {\scriptsize 3600 second timeout};
+        node [rotate=-90] at (2500,1) {\scriptsize 3600 second timeout}; % x timeout
     \end{axis}
-\end{tikzpicture}
+\end{tikzpicture}%
 }

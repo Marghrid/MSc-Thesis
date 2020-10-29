@@ -1,13 +1,14 @@
 \begin{table}[t]
 \centering
 
-\newcolumntype{R}{>{\centering\arraybackslash}m{.25\textwidth}}
-\newcolumntype{L}{>{\centering\arraybackslash}m{.24\textwidth}}
-\newcolumntype{M}{>{\centering\arraybackslash}m{.33\textwidth}}
+\newcolumntype{R}{>{\arraybackslash}m{.18\textwidth}}
+\newcolumntype{L}{>{\arraybackslash}m{.2\textwidth}}
+\newcolumntype{M}{>{\arraybackslash}m{.15\textwidth}}
+\setlength\extrarowheight{.5em}
 
-\begin{tabular}{@{}R L M@{}}
+\begin{tabular}{l c c}
 \toprule
-Operation name & Operation on regular expressions & \quad Corresponding regular operation on languages \\ \midrule
+Name & \makecell{Operation on\\regular expressions} & \makecell{Operation on\\languages} \\ \midrule
 Union          & \(r|q\) & \quad \(\mathcal{L}(r) \cup \mathcal{L}(q)\) \\
 Concatenation  & \(rq\)  & \quad \(\mathcal{L}(r)\mathcal{L}(q)\) \\
 Kleene closure & \(r^*\) & \quad \(\mathcal{L}(r)^*\)\\
