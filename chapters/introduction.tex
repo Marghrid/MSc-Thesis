@@ -35,6 +35,7 @@ and deep learning \cite{DBLP:conf/iclr/BalogGBNT17,DBLP:conf/iclr/ParisottoMS0ZK
 
 To help users write regular expressions, prior work has proposed to synthesise regular expressions from natural language~\cite{Regel20,DBLP:conf/naacl/KushmanB13,DBLP:conf/emnlp/LocascioNDKB16,DBLP:conf/emnlp/ZhongGYPXLLZ18,DBLP:journals/pacmpl/Yaghmazadeh0DD17} or from positive and negative examples~\cite{Regel20,DBLP:conf/popl/Gulwani11,AlphaRegex16,Fidex16}. Even though these techniques assist users in writing regular expressions for search and replace operations, they do not specifically target digital form validation and do not take advantage of the structured format of the data.
 
+\todo{Move to motivating example?}
 In this thesis, we propose \Forest{}, a new program synthesizer for regular expressions that targets digital form validations.
 \Forest takes as input a set of examples and returns a regex validation that validates them.
 \Forest accepts three types of examples:
@@ -44,7 +45,7 @@ In this thesis, we propose \Forest{}, a new program synthesizer for regular expr
     \item \textbf{conditional invalid examples} (optional): incorrect values for the input field due not to their format but to their \textit{values}.
 \end{enumerate}
 %
-\Forest outputs a regex validation, consisting of two components:
+\Forest outputs a regex validation, consisting of three components:
 \begin{enumerate}%[label=(\roman*)]
     \item a \textbf{regular expression} that matches all valid and none of the invalid examples and
     \item \textbf{capturing groups} that reflect the captures provided with the valid examples;
@@ -54,7 +55,7 @@ In this thesis, we propose \Forest{}, a new program synthesizer for regular expr
 \section{Motivating Example}\label{sec:motivating-example}
 
 Suppose a user is writing a form where one of the fields is a date that must respect the format DD/MM/YYYY.
-The user wants to accept the input strings:
+The user wants to accept the input strings (valid examples):
 \begin{multicols}{3}
     \begin{itemize}[label={}]
     \item 19/08/1996
@@ -66,7 +67,7 @@ The user wants to accept the input strings:
     \end{itemize}
 \end{multicols}
 \noindent
-But not:
+But not (invalid examples):
 \begin{multicols}{3}
 \begin{itemize}[label={}]
 \item 19/08/96
@@ -93,9 +94,9 @@ We consider as \textit{conditional invalid}:
     \item 52/03/2015
     \end{itemize}
 \end{multicols}
-To ensure only valid values are inserted as the day and month, one can use capturing groups. A capturing group is represented by a set of parenthesis. They capture the text matched by the regex inside them, that can be later used with a numbered reference. In this document we use the notation \(\$i, i \in 0, 1, ...\) to reference the integer value captured by the \((i+1)\)\textsuperscript{th} group.
-Then, conditions can be applied to these values. In this situation, the desired validation and the output of \Forest is:
-\UseVerb{date_day_mo_caps}, \(\$0 \wedge 31 \wedge \$0 \ge 1 \wedge \$1 \le 12 \wedge \$1 \ge 1\).
+To ensure only valid values are inserted as the day and month, one can use capturing groups. A capturing group is represented by a set of parenthesis. They capture the text matched by the regex inside them, that can later be used with a numbered reference. In this document we use the notation \(\$i, i \in 0, 1, ...\) to reference the integer value captured by the \((i+1)\)\textsuperscript{th} group.
+Then, conditions can be applied to these values. In this situation, the desired validation (and the output of \Forest) includes the same regular expression as before, now extended with two capturing groups and four integer conditions over them:
+\UseVerb{date_day_mo_caps}, \(\$0 \le 31 \wedge \$0 \ge 1 \wedge \$1 \le 12 \wedge \$1 \ge 1\).
 
 Finally, suppose the user wishes not only to validate the input string but also to extract some information from it. Still using the dates example, the user could wish to extract the year from each date, so it could be used afterwards.
 \begin{multicols}{3}
@@ -172,9 +173,8 @@ This document is organised as follows.
 
 We begin in~\autoref{chap:background} by introducing some background concepts used throughout the rest of the document. We introduce the concepts of regular language and regular expression, the main logic concepts used throughout this document, and the main components that characterise a program synthesizer.
 %
-In \autoref{chap:program-synthesis} with an overview of existing program synthesis algorithms used in recent synthesizers to improve performance.
+\autoref{chap:program-synthesis} presents a survey of program synthesis algorithms with emphasis on regular expression synthesis.
 %
-%In \autoref{sec:regex-synthesizers},
 We also look into \textit{AlphaRegex} and \Regel, two regular expression synthesizers that propose optimisations specific to that domain.
 
 We proceed to \autoref{chap:regex-synthesis}, where we take a look into how \Forest synthesises the first part of its regex validation: a regular expression.

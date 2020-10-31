@@ -1,12 +1,12 @@
 \chapter{Capturing Groups Synthesis}\label{chap:capture-cond-synthesis}
 
-\todo{Motivation}
+As mentioned before, aside from being a very expressive way to describe patterns in text, regular expressions can be extended with capturing groups.
+%
+Capturing groups are used to extract information from text, which can be used after independently from the originally matched text.
 
-In this chapter we describe the synthesis procedure that generates the second and third components of the regex validation:
-\begin{itemize}
-    \item \textbf{capturing groups} that reflect the captures provided with the valid examples;
-    \item \textbf{capture conditions} which express integer conditions for the values in the example that are satisfied by all valid examples but not by any of the conditional invalid examples. 
-\end{itemize}
+\Forest, after synthesising a regular expression to describe the desired format for a certain input field, completes it with capturing groups that, either capture some information desired by the user, or further restrict the accepted values by enforcing integer conditions over the integer values captured in the input string.
+%
+In this chapter we describe the synthesis procedure that generates the second and third components of the regex validation: capturing groups that reflect the captures provided with the valid examples and capture conditions which express integer conditions for the values in the example that are satisfied by all valid examples but not by any of the conditional invalid examples.
 
 In \autoref{sec:cap_groups_enumeration}, we look at the base enumeration cycle that produces capturing groups over a given regular expression. This enumeration method is used both in the synthesis of capturing groups and capture conditions. Then, in \autoref{sec:cap_groups_synthesis}, we look at how \Forest synthesises the second component in the regex validations. After, we move on to the synthesis of the third component in the regex validations: capture conditions. In \autoref{sec:cap_cond_synthesis}, we explain the SMT encoding used to produce a minimum set of integer conditions over some capturing groups. Finally, in \autoref{sec:cap_cond_distinguish}, we show how we can produce a distinguishing input to resolve the ambiguity of the input examples when there are several minimum sets of conditions that satisfy them.
 

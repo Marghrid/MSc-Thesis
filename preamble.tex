@@ -227,11 +227,17 @@
 
 % Redefine autoref automatic prefix.
 % It is "Section" for sections, subsections and subsubsections.
-\def\sectionautorefname{Section}
-\def\sectionname{Section}
-\def\subsectionautorefname{Section}
-\def\subsectionname{Section}
-\def\subsubsectionautorefname{Section}
-\def\subsubsectionname{Section}
-\def\exampleautorefname{Example}
-\def\examplename{Example}
+\renewcommand\sectionautorefname{Section}
+\newcommand\sectionname{Section}
+
+\renewcommand\subsectionautorefname{Section}
+\newcommand\subsectionname{Section}
+
+\renewcommand\subsubsectionautorefname{Section}
+\newcommand\subsubsectionname{Section}
+
+\renewcommand\chapterautorefname{Chapter}
+\renewcommand\chaptername{Chapter}
+
+\newcommand\exampleautorefname{Example}
+\newcommand\examplename{Example}

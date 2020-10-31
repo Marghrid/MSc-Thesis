@@ -103,7 +103,7 @@ The constraints in the \ac{SMT} formula ensure that the program is well-typed.
 %
 A model that satisfies the formula represents an assignment of a DSL symbol to each tree node. This assignment is then used to build a valid regex.
 
-\subsection{\textit{K}-tree Encoding}
+\subsection{\textit{K}-tree Encoding}\label{sec:k-tree}
 
 In this section we offer a formal description of the \(k\)-tree encoding, as proposed by Chen et. al. \cite{DBLP:conf/sigsoft/ChenMF19,Orvalho19}.
 Consider a \(k\)-tree of depth \(d\). Assume each node in the \(k\)-tree is assigned a unique positive integer index consistent with level-order traversal. Let \(N\) be the set all nodes' indices, \(N = \{1, 2, ..., k^d - 1\}\).
@@ -181,7 +181,7 @@ We want or regular expression to have the DSL type \(Re\), so the output constra
 \end{gather*}
 \end{example}
 
-\subsection{Multi-tree Representation}
+\subsection{Multi-tree Representation}\label{sec:multi-tree}
 We considered several validators for digital forms and observed that many regexes in this domain are the concatenation of relatively simple regexes. However, the successive concatenation of simple regexes quickly becomes complex in its \(k\)-tree representation.
 %
 Recall the regex for date validation presented in the motivating example in \autoref{sec:motivating-example}: \UseVerb{date2}.
@@ -196,6 +196,7 @@ Because the root-node has a fixed assignment, it is not included in the \ac{SMT}
 Having a top-level concatenation node that connects \(n\) \(k\)-trees of depth \(d\), we are able to represent regexes using fewer nodes. \autoref{fig:date-multitree} shows the multi-tree representation of the same regex as \autoref{fig:date-ktree}, and shows that the multi-tree construct can represent this expression using half the~nodes.
 
 In the \(k\)-tree encoding, an increase in the depth \(d\) of the tree corresponds to an increase in the expression's complexity. Thus, the enumerator successively explores \(k\)-trees of increasing depth. However, multi-tree has 2 measures of complexity: the depth of the trees, \(d\), and the number of trees, \(n\). Note that, since it is not encoded into \ac{SMT}, the root-node level is not taken into account for the depth of the multi-tree. \Forest{} employs two different methods for increasing these values: static multi-tree and dynamic multi-tree.
+
 
 \subsubsection{Static multi-tree} \label{sec:static-multi-tree} In the static multi-tree method, \Forest{} fixes \(n\) and progressively increases \(d\). To find the value of \(n\), there is a preprocessing step, in which \Forest{} identifies patterns in the valid examples. This is done by first identifying substrings common to all examples. A substring is considered a dividing substring if it occurs exactly the same number of times in all examples. Dividing substrings must also occur in the same order in all examples. Then, we split each example before and after the dividing substrings. Each example becomes an array of \(n\) strings.
 
@@ -387,7 +388,8 @@ Consider, once again, the motivating example described in \autoref{sec:motivatin
 \end{itemize}
 \end{example}
 
-Several methods can be used to find the correct values fill the holes in a sketch within the respective domain. In \Forest{}, we tried two different approaches: graph-based and \ac{SMT}-based sketch completion.
+Several methods can be used to find the correct values to fill the holes in a sketch within the respective domain. In \Forest{}, we tried two different approaches: graph-based and \ac{SMT}-based sketch completion.
+
 
 \paragraph{Graph-based completion} is implemented as described by \citeauthor{DanielThesis} in his MSc. Thesis \cite{DanielThesis}. We start by identifying all possible complete programs resulting from a sketch. To do this, we first consider the root node and recursively visit all its descendants, traversing the sketch tree in \ac{DFS} order. For each tree node we visit, if it is an internal node, we visit its descendants. If it is a hole, we return a list of all possible completions for it, i.e., the values in its corresponding domain. These values are stored in the parent node. In the end of the traversal, each internal node has a list of all possible completions for all holes in its descendant sub-tree. The root node contains information about all completion values for all holes in the tree. Then, the complete programs resulting from the sketch are simply the Cartesian product of all domains stored in the root node. Each concrete program is built and tested against the specification by the \textit{verifier}, and the synthesizer stores those that satisfy the specification.
 
@@ -451,16 +453,16 @@ A possible distinguishing input between \(r_1\) and \(r_2\) returned by \Forest{
 
 
 
-\subsection{Multi-distinguish}\label{sec:interaction-ramos}
+\subsection{Multi-distinguish}\label{sec:multi-dist}
 
-Besides the basic conversational clarification model, we extend \Forest{} a new interaction model, based on the interaction models first introduced in \citeyear{UnchartIt20} by \citet{UnchartIt20}. 
+Besides the basic conversational clarification model, we extend \Forest{} with a new interaction model, based on the interaction models first introduced in \citeyear{UnchartIt20} by \citet{UnchartIt20}. 
 As mentioned in \autoref{sec:regex-interaction}, \citeauthor{UnchartIt20} present two interaction models: \ynmodel and \optmodel.
-In the domain of regular expressions, the output is a Boolean value: either the string is matched by the regular expression or it is not. In practice, this entails a simplification of the \ynmodel and \optmodel models, and they converge into a single model, which we call multi-distinguish interaction model.
+In the domain of regular expressions, the output is a Boolean value: either the string is matched by the regular expression or it is~not. In practice, this entails a simplification of the \ynmodel and \optmodel models, and they converge into a single model, which we call multi-distinguish interaction model.
 
-The goal is to distinguish more than two regular expressions at once. Instead of triggering an interaction cycle right after finding two correct regular expressions, we continue the enumeration process past the second expression, until we have \(n\) correct expressions. Then, we disambiguate those \(n\) expressions at once. The goal is to generate fewer, more comprehensive distinguishing inputs, thus reducing the number of necessary queries to the user.
+The goal is to distinguish more than two regular expressions at once. Instead of triggering an interaction cycle right after finding two correct regular expressions, we continue the enumeration process past the second expression, until we have \(n\) correct expressions. Then, we disambiguate those \(n\) expressions at once, in order to generate fewer, more comprehensive distinguishing inputs, thus reducing the number of necessary queries to the user.
 
-To disambiguate \(n\) regular expressions, \(r_1, ..., r_n\), we start, as before, by defining \(n\) \ac{SMT} predicates, \(\rho_1, ..., \rho_n\) such that, for any input string \(s\), \(\rho_i\)(s) evaluates to \true{} if and only if \(r_i\) matches \(s\).
-We want to find a distinguishing string that approximately separates the regexes in two disjoint sets: those which match it and those which do not. Ideally, we want both sets to have the same number of regexes, so we can eliminate at least half the candidate expressions with each interaction.
+To disambiguate \(n\) regular expressions, \(r_1, ..., r_n\), we start, as before, by defining \(n\) \ac{SMT} predicates, \(\rho_1, ..., \rho_n\) such that, for any input string \(s\), \(\rho_i(s)\) evaluates to \true{} if and only if \(r_i\) matches \(s\).
+We want to find a distinguishing string \(s\) that separates the regexes in two disjoint sets, \set{A} and \set{B}, such that all regexes in \set{A} match \(s\) and none of the regexes in \set{B} matches \(s\). Ideally, we want \set{A} and \set{B} to have the same number of regexes, so we can eliminate at least half the candidate expressions with each interaction.
 
 To ensure at least two regexes in \(r_1, ..., r_n\) produce a different result when matched against \(s\), we add the hard constraint:
 \begin{equation}\label{eq:multi-distinguish0}
@@ -468,12 +470,17 @@ To ensure at least two regexes in \(r_1, ..., r_n\) produce a different result w
 \end{equation}
 
 \noindent
-To maximise the number of pairs which have a different matching result to \(s\), we add the soft constraints:
+Then, we want to split the regexes into two sets \set{A} and \set{B} of approximately the same size. This problem can be modelled as a bipartite graph. Let the regexes be the vertices in the graph, and let there be an edge between \(r_i\) and \(r_j\) if and only if \(r_i\) and \(r_j\) have a different matching result to string \(s\). Then the graph's sets are equivalent to to sets \set{A} and \set{B}. The resulting structure is a complete bipartite graph, a bipartite graph where each vertex of the first set is connected to every vertex of the second set.
+
+Now, we want to build a bipartite graph such that both sets of vertices have the same size. Since the number of edges in the bipartite graph is \(|\set{A}| \cdot |\set{B}|\), this is equivalent to maximising the number of edges in the graph, i.e., the number of pairs (\(r_i, r_j\)) which have different matching results to \(s\).
+
+Thus, to encode the goal of \set{A} and \set{B} having the same size, we add the soft constraints:
 \begin{equation}\label{eq:multi-distinguish}
     \bigwedge_{i,j \in \{1, ..., n\}, i<j} \; \rho_i(s) \ne \rho_j(s).
 \end{equation}
 
-We use a \ac{MaxSMT} solver to find a model to this formula. If  \eqref{eq:multi-distinguish0} is unsatisfiable, then all regexes in \(r_1, ..., r_n\) are equivalent and we can keep only one of them. Otherwise, if the formula is satisfiable, \(s\) is a distinguishing string. Once found, \Forest{} follows a similar procedure to that described in \autoref{sec:interaction-cc}: we ask the user to classify \(s\) as valid or invalid. Then, \Forest{} add the example to the respective set, eliminating from the search space all regexes which are not in accordance to the user's answer. 
+We use a \ac{MaxSMT} solver to find a model to this formula. If  \eqref{eq:multi-distinguish0} is unsatisfiable, then all regexes in \(r_1, ..., r_n\) are equivalent and we can keep only one of them. Otherwise, if the formula is satisfiable, \(s\) is a distinguishing string. Once found, \Forest{} follows a similar procedure to that described in \autoref{sec:interaction-cc}: we ask the user to classify \(s\) as valid or invalid. Then, \Forest{} adds the example to the respective set, eliminating from the search space all regexes which are not in accordance to the user's~answer. 
+
 
 \begin{example}
 Suppose \Forest{} enumerates the following four regular expressions:

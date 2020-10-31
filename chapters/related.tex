@@ -209,7 +209,7 @@ We use a \ac{MaxSMT} solver to try and find a model that satisfies the formula. 
 
 On the \ynmodel interaction model, the goal is to identify a distinguishing input \(\vec{x}\) that splits the set of programs into two sets \set{A} and \set{B}, such that programs in \set{A} produce the same output \(o\)  given input \(\vec{x}\), and all programs in \set{B} produce outputs different than \(o\) given input \(\vec{x}\).
 %
-The goal is then to find \(\vec{x}\) such that half programs is placed in each set.
+The goal is then to find \(\vec{x}\) such that half the programs are placed in each set.
 
 To encode this problem into \ac{MaxSMT}, we have the same Boolean variables \(b_{ij}\) for all pairs \(i,j \in \{1, ..., n\}, i < j\), which are \true if and only if \(P_i\) and \(P_j\) have the same output for input \(\vec{x}\):
 \begin{equation}
@@ -218,7 +218,7 @@ To encode this problem into \ac{MaxSMT}, we have the same Boolean variables \(b_
 %
 Then, we define a set of Boolean variables \(p_i^\set{A}\) (resp. \(p_i^\set{B}\)) for all \(i\in \{1, ..., n\}\) which are assigned \true if and only if program \(P_i\) is placed in set \set{A} (resp. \set{B}).
 %
-If two candidate programs \(P_i\) and \(P_j\) produce the same output for \(\vec{x}\) (i.e. \(b_{ij}\) is \true), then \(P_i\) and \(P_j\) must be placed in the same set. On the other hand, if two programs produce different outputs (i.e. \(b_{ij}\) is \false), then only one of them can be placed in set \set{A}. Finally, each program to be placed in one and only one set. To enforce this, we add the constraints:
+If two candidate programs \(P_i\) and \(P_j\) produce the same output for \(\vec{x}\) (i.e. \(b_{ij}\) is \true), then \(P_i\) and \(P_j\) must be placed in the same set. On the other hand, if two programs produce different outputs (i.e. \(b_{ij}\) is \false), then only one of them can be placed in set \set{A}. Finally, each program must be placed in one and only one set. To enforce this, we add the constraints:
 \begin{equation}
     \bigwedge_{i,j \in \{1, ..., n\}, i < j} b_{ij} \rightarrow \left( (p_i^\set{A} \wedge p_j^\set{A}) \vee (p_i^\set{B} \wedge p_j^\set{B}) \right),
 \end{equation}
@@ -231,9 +231,10 @@ If two candidate programs \(P_i\) and \(P_j\) produce the same output for \(\vec
     \bigwedge_{i \in \{1, ..., n\}} p_i^\set{A} \ne p_i^\set{B}.
 \end{equation}
 %
-To ensure we have at least one program in set \set{A}, we add the cardinality constraint:
+To ensure we have at least one program in set \set{A}, we add the constraint:
 \begin{equation}
-    \sum_{i=1}^n p_i^B  \le n-1.
+    %\sum_{i=1}^n p_i^B  \le n-1.
+    \bigvee_{i \in \{1, ..., n\}} p_i^\set{A}.
 \end{equation}
 
 \noindent

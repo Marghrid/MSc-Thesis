@@ -148,7 +148,8 @@ The following are examples of character classes:
 
 Regular expressions can be coupled with capturing groups.
 %
-A capturing group is a sub-regex within a regex, usually indicated with parentheses, which can be nested. When a string is matched by a regular expression with capturing groups, the match operation returns the resulting captures, i.e., the text that is matched by the regex inside each pair of parentheses. Capturing groups are used to extract information from text. Once extracted, that information can be used independently from the original string.
+A capturing group is a sub-regex within a regex, usually specified with parentheses. %, which can be nested.
+When a string is matched by a regular expression with capturing groups, the match operation returns the resulting captures, i.e., the text that is matched by the regex inside each pair of parentheses. Capturing groups are used to extract information from text. Once extracted, that information can be used independently from the original string.
 Besides producing a capturing group, the parentheses also cause the expression inside them to take precedence over the remaining operators in the regular expression.
 For instance, if a quantifier is placed after the parentheses, it applies to the regular expression inside as~a~whole.
 
@@ -157,7 +158,7 @@ Consider the regular expression \(r_1\) = \UseVerb{date2} and the string \(s\) =
 %
 Consider now \(r_2\) = \verb`([0-9]{2})/([0-9]{2})/([0-9]{4})`. \(r_2\) also matches \(s\) (it has the same base regular expression as \(r_1\)) and it has 3 capturing groups. Thus, when matched to \(s\), \(r_2\) produces the captures ``19'', ``08'', and ``1996''.
 %
-Finally, consider \(r_3\) = \verb`(([0-9]{2})/([0-9]{2}))/[0-9]{4}`. \(r_3\) also matches \(s\) and it has 3 capturing groups, two of which are nested inside the third one. When matched to \(s\), \(r_3\) produces the captures ``19/08'', ``19'', and ``08''.
+%Finally, consider \(r_3\) = \verb`(([0-9]{2})/([0-9]{2}))/[0-9]{4}`. \(r_3\) also matches \(s\) and it has 3 capturing groups, two of which are nested inside the third one. When matched to \(s\), \(r_3\) produces the captures ``19/08'', ``19'', and ``08''.
 \end{example}
 
 \noindent
@@ -168,8 +169,8 @@ Recall the string \(s\) = ``19/08/1996'' and regex \(r_2\) = \verb`([0-9]{2})/([
 \end{example}
 
 \section{Constraint Solving}\label{sec:logic}
-
-Throughout this document we make extensive use of \ac{SMT} and \ac{MaxSMT} to model problems in our synthesis domain.
+Constraint solving techniques are used to solve problems where the space of solutions is restricted by logical constraints.
+Throughout this document we make extensive use of \acf{SMT} and \acf{MaxSMT} to model problems in our synthesis domain.
 %
 The \ac{SMT} problem can be seen as a generalisation of the \ac{SAT} problem. Similarly, the \ac{MaxSMT} problem is defined as a generalisation of \ac{MaxSAT}. The next sections provide a brief introduction to each of these formalisms.
 
@@ -191,7 +192,7 @@ A clause \(c\) is a disjunction of literals: \(c = l_1 \lor l_2 \lor ... \lor l_
 \ac{SAT} formulas are usually represented in the \acf{CNF}. 
 
 \begin{definition}[\ac{CNF} Formula]
-A formula \(\phi\) in \ac{CNF} is a conjunction of clauses: \(\phi = c1 \land c2 \land ... \land c_n\). \(\phi\) can be equivalently represented as \(\phi = \{c_1, c_2, ..., c_n\}\).
+A formula \(\phi\) in \ac{CNF} is a conjunction of clauses: \(\phi = c_1 \land c_2 \land ... \land c_n\).
 \end{definition}
 
 \begin{example}\label{ex:CNF_formula}
@@ -215,8 +216,8 @@ Recall the \ac{CNF} formula from \autoref{ex:CNF_formula}: \(\phi_1 = (x_1 \lor 
 
 \subsection{Maximum Satisfiability}
 The problem of finding an assignment \(\nu\) to the variables of a CNF formula that satisfies the maximum number of clauses possible is known as \ac{MaxSAT}.
-\ac{MaxSAT} is used to get insights about the \textit{unsatisfiable} instances.
-Unlike \ac{SAT}, \ac{MaxSAT} is an optimisation problem.
+Unlike \ac{SAT}, which was a decision problem, \ac{MaxSAT} is an optimisation problem.
+In computer science, many optimisation programs can be reduced into \ac{MaxSAT}. Moreover, \ac{MaxSAT} can be used used to get insights about the \textit{unsatisfiable} instances.
 A \ac{SAT} solver tells us that we cannot satisfy all clauses. A \ac{MaxSAT} solver tells us how many can be satisfied at most.
 
 \begin{example}\label{ex:MaxSAT}
@@ -235,15 +236,15 @@ Let \((\phi_H, \phi_S)\) be an instance of partial \ac{MaxSAT}. An assignment \(
 \end{definition}
 
 \begin{example}
-Consider an instance of partial \ac{MaxSAT} \((\phi_{H1}, \phi_{S1})\), with the hard clause \(\phi_{H1} = \neg x_1\) and soft clauses \(\phi_{S1} = (x_1 \lor x_2) \land (\neg x_1 \lor x_2) \land \neg x_2\).
-The assignment \(\nu_2 = \{x_1 \mapsto \false, x_2 \mapsto \true\}\) is a model for \((\phi_{H1}, \phi_{S1})\), because it satisfies all hard clauses and as many soft clauses as possible.
+Consider an instance of partial \ac{MaxSAT} \((\phi_{H}, \phi_{S})\), with the hard clause \(\phi_{H} = \neg x_1\) and soft clauses \(\phi_{S} = (x_1 \lor x_2) \land (\neg x_1 \lor x_2) \land \neg x_2\).
+The assignment \(\nu_2 = \{x_1 \mapsto \false, x_2 \mapsto \true\}\) is a model for \((\phi_{H}, \phi_{S})\), because it satisfies all hard clauses and as many soft clauses as possible.
 \end{example}
 
 
 
 \subsection{Satisfiability Modulo Theories}
 
-Oftentimes, it is advantageous to express the problem at hand using more expressive logics. In this thesis we make extensive use of an extension of \ac{SAT}: \acf{SMT}. \ac{SMT} is the problem of satisfiability of formulas with respect to some background theory \(\mathcal{T}\), which defines the interpretations of certain function symbols. This allows us to incorporate ``pieces'' of first-order logic in \ac{CNF} formulas.
+Oftentimes, it is advantageous to express the problem at hand using more expressive logics. In this thesis we make extensive use of an extension of \ac{SAT}: \acf{SMT}. \ac{SMT} is the problem of satisfiability of formulas with respect to some background theory \(\mathcal{T}\), which defines the interpretations of certain function symbols. This allows us to incorporate fragments of first-order logic in \ac{CNF} formulas.
 
 \begin{definition}[\(\mathcal{T}\)-atom]
 A \(\mathcal{T}\)-atom \(t\) is a ground atomic formula in \(\mathcal{T}\).
@@ -251,7 +252,7 @@ A \(\mathcal{T}\)-atom \(t\) is a ground atomic formula in \(\mathcal{T}\).
 
 
 \begin{definition}[\(\mathcal{T}\)-literal]
-A \(\mathcal{T}\)-literal is a \(\mathcal{T}\)-atom  or (\(t\)) its negation (\(\neg t\)).
+A \(\mathcal{T}\)-literal is a \(\mathcal{T}\)-atom (\(t\)) or its negation (\(\neg t\)).
 \end{definition}
 
 \begin{definition}[\(\mathcal{T}\)-formula]
@@ -259,7 +260,7 @@ A \(\mathcal{T}\)-formula is then analogous to a propositional formula but it is
 \end{definition}
 
 \noindent
-The values in an \ac{SMT} assignment depend on the background theory~\(\mathcal{T}\). Commonly used theories include the theory of \ac{LIA}, whose values are integer, the theory of \textit{strings}, whose values are strings, and the theory of \ac{EUF}, which assigns functions with a valid interpretation. Given an \ac{SMT} assignment, \(\nu\), and a \(\mathcal{T}\)-atom \(t\), the positive \(\mathcal{T}\)-literal \(t\) is satisfied by \(\nu\) if and only if \(\nu(t)\) evaluates to \true according to theory \(\mathcal{T}\) and the negative \(\mathcal{T}\)-literal \(\neg t\) is satisfied by \(\nu\) if and only if \(\nu(t)\) evaluates to \false according to \(\mathcal{T}\); a \(\mathcal{T}\)-formula is satisfied by \(\nu\) if and only if all of its clauses are satisfied by \(\nu\).
+The values in an \ac{SMT} assignment depend on the background theory~\(\mathcal{T}\). Commonly used theories include the theory of \ac{LIA}, whose values are integer, the theory of \textit{strings}, whose values are strings, and the theory of \ac{EUF}, which assigns functions with a valid interpretation. Given an \ac{SMT} assignment, \(\nu\), and a \(\mathcal{T}\)-atom \(t\), the positive \(\mathcal{T}\)-literal \(t\) is satisfied by \(\nu\) if and only if \(\nu(t)\) is assigned \true according to theory \(\mathcal{T}\) and the negative \(\mathcal{T}\)-literal \(\neg t\) is satisfied by \(\nu\) if and only if \(\nu(t)\) is assigned \false according to \(\mathcal{T}\); a \(\mathcal{T}\)-formula is satisfied by \(\nu\) if and only if all of its clauses are satisfied by \(\nu\).
 
 \ac{SMT} is then the problem of deciding, given an SMT formula \(\phi\), if there exists an assignment of the variables and functions of \(\phi\) that satisfies it.
 
@@ -270,11 +271,11 @@ Let \(\phi_3 = (b - a = 1) \land ((b<5) \lor (a>10))\) be a \ac{SMT} formula in 
 
 \subsection{\acl{MaxSMT}}
 
-The same way \ac{MaxSAT} finds the maximum number of clauses that can be solved in a \ac{CNF} formula, \ac{MaxSMT} finds the maximum number of clauses that can be solved in an unsatisfiable \(\mathcal{T}\)-formula.
+The same way \ac{MaxSAT} finds the maximum number of clauses that can be satisfied in a \ac{CNF} formula, \ac{MaxSMT} finds the maximum number of clauses that can be satisfied in an unsatisfiable \(\mathcal{T}\)-formula.
 We can also define \textit{partial} \ac{MaxSMT} with hard clauses, \(\phi_H\), and soft clauses, \(\phi_S\).
 
 \begin{example}
-Let \((\phi_{H2}, \phi_{S2})\) be a partial \ac{MaxSMT} instance, with hard clauses \(\phi_{H2}=(b-a=1) \land (b<10)\) and soft clauses \(\phi_{S2} = (b<5) \land (a>10)\). We can satisfy at most one of the soft clauses. Therefore \(\nu_3 = \{a \mapsto 1, b \mapsto 2\}\) is an optimal model for this instance.
+Let \((\phi_{H}, \phi_{S})\) be a partial \ac{MaxSMT} instance, with hard clauses \(\phi_{H}=(b-a=1) \land (b<10)\) and soft clauses \(\phi_{S} = (b<5) \land (a>10)\). We can satisfy at most one of the soft clauses. Therefore \(\nu_3 = \{a \mapsto 1, b \mapsto 2\}\) is an optimal model for this instance.
 \end{example}
 
 \section{Program Synthesis} \label{sec:back-ps}
