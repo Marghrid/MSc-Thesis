@@ -3,7 +3,7 @@
 In this chapter, we describe the first stage of \Forest{}'s synthesis procedure, which produces the first component of the regex validation: a regular expression that matches all valid examples and none of the invalid examples. This regular expression serves as basis for the synthesis of the second and third components of the regex validation.
 
 
-Before the synthesis procedure starts, we define the set of operators that can be used to build the desired regex, as well as the values each operator can take as argument, i.e., \Forest{}'s \ac{DSL}. \Forest{} builds its DSL based on the user-provided examples. Each DSL is dynamically constructed to fit the problem at hand: it is as restricted as possible, without losing any expressiveness necessary to ensure it includes the correct regex. The DSL construction procedure is detailed in \autoref{sec:dsl}.
+Before the synthesis procedure starts, we define the set of operators that can be used to build the desired regex, as well as the values each operator can take as argument, i.e., \Forest{}'s \ac{DSL}. \Forest{} builds its \ac{DSL} based on the user-provided examples. Each \ac{DSL} is dynamically constructed to fit the problem at hand: it is as restricted as possible, without losing any expressiveness necessary to ensure it includes the correct regex. The \ac{DSL} construction procedure is detailed in \autoref{sec:dsl}.
 
 \begin{figure}[t]
     \centering
@@ -470,7 +470,7 @@ To ensure at least two regexes in \(r_1, ..., r_n\) produce a different result w
 \end{equation}
 
 \noindent
-Then, we want to split the regexes into two sets \set{A} and \set{B} of approximately the same size. This problem can be modelled as a bipartite graph. Let the regexes be the vertices in the graph, and let there be an edge between \(r_i\) and \(r_j\) if and only if \(r_i\) and \(r_j\) have a different matching result to string \(s\). Then the graph's sets are equivalent to to sets \set{A} and \set{B}. The resulting structure is a complete bipartite graph, a bipartite graph where each vertex of the first set is connected to every vertex of the second set.
+Then, we want to split the regexes into two sets \set{A} and \set{B} of approximately the same size. This problem can be modelled as a bipartite graph. Let the regexes be the vertices in the graph, and let there be an edge between \(r_i\) and \(r_j\) if and only if \(r_i\) and \(r_j\) have a different matching result to string \(s\). Then the graph's sets correspond to sets \set{A} and \set{B}. The resulting structure is a complete bipartite graph, a bipartite graph where each vertex of the first set is connected to every vertex of the second set.
 
 Now, we want to build a bipartite graph such that both sets of vertices have the same size. Since the number of edges in the bipartite graph is \(|\set{A}| \cdot |\set{B}|\), this is equivalent to maximising the number of edges in the graph, i.e., the number of pairs (\(r_i, r_j\)) which have different matching results to \(s\).
 
@@ -491,5 +491,5 @@ Suppose \Forest{} enumerates the following four regular expressions:
     \item \(r_4\) = \verb`[0-9]{2}/[0-9]{2}/[0-9]{3,4}`.
 \end{itemize}
 %
-A possible distinguishing input obtained using multi-distinguish is \(s\) = `01//2000'. \(s\) is accepted by \(r_1\)~and~\(r_2\) but not by \(r_3\)~or~\(r_4\). If we show \(s\) to the user, the user classifies it as invalid because it does not correspond to a valid date. We add this example to the set of invalid examples, thus eliminating \(r_1\)~and~\(r_2\) from the search space.
+A possible distinguishing input obtained using multi-distinguish is \(s\) = `01//2000'. \(s\) is accepted by \(r_1\)~and~\(r_2\) (\(\set{A} = \{r_1, r_2\}\)) but not by \(r_3\)~or~\(r_4\) (\(\set{B} = \{r_3, r_4\}\)). If we show \(s\) to the user, the user classifies it as invalid because it does not correspond to a valid date. We add this example to the set of invalid examples, thus eliminating \(r_1\)~and~\(r_2\) from the search space.
 \end{example}

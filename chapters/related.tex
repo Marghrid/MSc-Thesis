@@ -1,4 +1,4 @@
-\chapter{\revise{Related Work / Program Synthesis}}\label{chap:program-synthesis}
+\chapter{Program Synthesis}\label{chap:program-synthesis}
 
 
 Program synthesis is a very wide field of research. It has been studied by several different research communities and applied to diverse problems. As such, many approaches have been proposed to deal with the specific challenges introduced by each application, resulting in a great variety of focused algorithms that aim at finding a better program in less time. In this section, we take a more in-depth look into some of these techniques.
@@ -23,7 +23,7 @@ Some synthesizers perform enumerative search using partial programs \cite{Solar-
 Instead of completely defining a program, partial (or incomplete) programs contain holes alongside the \ac{DSL} components. %, i.e., parts of the program that refer to lower-level implementation details.
 For a partial program to become a syntactically correct complete program, all its holes must be filled with syntactically consistent expressions.
 %
-If we think in terms of the \ac{DSL}'s representation as a \ac{CFG}, a \textit{complete} program is a production of the grammar containing only terminal symbols, i.e, only actual operators and literal values in the \ac{DSL}. In contrast, a \textit{partial} program is a production of the grammar that may contain non-terminal symbols. Since each non-terminal symbol can correspond to many terminal symbols, a partial program can represent many complete programs.
+If we think in terms of the \ac{DSL}'s representation as a \ac{CFG}, a \textit{complete} program is a production of the grammar containing only terminal symbols, i.e, only operators and literal values in the \ac{DSL}. In contrast, a \textit{partial} program is a production of the grammar that may contain non-terminal symbols. Since each non-terminal symbol can correspond to many terminal symbols, a partial program can represent many complete programs.
 
 Sketch-based enumeration deals with a particular type of partial programs: \textit{sketches}. A sketch is a partial program where the holes cannot be filled with operators: all missing constructs are literal values of the \ac{DSL}.
 %
@@ -32,9 +32,9 @@ Instead of enumerating complete programs, a sketch-based synthesizer takes one o
     \item a sketch is provided by the user, who already possesses a high-level description of the desired program, in which case the synthesizer must complete it according to the specification, or
     \item the synthesizer is responsible for both producing a suitable sketch and completing it. The enumeration process is then split in two steps: sketch generation and sketch completion.
 \end{enumerate*}
-During sketch generation, the synthesizer enumerates incomplete programs in some order. During sketch completion, the synthesizer then enumerates complete programs for each given sketch, by successively filling each hole with a syntactically correct expression. Sketch-based enumeration is outlined in \autoref{fig:sketch_enumeration}.
+During sketch generation, the synthesizer enumerates incomplete programs in some order. During sketch completion, the synthesizer enumerates complete programs for each given sketch, by successively filling each hole with a syntactically correct expression. Sketch-based enumeration is outlined in \autoref{fig:sketch_enumeration}.
 
-To some synthesizers, two-step enumeration outperforms normal enumeration because there is a very efficient way to fill the sketch holes, either because the few possible values exist for each hole, or because they can be directly deduced from the specification (instead of enumerated).
+In many synthesizers, two-step enumeration outperforms normal enumeration because there is a very efficient way to fill the sketch holes, either because the few possible values exist for each hole, or because they can be directly deduced from the specification (instead of enumerated).
 
 
 
@@ -327,15 +327,14 @@ In \citeyear{Regel20}, \citet{Regel20} proposed \Regel, a multi-modal sketch-bas
 \end{enumerate*}
 \Regel's synthesis pipeline is shown in \autoref{fig:regel-synthesis}
 
-\Regel's \ac{DSL} is a lot more expressive than that of \AlphaRegex. They synthesise common regex operators: concatenation, union, Kleene closure, positive closure, option and range. Besides the standard regex operators, they accept operations and (intersect) and not (complement), which are implemented at the automaton level. 
-The literals complemented in \Regel's \ac{DSL} are the same as those in \Forest: the characters in the valid examples, in addition to all relevant character classes.
+\Regel's \ac{DSL} is a lot more expressive than that of \AlphaRegex. They synthesise common regex operators: concatenation, union, Kleene closure, positive closure, option and range. Besides the standard regex operators, they accept operations and (intersect) and not (complement), which are implemented at the automaton level.
 
 \paragraph{Sketch generation.}
 The first step of \Regel's synthesis is to produce a ranked list of sketches from the natural language description of the desired pattern using a semantic parser. Intuitively, \Regel's sketches represent a family of regexes that conform to a high-level structure. A sketch is then a program of an extended version of the \ac{DSL} that includes a ``constrained hole'' construct, denoted \(\square\{S_1, ..., S_n\}\), where \(S_1, ..., S_n\) are sub-regexes.
 Specifically, regex \(r\) belongs to the space of
 regexes defined by \(\square\{S_1, ..., S_n\}\) if one of the leaf nodes of \(r\) is one of the \(S_i\) sub-regexes.
 %
-In addition to constrained holes, \Regel's sketches can contain operators in their regex DSL. For example, a sketch can be of the form \(\texttt{f}(S_1, ..., S_n)\) where \(\texttt{f}\) denotes a DSL operator.
+In addition to constrained holes, \Regel's sketches can contain operators in their regex DSL. For example, a sketch can be of the form \(\texttt{f}(S_1, ..., S_n)\) where \(\texttt{f}\) denotes a \ac{DSL} operator.
 
 
 \begin{example}
@@ -352,7 +351,9 @@ First, like \AlphaRegex, they use lightweight deductive reasoning to prune infea
 
 Second, they use symbolic regexes to prune large parts of the search space.
 When synthesising constructs that take integer constants as arguments (like the range operator), they use a symbolic integer \(\kappa\) that represents any possible integer rather than explicitly enumerating possible integer values.
-Then, they generate a SMT formula that over-approximates the concrete regex. Since it is not a precise encoding of the regex, not all models satisfy all examples. So, in the end one of the resulting \ac{SMT} models must be selected to extract the concrete values of \(\kappa\).
+Then, they generate a SMT formula that over-approximates the concrete regex.
+%Since it is not a precise encoding of the regex, not all models satisfy all examples.
+In the end, the concrete values of \(\kappa\) are extracted from the resulting \ac{SMT} model.
 
 \citeauthor{Regel20} evaluate their approach on 322 regexes and showed that their multi-modal approach can successfully synthesise the intended regex in 80\% of the cases. In comparison, using only natural language can solve 43\% of these benchmarks and an example-only baseline can solve only 26\%. 
 %

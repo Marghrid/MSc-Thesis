@@ -79,7 +79,7 @@ In 6 of the benchmarks, we need only 2 capturing groups and at most 4 conditions
 In these 6 instances, the conditions' synthesis takes under 2 seconds.
 The remaining 2 benchmarks need 4 capturing groups and take longer.
 It takes 99 seconds to synthesise 4 capturing groups with 4 conditions.
-The instance that takes the longest to compute capture conditions is quite complex. The synthesised regular expression has 23 nodes, and it requires 6 capture conditions over 4 capturing groups. The result validates a datetime format: \verb`[0-9]{4}/([0-9]{2})/([0-9]{2}) ([0-9]{2}):([0-9]{2}) AM|PM`, \(\$0\le1 \land \$0\le12 \land \$1\le1 \land \$1~\le~31 \land \$2\le12 \land \$3\le59\). This benchmark takes 1229 (about 20 minutes) seconds to synthesise, 97\% of which is spent synthesising the capture conditions.
+The instance that takes the longest to compute capture conditions is quite complex. The synthesised regular expression has 23 nodes, and it requires 6 capture conditions over 4 capturing groups. The result validates a datetime format: \verb`[0-9]{4}/([0-9]{2})/([0-9]{2}) ([0-9]{2}):([0-9]{2}) AM|PM`, \(\$0\le1 \land \$0\le12 \land \$1\le1 \land \$1~\le~31 \land \$2\le12 \land \$3\le59\). This benchmark takes 1229 seconds (about 20 minutes) to synthesise, 97\% of which is spent synthesising the capture conditions.
 %
 During capture conditions synthesis, \Forest interacts 6.75 times and takes 0.1 seconds to compute distinguishing inputs, on~average.
 
@@ -139,15 +139,13 @@ Furthermore, static multi-tree allows \Forest{} to synthesise more complex expre
 To evaluate the performance of the multi-tree encoding, we ran \Forest{} with two other enumeration encodings: \(k\)-tree and line-based.
 The latter is a state of the art encoding for the synthesis of SQL queries \cite{Orvalho19,DBLP:journals/pvldb/OrvalhoTVMM20}.
 \(k\)-tree is implemented as the default enumerator in \textsc{Trinity}~\cite{trinity19}, while the line-based enumerator is used as available in \textsc{Squares}~\cite{squares-webpage}.
-The \(k\)-tree encoding has a very similar structure to that of multi-tree, so our pruning techniques were easily applied to this encoding.
+The \(k\)-tree encoding (introduced in \autoref{sec:k-tree}) has a very similar structure to that of multi-tree, so our pruning techniques were easily applied to this encoding.
 %
 On the other hand, line-based encoding is intrinsically different, making the pruning techniques harder to implement. Because of this, we compare line-based encoding to multi-tree without pruning.
 %
 In every other aspect, the three encodings were run in the same conditions, using \Forest{}'s regex \ac{DSL}.
 The synthesis time comparison of multi-tree with \(k\)-tree and line-based encodings are shown in the scatter plots in \autoref{fig:mt_vs_ktree} and \autoref{fig:mt_vs_lines}, respectively.
 \(k\)-tree is able to synthesise programs with up to 10 nodes, while the line-based encoding synthesises programs of up to 9 nodes. Neither encoding~outperforms~multi-tree.
-
-As seen in \autoref{table:number-solved}, line-based encoding does not outperform the tree-based encodings for the domain of regular expressions while it was much better for the domain of SQL queries~\cite{Orvalho19}. We conjecture the reason behind this disparity arises from the different nature of \ac{DSL}s. Most SQL queries, when represented as a tree, leave many branches of the tree unused and have more children per node, which results in a much larger tree and SMT encoding.
 
 As can be seen in \autoref{table:number-solved} and \autoref{fig:cactus}, line-based encoding does not outperform the tree-based encodings in our experiments. This contradicts the results obtained by \citet{Orvalho19} for the synthesis of SQL queries. We conjecture the reason behind this disparity arises from different nature of the DSLs. Most SQL queries, when represented as a tree, leave many branches of the tree unused, which results in the need of a larger depth for the tree. Regular expressions, on the other hand, take more advantage of the tree structure.
 
@@ -157,11 +155,10 @@ As can be seen in \autoref{table:number-solved} and \autoref{fig:cactus}, line-b
 To assess the impact of providing fewer examples on the accuracy of the solution, we ran \Forest{} with modified versions of each benchmark.
 First, each benchmark was run with at most 10 valid and 10 invalid examples, chosen randomly among all examples. Conditional invalid examples are already very few per instance, so these were not altered. The accuracy of the returned regexes is slightly~lower.
 
-With only 10 valid and 10 invalid examples, \Forest{} returns the correct regex in 93.5\% of the benchmarks, which represents a decrease of only 2.5\% relative to the results with all examples.
-We also saw an increase in the number of interactions before returning, since fewer examples are likely to be more ambiguous. With only 10 examples, \Forest{} interacts on average 2.2 times per benchmark, which represents an increase of about a fifth.
-The increase in the number of interactions reflects on a small increase in the synthesis time (less than 1\%).
+With only 10 valid and 10 invalid examples, \Forest{} returns the correct regex in 96\% of the benchmarks, which represents a very slight decrease compared with results with all examples, where the accuracy was 98\%.
+We also saw an increase in the number of interactions before returning, since fewer examples are likely to be more ambiguous. With only 10 examples, \Forest{} interacts on average 2.1 times per instance during regex synthesis, which represents an increase of about a fourth compared to \Forest run with all examples, which interacted on average 1.7 times per instance.
 
-After, we reduced the number of examples even further: only 5 valid and 5 invalid. The accuracy of \Forest{} in this setting was reduced to 71\%. On average, it interacted 4.3 times per benchmark, which is over two times more than~before.
+After, we reduced the number of examples even further: only 5 valid and 5 invalid. The accuracy of \Forest{} in this setting was reduced to 71\%. On average, it interacted 4.0 times per benchmark, which is over two times more than~before.
 
 
 \section{Sketching and Multi-distinguish Interaction}
@@ -169,22 +166,22 @@ After, we reduced the number of examples even further: only 5 valid and 5 invali
 
 We implemented sketch-based enumeration in \Forest with both sketch-completion methods described in \autoref{sec:regex-sketches}: graph-based and \ac{SMT}-based.
 %
-Graph-based sketch completion solved only 4 instances, all in under 1 second. All 4 instances are among the simplest in the benchmark set: the synthesised regex has only 4 nodes. In these 4 instances, the correct sketch was enumerated within the first 6 sketches. This means \Forest had to exhaust at most 5 sketches before finding the correct one. In sum, the only instances that are solved with graph-based sketching are those where the regex is simplest and whose correct sketches happens to be enumerated first. In the remaining instances, \Forest enumerates and tests at most 500 sketches before timeout, while sketch-less \Forest enumerates at most 30 thousand regexes before the timeout. Graph-based sketch completion is inefficient because the possible values for each leaf are not pruned, and all combinations are tested.
+Graph-based sketch completion solved only 4 instances, all in under 1 second. All 4 successfully synthesised instances are among the simplest in the benchmark set, the synthesised regex has only 4 nodes, and the correct sketch was enumerated within the first 6 sketches. This means \Forest had to exhaust very few sketches (at most 5) before finding the correct one. In sum, the only instances that are solved with graph-based sketching are those where the regex is simplest and whose correct sketches happens to be enumerated first. In the remaining instances, \Forest enumerates and tests at most 500 sketches before timeout, while sketch-less \Forest enumerates at most 30 thousand regexes before the timeout. Graph-based sketch completion is inefficient because the possible values for each leaf are not pruned, and all combinations are tested.
 
-\ac{SMT}-based sketching performed only slightly better: 8 instances were solved in total. Synthesis times vary in accordance with each solution's complexity. Four 4-node regexes synthesised in under 2 seconds, one 5- and one 6-node regex synthesised in under one minute, and the remaining two 8-node solutions in under one hour. Of the unsolved instances, only one timed out. The remaining 47 were forcefully terminated due to insufficient memory (within the imposed 4GB limit). This happens because the \ac{SMT} formula grows exponentially with the number of holes in the sketch, so larger sketches quickly become intractable.
+\ac{SMT}-based sketching performed only slightly better: 8 instances were solved in total. Synthesis times vary in accordance with each solution's complexity. Four 4-node regexes synthesised in under 2 seconds, one 5- and one 6-node regex synthesised in under one minute, and the remaining two 8-node solutions in under one hour. Of the unsolved instances, only one timed out. The remaining 47 were forcefully terminated due to insufficient memory within the imposed 4GB limit. We observed out-of-memory errors even with the limit set as high as 32GB. This happens because the \ac{SMT} formula grows exponentially with the number of holes in the sketch, so larger sketches quickly become intractable.
 
 We also compared the behaviour of the two interaction models described for regex synthesis in \autoref{sec:regex-interaction}.
 The multi-distinguish model was run every 4 regexes found, because
-%\begin{enumerate*}[label=(\roman*)]
-%    \item
-our experiments showed that Z3's regex theory could not efficiently distinguish more than 4 regexes at a time. %, and 
-%    \item 4 is the minimum number of regexes to distinguish such that it still makes sense to apply multi-distinguish: ideally we would remove 2 programs from the search space with each interaction
-%\end{enumerate*} 
+our experiments showed that Z3's regex theory could not efficiently distinguish more than 4 regexes at a time.
+%
+Regardless of the interaction model, \Forest interacts with the user in 29 benchmarks. With multi-distinguish, of these 29, only 23 successfully terminate synthesis and compute a regex.
+%
+One of the failed instances times out before enumerating the correct regex. The remaining 5 timeout after finding 4 regexes in the first minute of synthesis and spending the remaining 59 minutes unsuccessfully trying to find a distinguishing input for them.
+While 4 instances we distinguishing relatively complex regexes (10-16 nodes), the remaining one times out trying to distinguish simple 4-node regular expressions.
 
-Regardless of the interaction model, \Forest interacts with the user in 29 benchmarks. With multi-distinguish, of these 29, only 23 successfully terminate synthesis and compute a regex. One times out before enumerating the correct regex. The other 5 timeout after finding 4 regexes in the first minute of synthesis and spending the remaining 59 minutes unsuccessfully trying to find a distinguishing input for them.
-Of these 5, 4 are distinguishing relatively complex regex (10-16 nodes). The remaining one, however, times out trying to distinguish between four 4-node regular expressions.
-13 instances required 3 or more interactions using the multi-distinguish model, which is fewer than with conversational clarification, in which 16 instances require 3 or more interactions and 3 instances require more than 10 interactions. With multi-distinguish, \Forest required at most 9 regex interactions before converging to a solution. With conversational clarification, \Forest interacts up to 21 to synthesise the correct regular expression.
-Overall, considering only benchmarks solved in both runs, with conversational clarification \Forest spends about half the time (3.2 seconds on average) computing distinguishing input than with multi-distinguish (6.2 seconds on average).
+Regarding the number of interactions, 13 instances required 3 or more interactions using the multi-distinguish model, which is 3 fewer than with conversational clarification.
+With multi-distinguish, \Forest required at most 9 regex interactions before converging to a solution. With conversational clarification, \Forest interacts up to 21 times to synthesise the correct regular expression.
+Overall, considering only benchmarks synthesised in both runs, with conversational clarification \Forest spends about half the time (3.2 seconds on average) computing distinguishing input than with multi-distinguish (6.2 seconds on average).
 
 As expected, when maximising the number of programs eliminated by each interactions, \Forest had on average fewer interactions with the user.
 Although it successfully minimises the number of required interactions to completely disambiguate the specification, we conclude that multi-distinguish is not a viable alternative to conversational clarification for two motives:

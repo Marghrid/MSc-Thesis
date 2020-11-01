@@ -1,8 +1,8 @@
 \chapter{Capturing Groups Synthesis}\label{chap:capture-cond-synthesis}
 
-As mentioned before, aside from being a very expressive way to describe patterns in text, regular expressions can be extended with capturing groups.
+Aside from being a very expressive way to describe patterns in text, regular expressions can be extended with capturing groups.
 %
-Capturing groups are used to extract information from text, which can be used after independently from the originally matched text.
+Capturing groups are used to extract information from text, which can be used independently from the originally matched text.
 
 \Forest, after synthesising a regular expression to describe the desired format for a certain input field, completes it with capturing groups that, either capture some information desired by the user, or further restrict the accepted values by enforcing integer conditions over the integer values captured in the input string.
 %
@@ -16,19 +16,17 @@ The synthesis of both the capturing groups and the capture conditions is done us
 
 To enumerate capturing groups, \Forest starts by identifying atomic sub-regexes in the regular expression.
 Atomic regexes correspond to the smallest sub-regexes whose concatenation results in the original complete regex.
-It does not make sense to place a capturing group inside atomic sub-regexes. For example, the regex \verb![0-9]{2}! is an atomic sub-regex: there are no smaller sub-regexes whose concatenation results in it. It does not make sense to place a capturing group on just a part of~it: \verb!([0-9]){2}!.
+It does not make sense to place a capturing group inside atomic sub-regexes. For example, the regex \verb![0-9]{2}! is an atomic sub-regex: there are no smaller sub-regexes whose concatenation results in it. It does not make sense to place a capturing group on just a part of~it: \verb!([0-9]){2}! does not have a clear meaning.
 % In the tree representation of regexes, an atomic sub-regex is any subtree of regex whose root node is not a concatenation and whose parents are nothing but concatenations.
 Once identified, the atomic sub-regexes are placed in an ordered list. The concatenation of all elements in this list results in the original regular expression.
-
-\begin{example}
-Recall the previously shown date regex: \UseVerb{date2}. The ordered list of atomic sub-regexes for this regex is [\verb![0-9]{2}!, \verb!/!, \verb![0-9]{2}!, \verb!/!, \verb![0-9]{4}!].
-\end{example}
 
 Enumerating capturing groups over the regular expression is done by enumerating non-empty disjoint sub-lists of this list. The elements inside each sub-list form a capturing group.
 
 \begin{example}
-Suppose we want to get a single capturing group within the date regex. % \UseVerb{date2}.
-To do so, we use the ordered list of atomic sub-regexes [\verb![0-9]{2}!, \verb!/!, \verb![0-9]{2}!, \verb!/!, \verb![0-9]{4}!].
+Recall the previously shown date regex: \UseVerb{date2}. The ordered list of atomic sub-regexes for this regex is [\verb![0-9]{2}!, \verb!/!, \verb![0-9]{2}!, \verb!/!, \verb![0-9]{4}!].
+
+Suppose we want to get a single capturing group within the date regex. 
+A single capturing group is a single sub-list of the list of atomic sub-regexes.
 The following are some examples of sub-lists of the atomic sub-regexes list and their resulting capturing groups:
 
 %\begin{table}[h!]
@@ -47,8 +45,8 @@ The following are some examples of sub-lists of the atomic sub-regexes list and 
 %\caption{}
 %\end{table}
 
-\noindent
-Analogously, to enumerate two capturing groups, consider two non-empty disjoint sub-lists. For the date regex, we can have at most 5 capturing groups because the atomic sub-regexes list has 5 elements. The following are some examples of multiple sub-lists of the atomic sub-regexes list and their resulting capturing groups:
+
+Analogously, to enumerate two or more capturing groups, we consider two or more non-empty disjoint sub-lists. For the date regex, we can have at most 5 capturing groups because the atomic sub-regexes list has 5 elements. The following are some examples of multiple sub-lists of the atomic sub-regexes list and their resulting capturing groups:
 
 %\begin{table}[h!]
 %\centering
@@ -87,11 +85,11 @@ Recall the motivating example in \autoref{sec:motivating-example}: the user wish
     \end{itemize}
 \end{multicols}
 %
-As we saw back then, \Forest can provide capturing groups within the regular expression that allow the user to achieve this. In this example, we can see that each example is followed only by one capture, so we want to enumerate only one sub-list from the list of atomic regexes. In this specific case, the desired sub-list and corresponding capturing group are:
+As we saw back then, \Forest can provide capturing groups within the regular expression that allow the user to achieve this. In this case, each example is followed only by one capture, so we want to enumerate only one sub-list from the list of atomic regexes. The desired sub-list and corresponding capturing group are:
 %
 \begin{center}
 \begin{tabular}{rcl}
-[[\verb![0-9]{2}!], \verb!/!, \verb![0-9]{2}!, \verb!/!, \verb![0-9]{4}!] & $\rightarrow$ & \verb!([0-9]{2})/[0-9]{2}/[0-9]{4}!
+[\verb![0-9]{2}!, \verb!/!, \verb![0-9]{2}!, \verb!/!, [\verb![0-9]{4}!]] & $\rightarrow$ & \verb![0-9]{2}/[0-9]{2}/([0-9]{4})!
 \end{tabular}\bigskip
 \end{center}
 \end{example}
@@ -106,95 +104,100 @@ To ensure this, we remove from the set of conditional invalid examples all those
 This is equivalent to moving them from the conditional invalid set to the invalid set.
 To the user, it matters only that all invalid and conditional invalid examples are rejected by the final regex validation; whether they are rejected because they do not match the regular expression or because they do not satisfy the capture conditions is not relevant. Therefore, this behaviour is inconsequential to the user.
 
-To synthesise the capture conditions, \Forest starts by enumerating capturing groups using the enumeration process described in \autoref{sec:cap_groups_enumeration}. When synthesising capture conditions, the number of necessary capturing groups is not known beforehand. Thus, we enumerate capturing groups in progressively increasing number. We start by attempting to generate conditions with just one capturing group; if no solutions are found, enumerate two capturing groups, and so on.
+To synthesise the capture conditions, \Forest starts by enumerating capturing groups using the enumeration process described in \autoref{sec:cap_groups_enumeration}. When synthesising capture conditions, the number of necessary capturing groups is not known beforehand. Thus, we enumerate capturing groups in progressively increasing number. We start by attempting to generate conditions with just one capturing group; if no solutions are found, we enumerate two capturing groups, and so on.
 
 Since it is our goal to synthesise integer conditions, we require that the captures resulting from any given set of capturing groups all correspond to integers. This is done by, for each enumerated capturing groups, matching the regex to all valid and conditional invalid examples and casting the resulting captures to integers. If this is not successful for all captures and all examples, these capturing groups cannot be used for capture conditions. The current capturing groups are discarded and the enumeration process continues.
 
 
 For each enumerated set of integer capturing groups, \Forest tries to find a set of capture conditions over those capturing groups that are satisfied by all valid examples but not by any of the conditional invalid examples.
 %
-A capture condition is a 3-tuple. It contains a capture, an integer comparison operator and an integer argument. In this document, we use the notation \(\$i, i \in 0, 1, ...\) to reference the text captured by the \((i+1)\)\textsuperscript{th} group. In \Forest, we consider only two integer comparison operators, $\le$ and $\ge$. However, the algorithm can be expanded to include more integer comparison operators. We do not allow two capture conditions referring to the same capturing group that use the same operator, changing only the integer argument. Therefore, a capture condition can be identified by the capturing group's index and the integer comparison operator.
+A capture condition is a 3-tuple: it contains the captured text, an integer comparison operator and an integer argument. In this document, we use the notation \(\$i, i \in 0, 1, ...\), to reference the text captured by the \((i+1)\)\textsuperscript{th} group. In \Forest, we consider only two integer comparison operators, $\le$ and $\ge$. However, the algorithm can be easily extended to include more integer comparison operators. We do not allow two capture conditions referring to the same capturing group that use the same operator, changing only the integer argument. Therefore, a capture condition can be identified by the capturing group's index and the integer comparison operator.
 
 %\Forest uses \ac{SMT} to find which operators to use in the conditions for each capture, and which integer argument they should have.
-We start by considering all possible capture conditions for a given set of capturing groups. Let \(\mathcal{C}\) be a set of capturing groups and \(\mathcal{C}(x)\) the captures that result from applying the capturing groups \(\mathcal{C}\) to example string \(x\). Let \(\mathcal{O}\) be the set of integer operators being considered; in \Forest \(\mathcal{O} = \{\le, \ge\}\). Then, the set of all capture conditions, \(\mathcal{D}\), is the combination of any capturing group with any operator: \(\mathcal{D} = \mathcal{C} \times \mathcal{O}\).
-
-
-\Forest uses max-\ac{SMT} to select among all possible capture conditions the minimum set of capture conditions that are satisfied by all valid examples and by none of the conditional invalid.
+%We start by considering all possible capture conditions for a given set of capturing groups.
 %
-Let \(\mathcal{V}\) be the set of all valid examples, \(\mathcal{I}\) the set of all conditional invalid examples and \(\mathcal{X} = \mathcal{V} \cup \mathcal{I}\) the set of all examples.
+Let \(\mathcal{C}\) be a set of capturing groups and \(\mathcal{C}(x)\) the integer captures that result from applying \(\mathcal{C}\) to example string \(x\).
+%
+Let \(\mathcal{O}\) be the set of integer operators being considered; in \Forest \(\mathcal{O} = \{\le, \ge\}\). Then, let \(\mathcal{D}_\mathcal{C}\) be the set of all possible capture conditions over capturing groups \(\mathcal{C}\).
+\(\mathcal{D}_\mathcal{C}\) results from combining each capturing group with each integer operator: \(\mathcal{D}_\mathcal{C} = \mathcal{C} \times \mathcal{O}\).
+%
+Finally, let \(\mathcal{V}\) be the set of all valid examples, \(\mathcal{I}\) the set of all conditional invalid examples and \(\mathcal{X} = \mathcal{V} \cup \mathcal{I}\) the set of all examples.
 %\subsection{\ac{SMT} variables}
-To encode the problem, we use the following sets of Boolean variables:
+Given a set of capturing groups \(\mathcal{C}\), \Forest uses \ac{MaxSMT} to select from \(\mathcal{D}_\mathcal{C}\) the minimum set of capture conditions that are satisfied by all valid examples and by none of the conditional invalid. To encode the problem, we use the following sets of Boolean variables:
 \begin{itemize}
-    \item \(a_x\) for all examples \(x \in \mathcal{X}\).
-    
-    \(a_x = \) True means that example \(x\) satisfies all capture conditions in the solution.
-    
-    \item \(s_{\textit{cap}, x}\) for all captures \(\textit{cap} \in \mathcal{C}(x)\) and \(x \in \mathcal{X}\).
-    
-    \(s_{\textit{cap}, x} =\) True means that capture \textit{cap} in example \(x\) satisfies all used conditions that refer to it.
+    \item \(a_x\) for every example \(x \in \mathcal{X}\).
+    %
+    \(a_x = \) \true means that example \(x\) satisfies all capture conditions in the solution.
+
+
+
+    \item \(s_{\textit{cap}, x}\) for every capture \(\textit{cap} \in \mathcal{C}(x)\) and examples \(x \in \mathcal{X}\).
+    %
+    \(s_{\textit{cap}, x} =\) \true means that capture \textit{cap} in example \(x\) satisfies all used conditions that refer to it.
 
     
-    \item \(u_{\textit{cond}}\) for all conditions \(\textit{cond} \in \mathcal{D}\). 
-    
-    \(u_{\textit{cond}} = \) True means condition \textit{cond} is used in the solution.
+    \item \(u_{\textit{cond}}\) for all conditions \(\textit{cond} \in \mathcal{D}_\mathcal{C}\). 
+    %
+    \(u_{\textit{cond}} = \) \true means condition \textit{cond} is used in the solution.
 \end{itemize}
 
-Besides these, we use a set of integer variables \(b_{\textit{cond}}\), for all conditions \(\textit{cond} \in \mathcal{D}\) that represent the integer argument present in each condition.
+Additionally, we define a set of integer variables \(b_{\textit{cond}}\), for all conditions \(\textit{cond} \in \mathcal{D}_\mathcal{C}\) that represent the integer argument in each condition.
 
 
 %\subsection{\ac{SMT} constraints}
-Then, we need to define a set of constraints that ensure the set of selected captures correctly classifies the examples.
-Let \(\textrm{SMT}(\textit{cond}, x)\) be the \ac{SMT} representation (in the underlying Linear Integer Arithmetic) of the condition \(\textit{cond}\) for example \(x\).
-In this representation, the capture is an integer value, the integer operator is has the usual semantics and the integer argument is the corresponding \(b_{\textit{cond}}\) \ac{SMT} integer variable.
+Then, we define a set of constraints that ensure the set of selected captures correctly classifies the examples.
+Let \(\textrm{SMT}(\textit{cond}, x)\) be the \ac{SMT} representation of the condition \(\textit{cond}\) for example \(x\).
+In this representation, the capture is an integer value, the integer operator is has the usual semantics, and the integer argument is the corresponding \(b_{\textit{cond}}\) integer variable.
 
-\begin{example}
-Recall the first valid example from the motivating example in \autoref{sec:motivating-example} \(x_0\) = ``27/10/2017''.
-%
-Suppose \Forest has already synthesised the desired regular expression and enumerated the capturing group that corresponds to the day: \verb`([0-9]{2})/[0-9]{2}/[0-9]{4}`. 
-%
-Finally, consider the capture condition that refers to the first (and only) capturing group, \(\$0\) and operator \(\le\), represented by these two elements: \(c_0 = (\$0, \le\)).
-%
-The SMT representation for condition \(c_0\) and example \(x\) is then:
-
-\[\textrm{SMT}(c_0, x_0)\; =\;  27 \le b_{c_0}\]
-\end{example}
-
-Constraint \ref{eq:cap_cond_s_def} states that a capture \textit{cap} in example \(x\) satisfies all conditions that refer to it if and only if for every condition that refers to that capturing group, either it is not used or it is satisfied for the value of that capture in that example.
+Let \(\mathcal{D}_{cap} \subseteq \mathcal{D}_\mathcal{C}\) be the set of capture conditions that refer to capture \textit{cap}.
+Constraint \ref{eq:cap_cond_s_def} states that a capture \textit{cap} in example \(x\) satisfies all conditions if and only if for every condition that refers to \textit{cap}, either it is not used or it is satisfied by the value of that capture in that example.
 
 \begin{equation}\label{eq:cap_cond_s_def}
-    s_{cap,x} \leftrightarrow \bigwedge_{cond \in \mathcal{D}(cap)} (u_{cond} \rightarrow \textrm{SMT}(\textit{cond}, x))
+    s_{cap,x} \leftrightarrow \bigwedge_{cond \in \mathcal{D}_{\textit{cap}}} u_{cond} \rightarrow \textrm{SMT}(\textit{cond}, x)
 \end{equation}
 
 \begin{example}
-Consider again \(x_0\) = ``27/10/2017'' and two capture conditions over the capturing group in \verb`([0-9]{2})/[0-9]{2}/[0-9]{4}`: \(c_0 = (\$0, \le\)) and \(c_1 = (\$0, \ge\)). Constraint \eqref{eq:cap_cond_s_def} for this example is then:
+Recall the first valid example from the motivating example in \autoref{sec:motivating-example}: \(x_0\) = ``19/08/1996''.
+%
+Suppose \Forest has already synthesised the desired regular expression and enumerated the capturing group that corresponds to the day: \verb`([0-9]{2})/[0-9]{2}/[0-9]{4}`. 
+%
+Let \(\textit{cond}_0\) and \(\textit{cond}_1\) be the conditions that refers to the first (and only) capturing group, \(\$0\), and operators \(\le\) and \(\ge\) respectively.
+%
+The SMT representation for \(\textit{cond}_0\) % and \(\textit{cond}_1\)
+and \(x_0\) is
+%
+\[\textrm{SMT}(\textit{cond}_0, x_0)\; =\;  19 \le b_{\textit{cond}_0}\]. 
+
+\noindent
+Constraint \ref{eq:cap_cond_s_def} for this example is then:
 %
 \begin{equation*}
-    s_{0,x_0} \leftrightarrow (u_{c_0} \rightarrow 27 \le b_{c_0}) 
-    \land (u_{c_1} \rightarrow 27 \ge b_{c_1})
+    s_{0,x_0} \leftrightarrow (u_{\textit{cond}_0} \rightarrow (19 \le b_{\textit{cond}_0}))
+    \land (u_{\textit{cond}_1} \rightarrow (19 \ge b_{\textit{cond}_1})).
 \end{equation*}
 
 \end{example}
 
-Let \(\mathcal{C}(x)\) be the set of all captures resulting from applying the current capturing groups to example \(x\). Constraint \ref{eq:cap_cond_a_def} states that an example \(x\) satisfies all capture conditions that refer to it if and only if all the individual captures satisfy their respective conditions.
+Constraint \ref{eq:cap_cond_a_def} states that an example \(x\) satisfies all capture conditions that refer to it if and only if all the individual captures satisfy their respective conditions.
 
 \begin{equation}\label{eq:cap_cond_a_def}
     a_x \leftrightarrow \bigwedge_{cap \in \mathcal{C}(x)} s_{cap,x}
 \end{equation}
 
-Finally, constraint \ref{eq:cap_cond_a_clause} ensures that all valid examples satisfy the used conditions and none of the conditional invalid examples does.
+Finally, constraint \ref{eq:cap_cond_a_clause} ensures that used conditions are satisfied by all valid examples and none of the conditional invalid examples.
 
 \begin{equation}\label{eq:cap_cond_a_clause}
     \bigwedge_{x \in \mathcal{V}} a_x \;\land\; \bigwedge_{x \in \mathcal{I}} \neg a_x
 \end{equation}
 
 
-Since we are looking for the minimum set of capture conditions that are satisfied by all valid examples and by none of the conditional invalid, we add soft clauses to penalise the addition of capture conditions to the solution:
+Since we are looking for the minimum set of capture conditions, we add soft clauses to penalise the usage of each capture condition in the solution:
 
 \begin{equation}
-    \bigwedge_{cond \in \mathcal{D}} \neg\, u_{cond}
+    \bigwedge_{cond \in \mathcal{D}_\mathcal{C}} \neg\, u_{cond}.
 \end{equation}
 
-Running a \ac{SMT} solver with these constraints results in a solution. We consider part of the solution only the capture conditions whose \(u_cond\) is True in the resulting model. We also extract the values of the integer arguments in each condition from the model values of the \(b_{\textit{cond}}\) variables.
+Running a \ac{SMT} solver with these constraints results in a solution. We consider part of the solution only the capture conditions whose \(u_cond\) is \true in the resulting model. We also extract the values of the integer arguments in each condition from the model values of the \(b_{\textit{cond}}\) variables.
 
 \section{Conditions Disambiguation}
 \label{sec:cap_cond_distinguish}
@@ -203,8 +206,9 @@ The same problem we encountered while synthesising a regular expression emerges 
 
 First, \Forest uses the \ac{SMT} solver to produce another valid solution. This is done, like before, by adding a clause that blocks the current model and then asking the solver to solve the new formula.
 %
-To block the current model, let \(\mathcal{D^+}\) be the set of conditions that were part of the solution in the current model, i.e., the set of conditions \(\textit{cond}\) for which \(u_{\textit{cond}}\) was assigned \true, and \(m(x)\) represent the value of variable \(x\) in the current model.
-To get a different solution, we add constraint \ref{eq:cap_cond_soft} to ensure that in at least one of the selected captures, the integer value is different. Note that this allows for new models that use some of the same conditions with the same integer arguments for the conditions that they keep, but ensure that at least one condition is replaced by another.
+To block the current model, let \(\mathcal{D^+}\) be the set of conditions that were part of the solution in the current model, i.e., the set of conditions \(\textit{cond}\) for which \(u_{\textit{cond}}\) was assigned \true.
+Let \(m(x)\) represent the value of variable \(x\) in the current model.
+To get a different solution, we add constraint \ref{eq:cap_cond_soft} to ensure that the integer value is different in at least one of the selected captures. 
 
 \begin{equation}\label{eq:cap_cond_soft}
 \bigvee_{\textit{cond} \in \mathcal{D^+}} b_{\textit{cond}} \ne m(b_{\textit{cond}})
@@ -213,7 +217,34 @@ To get a different solution, we add constraint \ref{eq:cap_cond_soft} to ensure 
 Another call to the \ac{SMT} solver supplies another, different solution. We have then \(\mathcal{S}_1\) and \(\mathcal{S}_2\), two different solutions, i.e., two different sets of capture conditions that satisfy the specification. Our goal is to find a distinguishing input: a string \(c\) which is satisfies all capture conditions in \(\mathcal{S}_1\), but not those in \(\mathcal{S}_2\), or vice-versa. First, to simplify the problem, \Forest eliminates from \(\mathcal{S}_1\) and \(\mathcal{S}_2\) conditions which are present in both: these are not relevant to compute a distinguishing input. Let \(\mathcal{S}_1^*\) (resp. \(\mathcal{S}_2^*\)) be the subset of \(\mathcal{S}_1\) (resp. \(\mathcal{S}_2\)) containing only the distinguishing conditions, i.e., the conditions that differ from those in  \(\mathcal{S}_2\) (resp. \(\mathcal{S}_1\)).
 
 \begin{example}\label{ex:cond_cap_keep_distinct}
-Recall the valid and conditional invalid examples from the motivating example in \autoref{sec:motivating-example}. Because there is no conditional invalid example that shows that there cannot be a date with the day 32, \Forest can produce two correct sets of capture conditions for the examples provided in  over \verb`([0-9]{2})/([0-9]{2})/[0-9]{4}`:
+Recall the valid and conditional invalid examples from the motivating example in \autoref{sec:motivating-example}:
+
+\noindent
+Valid examples:
+\begin{multicols}{3}
+    \begin{itemize}[label={}]
+    \item 19/08/1996
+    \item 26/10/1998
+    \item 22/09/2000
+    \item 01/12/2001
+    \item 29/09/2003
+    \item 31/08/2015
+    \end{itemize}
+\end{multicols}
+
+\noindent
+Conditional invalid examples: 
+\begin{multicols}{3}
+    \begin{itemize}[label={}]
+    \item 33/08/1996
+    \item 26/00/1998
+    \item 22/13/2000
+    \item 00/12/2001
+    \item 12/31/2003
+    \item 52/03/2015
+    \end{itemize}
+\end{multicols}
+Because there is no conditional invalid example that shows that there cannot be a date with the day 32, \Forest can produce two correct sets of capture conditions for the examples provided in  over \verb`([0-9]{2})/([0-9]{2})/[0-9]{4}`:
 \begin{itemize}
     \item \(\mathcal{S}_1 = \$0 \le 31 \wedge \$0 \ge 1 \wedge \$1 \le 12 \wedge \$1 \ge 1\)
     \item \(\mathcal{S}_2 = \$0 \le 32 \wedge \$0 \ge 1 \wedge \$1 \le 12 \wedge \$1 \ge 1\)
@@ -222,30 +253,32 @@ To find the correct solution, \Forest first keeps only the captures that differ 
 \end{example}
 
 %To find a distinguishing input, we use the \ac{SMT} solver again.
-Recall that \(\mathcal{S}_1\) and \(\mathcal{S}_2\) are capture conditions with respect to the same set of capturing groups \(\mathcal{C}\). The capture conditions do not refer to the whole matched string, but only to parts of it (the captured portions). Thus, we do not compute the distinguishing string \(c\) directly. Instead, we compute the integer value of the distinguishing captures: the captured parts of the distinguishing string that satisfy the only one of \(\mathcal{S}_1^*\) and \(\mathcal{S}_2^*\).
+Recall that \(\mathcal{S}_1\) and \(\mathcal{S}_2\) are capture conditions with respect to the same set of capturing groups \(\mathcal{C}\). The capture conditions do not refer to the whole matched string, but only to parts of it (the captured portions). Thus, we do not compute the distinguishing string \(c\) directly. Instead, we compute the integer value of the distinguishing captures in \(c\): the captures that result from applying the regular expression and its capturing groups to the distinguishing input string.
 %
-We define \(|\mathcal{C}|\) integer variables, \(c_i\), which correspond to the values of the distinguishing captures, i.e., the captures that result from applying the regular expression and its capturing groups to the distinguishing input string:
+We define \(|\mathcal{C}|\) integer variables, \(c_i\), which correspond to the values of the distinguishing captures:
 %
-\[c_0, c_1, ..., c_{|\mathcal{C}|} = \mathcal{C}(c)\]
+\[c_0, c_1, ..., c_{|\mathcal{C}|} = \mathcal{C}(c).\]
 
 \begin{example}
-In \autoref{ex:cond_cap_keep_distinct} we had two solutions: \(\mathcal{S}_1^* = \$0 \le 31\) and \(\mathcal{S}_2^* = \$0 \le 32\). Even though the regular expression had 2 capturing groups, since only one is present in the distinguishing conditions, we can define only one integer variable, \(c_0\), representing the integer value of the first capturing group in the distinguishing string.
+In \autoref{ex:cond_cap_keep_distinct} we had two solutions: \(\mathcal{S}_1^* = \$0 \le 31\) and \(\mathcal{S}_2^* = \$0 \le 32\). Even though the regular expression had two capturing groups, since only one is present in the distinguishing conditions, we can define only one integer variable, \(c_0\), representing the integer value of the first capturing group in the distinguishing string.
 \end{example}
 
-We then define \(\textrm{SMT}(\textit{cond}, c)\) for the distinguishing string using the \(c_i\). In the \ac{SMT} representation of each condition \(\textit{cond}\), each capture represented by its respective \(c_i\) variable, the operator maintains it usual semantics and the integer argument is its value in the solution to which the condition belongs.
+We define \(\textrm{SMT}(\textit{cond}, c)\), the \ac{SMT} representation of each condition \textit{cond}, for the distinguishing string using the \(c_i\). Each capture in \(\mathcal{C}(c)\) is represented by its respective \(c_i\) variable, the operator maintains it usual semantics and the integer argument is its value in the solution to which the condition belongs.
 
-Finally, we add constraint \eqref{eq:cap_cond_distinguishing_constraint}, which states that \(c\) must satisfy one solution but not the other.
+Finally, we add constraint \eqref{eq:cap_cond_distinguishing_constraint}, which states that \(c\) satisfies the conditions in one solution but not the other.
 
 \begin{equation}\label{eq:cap_cond_distinguishing_constraint}
-    \bigwedge_{\textit{cond} \in \mathcal{S}_1^*} \textrm{SMT}(\textit{cond}, c) \qquad\ne \bigwedge_{\textit{cond} \in \mathcal{S}_2^*} \textrm{SMT}(\textit{cond}, c)
+    \bigwedge_{\textit{cond} \in \mathcal{S}_1^*} \textrm{SMT}(\textit{cond}, c) \qquad\ne \bigwedge_{\textit{cond} \in \mathcal{S}_2^*} \textrm{SMT}(\textit{cond}, c).
 \end{equation}
 
 \begin{example}
-Recall once more the two solutions from \autoref{ex:cond_cap_keep_distinct}, \(\mathcal{S}_1^* = \$0 \le 31\) and \(\mathcal{S}_2^* = \$0 \le 32\). To find \(c_0\), the value of the distinguishing capture for these solutions, we solve the constraint
+Recall two solutions from \autoref{ex:cond_cap_keep_distinct}, \(\mathcal{S}_1^* = \$0 \le 31\) and \(\mathcal{S}_2^* = \$0 \le 32\). To find \(c_0\), the value of the distinguishing capture for these solutions, we solve the constraint
 \begin{equation*}
     \exists c_0 : c_0 \le 31 \ne c_0 \le 32
 \end{equation*}
-and get the value \(c_0 = 32\) for which the left-hand side of the constraint is False, and the right-hand side is True.
+and get the value \(c_0 = 32\) which satisfies \(\mathcal{S}_2^*\) (and \(\mathcal{S}_2\)), but not \(\mathcal{S}_1^*\) (or \(\mathcal{S}_1\)).
+
+If we pick the first valid example, ``19/08/1996'' as basis for \(c\), the respective distinguishing input is \(c\)~=~``32/08/1996''. Once the user classifies \(c\) as invalid, \(c\) is added as a conditional invalid example and \(\mathcal{S}_2\) is removed from consideration.
 \end{example}
 
 Note that string \(c\) is not a string variable: it is not part of the encoding and it is invisible to the solver. We include it here as an auxiliary structure. Therefore, the model that results from a call to the \ac{SMT} solver does not give us a distinguishing string \(c\). Instead, it outputs only values for the distinguishing captures \(c_i\). To produce the distinguishing string c, \Forest picks an example from the valid set, applies to it the regular expression with the capturing groups, and replaces its captures with the model values for \(c_i\). An additional step is required here to pad with zeros \(c_i\)'s integer values so that their string representation has the same length as the captures they are replacing in the valid string.

@@ -35,7 +35,9 @@ and deep learning \cite{DBLP:conf/iclr/BalogGBNT17,DBLP:conf/iclr/ParisottoMS0ZK
 
 To help users write regular expressions, prior work has proposed to synthesise regular expressions from natural language~\cite{Regel20,DBLP:conf/naacl/KushmanB13,DBLP:conf/emnlp/LocascioNDKB16,DBLP:conf/emnlp/ZhongGYPXLLZ18,DBLP:journals/pacmpl/Yaghmazadeh0DD17} or from positive and negative examples~\cite{Regel20,DBLP:conf/popl/Gulwani11,AlphaRegex16,Fidex16}. Even though these techniques assist users in writing regular expressions for search and replace operations, they do not specifically target digital form validation and do not take advantage of the structured format of the data.
 
-\todo{Move to motivating example?}
+
+\section{Motivating Example}\label{sec:motivating-example}
+
 In this thesis, we propose \Forest{}, a new program synthesizer for regular expressions that targets digital form validations.
 \Forest takes as input a set of examples and returns a regex validation that validates them.
 \Forest accepts three types of examples:
@@ -51,8 +53,6 @@ In this thesis, we propose \Forest{}, a new program synthesizer for regular expr
     \item \textbf{capturing groups} that reflect the captures provided with the valid examples;
     \item \textbf{capture conditions} that express integer conditions for values in the examples that are satisfied by all valid but none of the conditional invalid~examples.
 \end{enumerate}
-
-\section{Motivating Example}\label{sec:motivating-example}
 
 Suppose a user is writing a form where one of the fields is a date that must respect the format DD/MM/YYYY.
 The user wants to accept the input strings (valid examples):
@@ -83,7 +83,7 @@ A regular expression can be used to enforce this format. However, if the user is
 Instead, the user may simply use the two sets of examples as input to \Forest{}, who outputs the regular expression \UseVerb{date2}.
 
 Suppose the user wants to validate not only the format, but also the values in the date.
-We consider as \textit{conditional invalid}:
+We consider as conditional invalid:
 \begin{multicols}{3}
     \begin{itemize}[label={}]
     \item 33/08/1996
@@ -94,11 +94,18 @@ We consider as \textit{conditional invalid}:
     \item 52/03/2015
     \end{itemize}
 \end{multicols}
-To ensure only valid values are inserted as the day and month, one can use capturing groups. A capturing group is represented by a set of parenthesis. They capture the text matched by the regex inside them, that can later be used with a numbered reference. In this document we use the notation \(\$i, i \in 0, 1, ...\) to reference the integer value captured by the \((i+1)\)\textsuperscript{th} group.
+To ensure only valid values are inserted as the day and month, we can add capturing groups to our regular expression.
+A capturing group is represented by a set of parenthesis.
+They capture the text matched by the regex inside them, that can later be used with a numbered reference. In this document we use the notation \(\$i, i \in 0, 1, ...\) to reference the integer value captured by the \((i+1)\)\textsuperscript{th} group.
 Then, conditions can be applied to these values. In this situation, the desired validation (and the output of \Forest) includes the same regular expression as before, now extended with two capturing groups and four integer conditions over them:
-\UseVerb{date_day_mo_caps}, \(\$0 \le 31 \wedge \$0 \ge 1 \wedge \$1 \le 12 \wedge \$1 \ge 1\).
+%\UseVerb{date_day_mo_caps}, \(\$0 \le 31 \wedge \$0 \ge 1 \wedge \$1 \le 12 \wedge \$1 \ge 1\).
+%
+\[
+\overbrace{\underbrace{\texttt{([0-9]\{2\})}}_\textrm{capturing group}\texttt{/}\underbrace{\texttt{([0-9]\{2\})}}_\textrm{capturing group}\texttt{/[0-9]\{4\}}}^\textrm{regex},
+\underbrace{\$0 \le 31 \wedge \$0 \ge 1 \wedge \$1 \le 12 \wedge \$1 \ge 1}_\textrm{capture conditions}
+\]
 
-Finally, suppose the user wishes not only to validate the input string but also to extract some information from it. Still using the dates example, the user could wish to extract the year from each date, so it could be used afterwards.
+Finally, suppose the user wishes not only to validate the input string but also to extract some information from it. Still using the dates example, the user could wish to extract the year from each date, so it could be used afterwards. Thus, the user could extend the valid example strings with captures:
 \begin{multicols}{3}
     \begin{itemize}[label={}]
     \item 19/08/1996, 1996
@@ -110,7 +117,7 @@ Finally, suppose the user wishes not only to validate the input string but also 
     \end{itemize}
 \end{multicols}
 
-Using a capture group, we can extract the year from each date. If the user provides these example captures alongside the valid examples, \Forest also outputs the regular expression and captures \UseVerb{date_year_cap}. The captured text corresponds to the desired information.
+Using a capture group, we can extract the year from each date. If the user provides these example captures alongside the valid examples, \Forest outputs the regular expression complete with the capture group necessary to extract them: \UseVerb{date_year_cap}. The captured text corresponds to the desired information.
 
 \section{Contributions}
 
@@ -118,7 +125,7 @@ As we can see in the motivating example, data inserted into digital forms is usu
 In this example, the data has the shape \texttt{dd/dd/dddd} where \texttt{d} corresponds to a digit. 
 %This contrasts with general regexes for search and replace operations that are often performed over unstructured text. 
 \Forest takes advantage of this structure by automatically detecting these patterns and using a divide-and-conquer approach to split the expression into simpler sub-expressions, solving them independently, and then merging their information to obtain the final regular~expression.
-Additionally, \Forest computes a set of capturing groups over the regular expression, which it then uses to synthesise integer conditions that further constrain the accepted values for that form field.
+The obtained regular expression validates the form input field's format. Additionally, \Forest computes a set of capturing groups over the regular expression to extract information, and integer conditions over captured values that further constrain the accepted inputs for that field.
 
 % Unlike regular expressions,
 Input-output examples do not require specialised knowledge and are accessible to users.
@@ -127,7 +134,7 @@ The ambiguity of input-output examples raises the necessity of selecting one amo
 %
 %To increase the confidence that the regex returned by \Forest matches the user intent,
 To this end, we incorporate a user interaction model based on distinguishing inputs
-for both the synthesis of the regular expressions and the synthesis of the capture~conditions. 
+for both the synthesis of the regular expression and the synthesis of the capture~conditions. 
 
 \begin{figure}
     \centering
@@ -139,7 +146,7 @@ for both the synthesis of the regular expressions and the synthesis of the captu
 Our synthesis procedure is split into three stages, each relative to an output component. %: regular expression and capture conditions.
 First, \Forest synthesises the regular expression, which is the basis for the synthesis of capturing groups.
 Secondly, \Forest computes a set of capturing groups that match the captures provided by the used alongside the valid examples. If it is impossible to compute correct capturing groups using the current regular expression, \Forest reverts to the first stage to produce another regular expression.
-Finally, \Forest synthesises the capture conditions, by first computing a set of capturing groups and then the conditions to be applied to the resulting captures. Again, if it is not possible to compute correct conditions with the current regular expression, \Forest revers to the first stage to try another regular expression.
+Finally, \Forest synthesises the capture conditions, by first computing a new set of capturing groups and then the conditions to be applied to the resulting captures. Again, if it is not possible to compute correct conditions with the current regular expression, \Forest revers to the first stage to try to synthesise another regular expression.
 \autoref{fig:regex-synthesis} shows the regex validation synthesis pipeline.
 
 All three stages of our synthesis algorithm employ enumerative search, a common approach to solve the problem of program synthesis \cite{DBLP:conf/pldi/FengMBD18,DBLP:conf/pldi/FengMGDC17,AlphaRegex16,Orvalho19,DBLP:conf/cav/ReynoldsBNBT19}.
@@ -154,28 +161,29 @@ To disambiguate between two programs,
 %
 The new input-output pair is added to the examples, and the enumeration process continues until there is only one solution left.
 
+\pagebreak
 
-In summary, we make the following contributions:
-
+In summary, this dissertation makes the following contributions:
+%
 \begin{itemize}
-    \item We propose a multi-tree SMT representation for regular expressions that leverages the structure of the input example to apply a divide-and-conquer approach.
+    \item We propose a multi-tree SMT representation for regular expressions that leverages the structure of the input examples to apply a divide-and-conquer approach.
     
     \item We propose several techniques to prune the search space, based on regex properties.
     
     \item We propose a new method to synthesise capturing groups for a given regular expression and integer conditions over the resulting captures.
     
-    \item We implemented our approach in a tool, \Forest{}, that interacts with the user to disambiguate the provided specification. We evaluate \Forest{} on real-world form-validation instances that use regular expressions. Experimental results show that \Forest can synthesise 72\% of the regular expressions that match the user intent.  \Forest{} outperforms \Regel, a general state-of-the-art synthesizer for~regular expressions.
+    \item We implemented our approach in a tool, \Forest{}, that interacts with the user to disambiguate the provided specification. We evaluate \Forest{} on real-world form-validation instances that use regular expressions. Experimental results show that \Forest can synthesise 74\% of the regex validations that match the user intent, and that \Forest{} outperforms \Regel, a general state-of-the-art synthesizer for~regular expressions.
 \end{itemize}
 
 \section{Document Structure}
 
 This document is organised as follows.
 
-We begin in~\autoref{chap:background} by introducing some background concepts used throughout the rest of the document. We introduce the concepts of regular language and regular expression, the main logic concepts used throughout this document, and the main components that characterise a program synthesizer.
+We begin in~\autoref{chap:background} by introducing some background concepts used throughout the rest of the document. We introduce the concepts of regular language and regular expression, the logic concepts used throughout this document, and the main components that characterise a program synthesizer.
 %
 \autoref{chap:program-synthesis} presents a survey of program synthesis algorithms with emphasis on regular expression synthesis.
 %
-We also look into \textit{AlphaRegex} and \Regel, two regular expression synthesizers that propose optimisations specific to that domain.
+We look into \textit{AlphaRegex} and \Regel, two regular expression synthesizers that propose optimisations specific to that domain.
 
 We proceed to \autoref{chap:regex-synthesis}, where we take a look into how \Forest synthesises the first part of its regex validation: a regular expression.
 %
