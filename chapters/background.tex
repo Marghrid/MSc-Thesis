@@ -426,7 +426,7 @@ Several search techniques have been explored to solve program synthesis. In the 
 \end{figure}
 
 \paragraph{Enumerative Search}\label{sec:enum-search}
-\cite{DBLP:conf/pldi/FengMGDC17,DBLP:conf/pldi/FengMBD18,AlphaRegex16,Orvalho19,DBLP:conf/cav/ReynoldsBNBT19,DBLP:journals/pvldb/OrvalhoTVMM20} is a common approach to solve the search problem of program synthesis. In this technique, out synthesizer must include two key components: an \textit{enumerator} and a \textit{verifier}.
+\cite{DBLP:conf/pldi/FengMGDC17,DBLP:conf/pldi/FengMBD18,AlphaRegex16,Orvalho19,DBLP:conf/cav/ReynoldsBNBT19,DBLP:journals/pvldb/OrvalhoTVMM20} is a common approach to solve the search problem of program synthesis. In this technique, the synthesizer must include two key components: an \textit{enumerator} and a \textit{verifier}.
 The \textit{enumerator} successively enumerates programs from the program space in some order. For each candidate program, the \textit{verifier} subsequently checks whether it satisfies all behavioural constraints, i.e., it is consistent with the user intent specification.
 If the \textit{verifier} deems the program consistent with the given specification, then the program is correct and it can be returned to the user.
 If, on the other hand, the \textit{verifier} decides that the given program does not satisfy the specification, then the \textit{enumerator} must pick a new program from the search space.

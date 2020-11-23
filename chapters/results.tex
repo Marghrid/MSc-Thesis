@@ -58,7 +58,7 @@ In both plots in \autoref{fig:cactus}, each line corresponds to a row in \autore
 The synthesis methods that correspond to lines more to the right of the plot are able to find a solution to more benchmarks in less time. \autoref{fig:cactus_3600} shows the benchmarks synthesised before the 3600 seconds timeout and \autoref{fig:cactus_60} the number solved in the first 60 seconds.
 
 \Forest correctly finds a solution 33 benchmarks (48\%) in under 10 seconds.
-In one hour, \Forest{} synthesises 52 benchmarks (75\%), with 98\% accuracy: only one solution did not correspond to the desired regex validation. This happens because \Forest disambiguates only among programs at the same depth. In this instance, the the first solution is at a lower depth as the correct one, thus the correct solution is never found. 
+In one hour, \Forest{} synthesises 52 benchmarks (75\%), with 98\% accuracy: only one solution did not correspond to the desired regex validation. This happens because \Forest disambiguates only among programs at the same depth. In this instance, the first solution is at a lower depth as the correct one, thus the correct solution is never found. 
 After 1~hour of running time, \Forest{} is interrupted, but it prints its current best validation before terminating.
 After the timeout, \Forest{} returned 2 more regexes, both the correct solution for the benchmark. \Forest{} never uses more than 500MB of RAM in each benchmark.
 %

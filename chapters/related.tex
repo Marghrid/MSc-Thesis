@@ -1,11 +1,11 @@
 \chapter{Program Synthesis}\label{chap:program-synthesis}
 
 
-Program synthesis is a very wide field of research. It has been studied by several different research communities and applied to diverse problems. As such, many approaches have been proposed to deal with the specific challenges introduced by each application, resulting in a great variety of focused algorithms that aim at finding a better program in less time. In this section, we take a more in-depth look into some of these techniques.
+Program synthesis is a very wide field of research. It has been studied by several different research communities and applied to diverse problems. As such, many approaches have been proposed to deal with the specific challenges introduced by each application, resulting in a great variety of focused algorithms that aim at finding a better program in less time. In this chapter, we take a more in-depth look into some of these techniques.
 
 In \autoref{sec:rel-sketching} we introduce sketch-based enumeration: an enumeration method that deals with partial programs. In \autoref{sec:cegis}, we look at a method that steers the search in the right direction by using information about wrong answers to avoid future similar mistakes.
 %
-In sections~\ref{sec:ogis} and~\ref{sec:rel-user-interaction}, we look at ways to deal with the ambiguity of the desired behaviour specification in inductive synthesis.
+In Sections~\ref{sec:ogis} and~\ref{sec:rel-user-interaction}, we look at ways to deal with the ambiguity of the desired behaviour specification in inductive synthesis.
 %
 Finally, in \autoref{sec:rel-regex-synthesizers}, we take an in-depth look at two existing regular expression synthesizers: \AlphaRegex and~\Regel.
 
@@ -182,7 +182,7 @@ In sum, not only are \optmodel and \ynmodel's interactions fewer, they are also 
 The \optmodel model shows the user a distinguishing input, as well as several options that correspond to the outputs of candidate programs for that input. Then, the user selects the correct output among the provided options.
 %If the selected output still corresponds to the output of several candidate programs, additional rounds of questions are performed to disambiguate solely among those programs.
 Ideally, there is a single input example that produces a different output for each candidate program.
-In this best-case scenario, a single interaction is sufficient to disambiguate all candidate programs with the \optmodel: only one is consistent with the user's selection.
+In this best-case scenario, a single interaction is sufficient to disambiguate all candidate programs with the \optmodel model: only one is consistent with the user's selection.
 
 To produce the distinguishing input, \(\vec{x}\), we start by defining a Boolean variable \(b_{ij}\) for each pair \(i,j\in\{1, ..., n\},i<j\). \(b_{ij}\) is \true if and only if \(P_i\) and \(P_j\) have the same output for \(\vec{x}\):
 %
@@ -207,7 +207,7 @@ We use a \ac{MaxSMT} solver to try and find a model that satisfies the formula. 
 
 \subsection{\ynmodel Model}
 
-On the \ynmodel interaction model, the goal is to identify a distinguishing input \(\vec{x}\) that splits the set of programs into two sets \set{A} and \set{B}, such that programs in \set{A} produce the same output \(o\)  given input \(\vec{x}\), and all programs in \set{B} produce outputs different than \(o\) given input \(\vec{x}\).
+On the \ynmodel interaction model, the goal is to identify a distinguishing input \(\vec{x}\) that splits the set of programs into two sets \set{A} and \set{B}, such that all programs in \set{A} produce the same output \(o\)  given input \(\vec{x}\), and all programs in \set{B} produce outputs different than \(o\) given input \(\vec{x}\).
 %
 The goal is then to find \(\vec{x}\) such that half the programs are placed in each set.
 
@@ -290,7 +290,7 @@ Therefore, over-approximation makes the state as general as it can be.
 If the over-approximation rejects at least one of the positive examples we conclude that this state can never be used to build a solution.
 
 \begin{example}
-Consider the state \(\tt1\Box\), i.e., the concatenation of \regex{1} with a hole, which can be filled with any regular expression. The over-approximation of this state, \regex{1(0|1)*}, accepts all strings that a regular expression of the form \(\tt1\Box\) could possibly accept. Thus, if \regex{1(0|1)*} does not accept all the the positive examples, this state is not worth considering, and can be pruned.
+Consider the state \(\tt1\Box\), i.e., the concatenation of \regex{1} with a hole, which can be filled with any regular expression. The over-approximation of this state, \regex{1(0|1)*}, accepts all strings that a regular expression of the form \(\tt1\Box\) could possibly accept. Thus, if \regex{1(0|1)*} does not accept all the positive examples, this state is not worth considering, and can be pruned.
 \end{example}
 
 \paragraph{Under-approximation} consists in replacing holes in the current state with \regex{\emptyset}, the regular expression that corresponds to the empty language. The concatenation of any regular expression \(r\) with \(\tt\emptyset\), \(r\tt\emptyset\), results in \(\tt\emptyset\). The union of any  regular expression \(r\) with \(\tt\emptyset\), \(r|\tt\emptyset\), is the regular expression \(r\) itself.
