@@ -103,7 +103,7 @@ In \autoref{table:number-solved} we show how many instances can be solved with d
 \Regel{} returned a regular expression for 53 instances and timed out after one hour in the remaining 16.
 Since \Regel does not implement a disambiguation procedure, the returned regular expression does not always exhibit the desired behaviour, even though it correctly classifies all examples.
 Of the 53 synthesised expressions, 35 exhibit the desired~intent (only one more than \Forest's first solution).
-This is a 66\% accuracy, which is much lower than \Forest's at 96\%. 
+This is a 66\% accuracy, which is much lower than \Forest's at 98\%. 
 We conclude that, in terms of synthesis time, \Regel is comparable to \Forest, which solves only one fewer instance. However, \Regel's accuracy for the desired validation is much lower than that of \Forest, as they don't implement an interaction model. In terms of accuracy, \Regel is comparable to \Forest's \nth{1} solution, which has lower synthesis times in general.
 
 55 out of the 68 generated sketches are of the form \(\square\{S_1, ..., S_n\}\),
@@ -159,6 +159,8 @@ With only 10 valid and 10 invalid examples, \Forest{} returns the correct regex 
 We also saw an increase in the number of interactions before returning, since fewer examples are likely to be more ambiguous. With only 10 examples, \Forest{} interacts on average 2.1 times per instance during regex synthesis, which represents an increase of about a fourth compared to \Forest run with all examples, which interacted on average 1.7 times per instance.
 
 After, we reduced the number of examples even further: only 5 valid and 5 invalid. The accuracy of \Forest{} in this setting was reduced to 71\%. On average, it interacted 4.0 times per benchmark, which is over two times more than~before.
+
+We conclude that \Forest{} maintains a very high accuracy with 10 examples of each kind, but not with 5 examples of each kind. Therefore, to ensure the solution is correct, the user should provide \Forest at least 10 examples of each kind.
 
 
 \section{Sketching and Multi-distinguish Interaction}
